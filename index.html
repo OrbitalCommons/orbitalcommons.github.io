@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OrbitalCommons</title>
+<meta name="description" content="High-quality, open-source libraries and tools for satellite imaging, satellite navigation, and space exploration.">
+<meta property="og:title" content="OrbitalCommons">
+<meta property="og:description" content="Open-source tools for satellite imaging, navigation, and space exploration. Free for astronomers and commercial enterprise alike.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://orbitalcommons.github.io/">
+<link rel="icon" href="data:,">
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #0f1117; color: #d7dbe6;
+         font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 4rem 1.25rem 5rem; }
+  h1 { font-size: 2.6rem; margin: 0 0 .5rem; letter-spacing: -.02em; }
+  .tag { font-size: 1.15rem; color: #9aa3b8; margin: 0 0 2rem; max-width: 62ch; }
+  h2 { font-size: 1.1rem; text-transform: uppercase; letter-spacing: .09em;
+        color: #7f8aa3; margin: 3rem 0 1rem; font-weight: 600; }
+  .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); }
+  .card { background: #161925; border: 1px solid #242938; border-radius: 8px; padding: 1.1rem 1.2rem; }
+  .card h3 { margin: 0 0 .45rem; font-size: 1.05rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #8fb4ff; }
+  .card p { margin: 0 0 .8rem; font-size: .92rem; color: #b8c0d0; }
+  .meta { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .6rem; }
+  .meta span { font-size: .72rem; padding: .12rem .5rem; border-radius: 3px; background: #1e2334; color: #8d97ad; }
+  .links { font-size: .85rem; }
+  a { color: #8fb4ff; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  ul { max-width: 70ch; padding-left: 1.2rem; }
+  li { margin-bottom: .5rem; }
+  footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid #242938;
+            color: #6f7890; font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>OrbitalCommons</h1>
+  <p class="tag">High-quality, open-source libraries and tools for satellite imaging, satellite
+  navigation, and space exploration. Free for astronomers and commercial enterprise alike.</p>
+
+  <p>The foundational tools for working with space data should be fast, reliable, and accessible
+  to everyone. We use the right language for each job: Rust where performance and safety matter
+  most, Python where the ecosystem and ergonomics win.</p>
+
+  <h2>Projects</h2>
+  <div class="grid">
+    <article class="card">
+      <h3>starfield</h3>
+      <p>Star catalogs, coordinate systems, ephemerides, and star finding. Skyfield-inspired, pure Rust.</p>
+      <div class="meta"><span class="lang">Rust</span><span class="dl">7,725 downloads</span></div>
+      <div class="links"><a href="https://github.com/OrbitalCommons/starfield">source</a> · <a href="https://crates.io/crates/starfield">package</a> · <a href="https://docs.rs/starfield">docs</a></div>
+    </article>
+    <article class="card">
+      <h3>zodiacal</h3>
+      <p>Blind astrometry. Identify what you are looking at from the pattern of stars alone, no prior pointing required.</p>
+      <div class="meta"><span class="lang">Rust</span><span class="dl">230 downloads</span></div>
+      <div class="links"><a href="https://github.com/OrbitalCommons/zodiacal">source</a> · <a href="https://crates.io/crates/zodiacal">package</a> · <a href="https://docs.rs/zodiacal">docs</a></div>
+    </article>
+    <article class="card">
+      <h3>fitsio-pure</h3>
+      <p>A pure Rust implementation of the FITS file format. No C dependencies, no unsafe, builds for wasm.</p>
+      <div class="meta"><span class="lang">Rust</span><span class="dl">3,136 downloads</span></div>
+      <div class="links"><a href="https://github.com/OrbitalCommons/fitsio-pure">source</a> · <a href="https://crates.io/crates/fitsio-pure">package</a> · <a href="https://docs.rs/fitsio-pure">docs</a></div>
+    </article>
+    <article class="card">
+      <h3>rizzma</h3>
+      <p>matplotlib-style plotting in Rust, with first-class WebAssembly. Figures that stay interactive wherever they land.</p>
+      <div class="meta"><span class="lang">Rust</span><span class="dl">1,885 downloads</span></div>
+      <div class="links"><a href="https://github.com/OrbitalCommons/rizzma">source</a> · <a href="https://crates.io/crates/rizzma">package</a> · <a href="https://docs.rs/rizzma">docs</a></div>
+    </article>
+    <article class="card">
+      <h3>starfield-datastore</h3>
+      <p>Pull-through artifact cache and ephemeris server: local disk, then mirror, then upstream archives, with fail-closed validation.</p>
+      <div class="meta"><span class="lang">Rust</span><span class="dl">888 downloads</span></div>
+      <div class="links"><a href="https://github.com/OrbitalCommons/starfield-datastore">source</a> · <a href="https://crates.io/crates/starfield-datastore">package</a> · <a href="https://docs.rs/starfield-datastore">docs</a></div>
+    </article>
+    <article class="card">
+      <h3>zodiacal-web</h3>
+      <p>Upload a sky image, get back coordinates, orientation, pixel scale and field of view.</p>
+      <div class="meta"><span class="lang">Rust</span></div>
+      <div class="links"><a href="https://github.com/OrbitalCommons/zodiacal-web">source</a></div>
+    </article>
+    <article class="card">
+      <h3>planet9</h3>
+      <p>Research and analysis on the hypothesized ninth planet in the outer Solar System.</p>
+      <div class="meta"><span class="lang">Rust</span></div>
+      <div class="links"><a href="https://github.com/OrbitalCommons/planet9">source</a></div>
+    </article>
+    <article class="card">
+      <h3>scicamera</h3>
+      <p>Scientific camera capture built on libcamera.</p>
+      <div class="meta"><span class="lang">Python</span></div>
+      <div class="links"><a href="https://github.com/OrbitalCommons/scicamera">source</a> · <a href="https://pypi.org/project/scicamera/">package</a></div>
+    </article>
+    <article class="card">
+      <h3>sky-light-estimator</h3>
+      <p>Estimate light pollution for a given latitude and longitude.</p>
+      <div class="meta"><span class="lang">Python</span></div>
+      <div class="links"><a href="https://github.com/OrbitalCommons/sky-light-estimator">source</a></div>
+    </article>
+  </div>
+
+  <h2>What we are building toward</h2>
+  <ul>
+    <li><strong>Satellite imaging.</strong> Capturing, storing and processing astronomical image
+      data on open standards like FITS.</li>
+    <li><strong>Satellite navigation.</strong> Blind astrometry and star field identification for
+      autonomous celestial navigation.</li>
+    <li><strong>Space exploration.</strong> Simulation, planning and analysis libraries that lower
+      the barrier to working with space data.</li>
+  </ul>
+
+  <p>Whether you are running a university observatory, building a CubeSat, or pointing a telescope
+  in your back garden, these tools are for you. Contributions and ideas welcome.</p>
+
+  <footer>
+    <a href="https://github.com/OrbitalCommons">github.com/OrbitalCommons</a>
+  </footer>
+</div>
+</body>
+</html>
