@@ -11,22 +11,36 @@ for (const file of ["stars.js", "sky-core.js"])
     context,
   );
 const sky = context.window.OCSky;
-let solver;
+let solver, reference;
+const wasmDir = process.env.ZODIACAL_WASM_DIR || path.join(root, "projects/zodiacal/wasm");
 const index = fs.readFileSync(
   path.join(root, "projects/zodiacal/bright-quads.bin"),
 );
 test.before(async () => {
   const code = fs.readFileSync(
-    path.join(root, "projects/zodiacal/wasm/zodiacal_browser.js"),
+    path.join(wasmDir, "zodiacal_browser.js"),
   );
   solver = await import(
     `data:text/javascript;base64,${code.toString("base64")}`
   );
   await solver.default({
     module_or_path: fs.readFileSync(
-      path.join(root, "projects/zodiacal/wasm/zodiacal_browser_bg.wasm"),
+      path.join(wasmDir, "zodiacal_browser_bg.wasm"),
     ),
   });
+  // Optional migration check against a previously shipped build, using identical
+  // sources and index. The old binary stays outside the site repository.
+  if (process.env.ZODIACAL_REFERENCE_DIR) {
+    const folder = process.env.ZODIACAL_REFERENCE_DIR;
+    const code = fs.readFileSync(path.join(folder, "zodiacal_browser.js"));
+    reference = await import(
+      `data:text/javascript;base64,${code.toString("base64")}#reference`
+    );
+    await reference.default({
+      module_or_path: fs.readFileSync(path.join(folder, "zodiacal_browser_bg.wasm")),
+    });
+    reference.load_index(index);
+  }
   const info = JSON.parse(solver.load_index(index));
   assert.equal(info.stars, 7038);
   assert.equal(info.quads, 79077);
@@ -51,13 +65,13 @@ function errorArcsec(ra, dec, result) {
 }
 function run(sources) {
   // Deliberately remove catalog IDs and truth coordinates at the adapter boundary.
-  return JSON.parse(
-    solver.solve_sources(
-      JSON.stringify(sources.map(({ x, y, flux }) => ({ x, y, flux }))),
-      1024,
-      768,
-    ),
-  );
+  const input = JSON.stringify(sources.map(({ x, y, flux }) => ({ x, y, flux })));
+  const result = JSON.parse(solver.solve_sources(input, 1024, 768));
+  if (reference) {
+    assert.deepEqual(result, JSON.parse(reference.solve_sources(input, 1024, 768)),
+      "solver output differs from the reference build");
+  }
+  return result;
 }
 test("the shipped solver recovers independent clean TAN fields across the sky", () => {
   let solved = 0,
