@@ -1,42 +1,378 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>starfield · OrbitalCommons</title>
-<meta name="description" content="Astronomical calculations, star catalogs, and Solar System data in Rust. A shared foundation for turning observations into positions.">
-<link rel="canonical" href="https://orbitalcommons.github.io/projects/starfield/">
-<meta property="og:title" content="starfield · OrbitalCommons">
-<meta property="og:description" content="Astronomical calculations, star catalogs, and Solar System data in Rust. A shared foundation for turning observations into positions.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://orbitalcommons.github.io/projects/starfield/">
-<meta name="theme-color" content="#05070d">
-<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../../style.css">
-<link rel="stylesheet" href="../project.css">
-<script src="../project.js" defer></script>
-</head>
-<body>
-<a class="skip" href="#main">Skip to content</a>
-<header class="site-nav"><div class="wrap"><a class="brand" href="../../"><img class="mark" src="../../assets/mark.svg" alt="" width="26" height="26"><span>Orbital<b>Commons</b></span></a><nav aria-label="Main navigation"><a href="../../#stack" class="opt">Stack</a><a href="../../#projects">Projects</a><a href="https://github.com/OrbitalCommons">GitHub</a></nav></div></header>
-<main id="main" class="wrap project-main">
-<p class="crumb"><a href="../../">OrbitalCommons</a> / <a href="../../#projects">projects</a> / starfield</p>
-<div class="project-head"><div><p class="eyebrow">Reduce / Put the sky in a coordinate system.</p><h1 class="mono">starfield</h1><p class="lede">Astronomical calculations, star catalogs, and Solar System data in Rust. A shared foundation for turning observations into positions.</p><div class="meta"><span>Rust</span><span>MIT</span><span>Catalogs + ephemerides</span></div><div class="actions"><a class="btn primary" href="#install">Start building <span aria-hidden="true">↗</span></a><a class="btn" href="https://docs.rs/starfield">Read the docs</a></div></div><figure class="project-art"><svg viewBox="0 0 380 270" aria-hidden="true" focusable="false"><rect width="380" height="270" rx="16" fill="#1a1b26"/><g stroke="#565f89" stroke-width=".6" opacity=".45"><path d="M30 25V245"/><path d="M70 25V245"/><path d="M110 25V245"/><path d="M150 25V245"/><path d="M190 25V245"/><path d="M230 25V245"/><path d="M270 25V245"/><path d="M310 25V245"/><path d="M350 25V245"/><path d="M25 30H355"/><path d="M25 70H355"/><path d="M25 110H355"/><path d="M25 150H355"/><path d="M25 190H355"/><path d="M25 230H355"/></g><g fill="none" stroke="#7aa2f7" opacity=".65"><ellipse cx="190" cy="133" rx="115" ry="78"/><ellipse cx="190" cy="133" rx="45" ry="78"/><path d="M75 133H305M89 98Q190 130 291 98M89 168Q190 136 291 168"/></g><path d="M190 133L263 86" stroke="#e0af68"/><circle cx="263" cy="86" r="4" fill="#e0af68"/><circle cx="190" cy="133" r="3" fill="#7dcfff"/><g fill="#c0caf5" font-size="10"><text x="245" y="68">α, δ</text><text x="302" y="149">0h</text><text x="181" y="42">+90°</text><text x="124" y="232">A FRAME FOR THE SKY</text></g></svg><figcaption>ORBITALCOMMONS / STARFIELD</figcaption></figure></div>
-<div class="project-body"><nav class="project-index" aria-label="On this page"><p>On this page</p><a href="#overview">Overview</a><a href="#explore">Explore</a><a href="#install">Get started</a><a href="#example">Example</a><a href="#features">Capabilities</a></nav><div class="project-content">
-<section id="overview" aria-labelledby="overview-title"><h2 id="overview-title">Put the sky in a coordinate system.</h2><p>Space data becomes useful when time, position, and reference frame agree. <strong>starfield</strong> brings those fundamentals together, with a Skyfield-inspired API and optional data sources you can select for your application.</p><div class="project-features"><div class="project-feature"><span class="feature-n">01</span><h3>Coordinates</h3><p>Work with celestial reference frames, precession, nutation, and Earth rotation.</p></div><div class="project-feature"><span class="feature-n">02</span><h3>Catalogs</h3><p>Use Hipparcos and Gaia, or generate a synthetic catalog for repeatable tests.</p></div><div class="project-feature"><span class="feature-n">03</span><h3>Solar System</h3><p>Work with planetary constants, body-fixed frames, and optional JPL clients.</p></div></div></section>
-<section id="explore" aria-labelledby="explore-title"><h2 id="explore-title">See it in practice</h2><p>A magnitude limit is a simple way to explore a star catalog. Lower values select brighter stars; raise the limit to reveal more of the sky.</p><div class="panel demo-panel" data-demo="catalog"><div class="demo-topline"><span class="demo-label">Catalog explorer</span><span class="demo-badge">Hipparcos data</span></div><canvas id="catalog-canvas" width="760" height="380" role="img" aria-label="Equatorial map of bright Hipparcos stars. Right ascension increases from right to left; declination increases upward." hidden></canvas><div class="demo-controls" hidden><label for="magnitude">Magnitude limit <input id="magnitude" type="range" min="0" max="6" step="0.1" value="3"><output id="magnitude-value" for="magnitude">3.0</output></label><label><input id="constellations" type="checkbox" checked> Constellation guides</label></div><p id="catalog-status" class="demo-status" role="status">Enable JavaScript to explore the catalog.</p></div><p class="demo-note">A browser illustration of catalog filtering, using a bundled Hipparcos subset. Positions are catalog coordinates, not a prediction of tonight’s local sky. The Rust example below runs independently of this visualization.</p></section>
-<section id="install" aria-labelledby="install-title"><h2 id="install-title">Start building</h2><div class="code-block"><div class="code-label"><span>Terminal</span></div><pre tabindex="0" aria-label="Terminal"><code>cargo add starfield</code></pre></div><p>The default crate includes core calculations and datastore support. Add only the data sources your application needs:</p><div class="code-block"><div class="code-label"><span>Cargo.toml</span></div><pre tabindex="0" aria-label="Cargo.toml"><code>starfield = { version = &quot;0.18.1&quot;, features = [&quot;hipparcos&quot;] }</code></pre></div></section>
-<section id="example" aria-labelledby="example-title"><h2 id="example-title">From an idea to a few lines of code</h2><div class="code-block"><div class="code-label"><span>Rust · synthetic catalog · no download required</span></div><pre tabindex="0" aria-label="Rust · synthetic catalog · no download required"><code>use starfield::catalogs::hipparcos::HipparcosCatalog;
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>starfield · OrbitalCommons</title>
+    <meta
+      name="description"
+      content="Astronomical calculations, star catalogs, and Solar System data in Rust. A shared foundation for turning observations into positions."
+    />
+    <link
+      rel="canonical"
+      href="https://orbitalcommons.github.io/projects/starfield/"
+    />
+    <meta property="og:title" content="starfield · OrbitalCommons" />
+    <meta
+      property="og:description"
+      content="Astronomical calculations, star catalogs, and Solar System data in Rust. A shared foundation for turning observations into positions."
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://orbitalcommons.github.io/projects/starfield/"
+    />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../../style.css" />
+    <link rel="stylesheet" href="../project.css" />
+    <script src="../../assets/stars.js" defer></script>
+    <script src="../../assets/sky-core.js" defer></script>
+    <script src="../../assets/sky-art.js" defer></script>
+    <script src="../project.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="../../"
+          ><img
+            class="mark"
+            src="../../assets/mark.svg"
+            alt=""
+            width="26"
+            height="26"
+          /><span>Orbital<b>Commons</b></span></a
+        >
+        <nav aria-label="Main navigation">
+          <a href="../../#stack" class="opt">Stack</a
+          ><a href="../../#projects">Projects</a
+          ><a href="https://github.com/OrbitalCommons">GitHub</a>
+        </nav>
+      </div>
+    </header>
+    <main id="main" class="wrap project-main">
+      <p class="crumb">
+        <a href="../../">OrbitalCommons</a> /
+        <a href="../../#projects">projects</a> / starfield
+      </p>
+      <div class="project-head">
+        <div>
+          <p class="eyebrow">Reduce / Put the sky in a coordinate system.</p>
+          <h1 class="mono">starfield</h1>
+          <p class="lede">
+            Astronomical calculations, star catalogs, and Solar System data in
+            Rust. A shared foundation for turning observations into positions.
+          </p>
+          <div class="meta">
+            <span>Rust</span><span>MIT</span><span>Catalogs + ephemerides</span>
+          </div>
+          <div class="actions">
+            <a class="btn primary" href="#install"
+              >Start building <span aria-hidden="true">↗</span></a
+            ><a class="btn" href="https://docs.rs/starfield">Read the docs</a>
+          </div>
+        </div>
+        <figure class="project-art">
+          <div class="project-sky-art">
+            <svg
+              class="sky-art-fallback"
+              viewBox="0 0 380 270"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <rect width="380" height="270" rx="16" fill="#1a1b26" />
+              <g stroke="#565f89" stroke-width=".6" opacity=".45">
+                <path d="M30 25V245" />
+                <path d="M70 25V245" />
+                <path d="M110 25V245" />
+                <path d="M150 25V245" />
+                <path d="M190 25V245" />
+                <path d="M230 25V245" />
+                <path d="M270 25V245" />
+                <path d="M310 25V245" />
+                <path d="M350 25V245" />
+                <path d="M25 30H355" />
+                <path d="M25 70H355" />
+                <path d="M25 110H355" />
+                <path d="M25 150H355" />
+                <path d="M25 190H355" />
+                <path d="M25 230H355" />
+              </g>
+              <g fill="none" stroke="#7aa2f7" opacity=".65">
+                <ellipse cx="190" cy="133" rx="115" ry="78" />
+                <ellipse cx="190" cy="133" rx="45" ry="78" />
+                <path
+                  d="M75 133H305M89 98Q190 130 291 98M89 168Q190 136 291 168"
+                />
+              </g>
+              <path d="M190 133L263 86" stroke="#e0af68" />
+              <circle cx="263" cy="86" r="4" fill="#e0af68" />
+              <circle cx="190" cy="133" r="3" fill="#7dcfff" />
+              <g fill="#c0caf5" font-size="10">
+                <text x="245" y="68">α, δ</text>
+                <text x="302" y="149">0h</text>
+                <text x="181" y="42">+90°</text>
+                <text x="124" y="232">A FRAME FOR THE SKY</text>
+              </g></svg
+            ><canvas
+              class="sky-art"
+              hidden
+              data-ra="83.8"
+              data-dec="-2"
+              data-fov="34"
+              data-mode="band lines names planets"
+              data-aspect="1.4"
+              role="img"
+              aria-label="Orion star field from the Hipparcos catalog"
+            ></canvas>
+          </div>
+          <figcaption>ORION / HIPPARCOS CATALOG</figcaption>
+        </figure>
+      </div>
+      <div class="project-body">
+        <nav class="project-index" aria-label="On this page">
+          <p>On this page</p>
+          <a href="#overview">Overview</a><a href="#explore">Explore</a
+          ><a href="#install">Get started</a><a href="#example">Example</a
+          ><a href="#features">Capabilities</a>
+        </nav>
+        <div class="project-content">
+          <section id="overview" aria-labelledby="overview-title">
+            <h2 id="overview-title">Put the sky in a coordinate system.</h2>
+            <p>
+              Space data becomes useful when time, position, and reference frame
+              agree. <strong>starfield</strong> brings those fundamentals
+              together, with a Skyfield-inspired API and optional data sources
+              you can select for your application.
+            </p>
+            <div class="project-features">
+              <div class="project-feature">
+                <span class="feature-n">01</span>
+                <h3>Coordinates</h3>
+                <p>
+                  Work with celestial reference frames, precession, nutation,
+                  and Earth rotation.
+                </p>
+              </div>
+              <div class="project-feature">
+                <span class="feature-n">02</span>
+                <h3>Catalogs</h3>
+                <p>
+                  Use Hipparcos and Gaia, or generate a synthetic catalog for
+                  repeatable tests.
+                </p>
+              </div>
+              <div class="project-feature">
+                <span class="feature-n">03</span>
+                <h3>Solar System</h3>
+                <p>
+                  Work with planetary constants, body-fixed frames, and optional
+                  JPL clients.
+                </p>
+              </div>
+            </div>
+          </section>
+          <section id="explore" aria-labelledby="explore-title">
+            <h2 id="explore-title">See it in practice</h2>
+            <p>
+              A magnitude limit is a simple way to explore a star catalog. Lower
+              values select brighter stars; raise the limit to reveal more of
+              the sky.
+            </p>
+            <div class="panel demo-panel" data-demo="catalog">
+              <div class="demo-topline">
+                <span class="demo-label">Catalog explorer</span
+                ><span class="demo-badge">Hipparcos data</span>
+              </div>
+              <canvas
+                id="catalog-canvas"
+                width="760"
+                height="380"
+                role="img"
+                aria-label="Equatorial map of bright Hipparcos stars. Right ascension increases from right to left; declination increases upward."
+                hidden
+              ></canvas>
+              <div class="demo-controls" hidden>
+                <label for="magnitude"
+                  >Magnitude limit
+                  <input
+                    id="magnitude"
+                    type="range"
+                    min="0"
+                    max="6"
+                    step="0.1"
+                    value="3"
+                  /><output id="magnitude-value" for="magnitude"
+                    >3.0</output
+                  ></label
+                ><label
+                  ><input id="constellations" type="checkbox" checked />
+                  Constellation guides</label
+                >
+              </div>
+              <p id="catalog-status" class="demo-status" role="status">
+                Enable JavaScript to explore the catalog.
+              </p>
+            </div>
+            <p class="demo-note">
+              A browser illustration of catalog filtering, using a bundled
+              Hipparcos subset. Positions are catalog coordinates, not a
+              prediction of tonight’s local sky. The Rust example below runs
+              independently of this visualization.
+            </p>
+          </section>
+          <section id="install" aria-labelledby="install-title">
+            <h2 id="install-title">Start building</h2>
+            <div class="code-block">
+              <div class="code-label"><span>Terminal</span></div>
+              <pre
+                tabindex="0"
+                aria-label="Terminal"
+              ><code>cargo add starfield</code></pre>
+            </div>
+            <p>
+              The default crate includes core calculations and datastore
+              support. Add only the data sources your application needs:
+            </p>
+            <div class="code-block">
+              <div class="code-label"><span>Cargo.toml</span></div>
+              <pre
+                tabindex="0"
+                aria-label="Cargo.toml"
+              ><code>starfield = { version = &quot;0.18.1&quot;, features = [&quot;hipparcos&quot;] }</code></pre>
+            </div>
+          </section>
+          <section id="example" aria-labelledby="example-title">
+            <h2 id="example-title">From an idea to a few lines of code</h2>
+            <div class="code-block">
+              <div class="code-label">
+                <span>Rust · synthetic catalog · no download required</span>
+              </div>
+              <pre
+                tabindex="0"
+                aria-label="Rust · synthetic catalog · no download required"
+              ><code><span class="k">use</span> starfield::catalogs::hipparcos::HipparcosCatalog;
 
-fn main() {
-    let catalog = HipparcosCatalog::create_synthetic();
-    let bright = catalog.brighter_than(3.0);
-    println!(&quot;{} stars brighter than magnitude 3&quot;, bright.len());
-}</code></pre></div><p>This example uses a synthetic catalog, so your first run does not depend on a large download. Move to a real catalog when you are ready to connect observations.</p></section>
-<section id="features" aria-labelledby="features-title"><h2 id="features-title">Choose what you need</h2><div class="table-scroll" tabindex="0" role="region" aria-label="Feature comparison"><table><thead><tr><th scope="col">Feature group</th><th scope="col">What it adds</th></tr></thead><tbody><tr><td><code>catalogs</code></td><td>Catalog sources including Hipparcos, Gaia, MAST, and NSA.</td></tr><tr><td><code>jpl</code></td><td>Horizons, Small-Body Database, Minor Planet Center, and Rubin clients.</td></tr><tr><td><code>surfaces</code></td><td>Planetary maps, reflectance libraries, and reference spectra.</td></tr><tr><td><code>datastore</code></td><td>Artifact loading through starfield-datastore. Enabled by default.</td></tr></tbody></table></div><p>For small consumers, individual features such as <code>hipparcos</code> and <code>horizons</code> narrow the dependency set. <a href="https://docs.rs/crate/starfield/0.18.1/features">See the full feature list →</a></p></section>
-<p class="code-note">Examples and feature notes reviewed against <a href="https://crates.io/crates/starfield/0.18.1">starfield 0.18.1</a>. <a href="https://github.com/OrbitalCommons/starfield">Source &amp; contributions →</a></p>
-<a class="related-project" href="../zodiacal/"><div><small>Keep exploring</small><strong>zodiacal</strong><p>Match an observed field to the sky.</p></div><span class="related-arrow" aria-hidden="true">↗</span></a>
-</div></div></main>
-<footer class="site-foot"><div class="wrap"><div><a class="brand" href="../../"><img class="mark" src="../../assets/mark.svg" alt="" width="26" height="26"><span>Orbital<b>Commons</b></span></a><p class="muted">Open-source software for seeing, navigating<br>and exploring space.</p></div><div class="cols"><div><p class="foot-h">Keep exploring</p><a href="../fitsio-pure/">fitsio-pure</a><a href="../zodiacal/">zodiacal</a><a href="../rizzma/">rizzma</a><a href="../starfield-datastore/">starfield-datastore</a></div><div><p class="foot-h">Elsewhere</p><a href="https://github.com/OrbitalCommons">GitHub</a><a href="https://github.com/OrbitalCommons/starfield">Project source</a><a href="https://docs.rs/starfield">API documentation</a></div></div></div></footer>
-</body>
+<span class="k">fn</span> main() {
+    <span class="k">let</span> catalog = HipparcosCatalog::create_synthetic();
+    <span class="k">let</span> bright = catalog.brighter_than(<span class="n">3.0</span>);
+    println!(<span class="s">&quot;{} stars brighter than magnitude 3&quot;</span>, bright.len());
+}</code></pre>
+            </div>
+            <p>
+              This example uses a synthetic catalog, so your first run does not
+              depend on a large download. Move to a real catalog when you are
+              ready to connect observations.
+            </p>
+          </section>
+          <section id="features" aria-labelledby="features-title">
+            <h2 id="features-title">Choose what you need</h2>
+            <div
+              class="table-scroll"
+              tabindex="0"
+              role="region"
+              aria-label="Feature comparison"
+            >
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Feature group</th>
+                    <th scope="col">What it adds</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>catalogs</code></td>
+                    <td>
+                      Catalog sources including Hipparcos, Gaia, MAST, and NSA.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>jpl</code></td>
+                    <td>
+                      Horizons, Small-Body Database, Minor Planet Center, and
+                      Rubin clients.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>surfaces</code></td>
+                    <td>
+                      Planetary maps, reflectance libraries, and reference
+                      spectra.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><code>datastore</code></td>
+                    <td>
+                      Artifact loading through starfield-datastore. Enabled by
+                      default.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              For small consumers, individual features such as
+              <code>hipparcos</code> and <code>horizons</code> narrow the
+              dependency set.
+              <a href="https://docs.rs/crate/starfield/0.18.1/features"
+                >See the full feature list →</a
+              >
+            </p>
+          </section>
+          <p class="code-note">
+            Examples and feature notes reviewed against
+            <a href="https://crates.io/crates/starfield/0.18.1"
+              >starfield 0.18.1</a
+            >.
+            <a href="https://github.com/OrbitalCommons/starfield"
+              >Source &amp; contributions →</a
+            >
+          </p>
+          <a class="related-project" href="../zodiacal/"
+            ><div>
+              <small>Keep exploring</small><strong>zodiacal</strong>
+              <p>Match an observed field to the sky.</p>
+            </div>
+            <span class="related-arrow" aria-hidden="true">↗</span></a
+          >
+        </div>
+      </div>
+    </main>
+    <footer class="site-foot">
+      <div class="wrap">
+        <div>
+          <a class="brand" href="../../"
+            ><img
+              class="mark"
+              src="../../assets/mark.svg"
+              alt=""
+              width="26"
+              height="26"
+            /><span>Orbital<b>Commons</b></span></a
+          >
+          <p class="muted">
+            Open-source software for seeing, navigating<br />and exploring
+            space.
+          </p>
+        </div>
+        <div class="cols">
+          <div>
+            <p class="foot-h">Keep exploring</p>
+            <a href="../fitsio-pure/">fitsio-pure</a
+            ><a href="../zodiacal/">zodiacal</a><a href="../rizzma/">rizzma</a
+            ><a href="../starfield-datastore/">starfield-datastore</a>
+          </div>
+          <div>
+            <p class="foot-h">Elsewhere</p>
+            <a href="https://github.com/OrbitalCommons">GitHub</a
+            ><a href="https://github.com/OrbitalCommons/starfield"
+              >Project source</a
+            ><a href="https://docs.rs/starfield">API documentation</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
 </html>
