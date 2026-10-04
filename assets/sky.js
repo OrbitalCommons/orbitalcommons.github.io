@@ -397,9 +397,14 @@
     draw(t);
     if (reduced || t - hudT > 0.25) { updateHud(); hudT = t; }
   }
+  // The unattended drift is slow, so it runs at about 30 fps; dragging and flights get every frame.
+  var lastDraw = 0;
   function loop(now) {
     if (!running) return;
-    frame(now);
+    if (dragging || goal || now - lastDraw > 30) {
+      lastDraw = now;
+      frame(now);
+    }
     requestAnimationFrame(loop);
   }
   function start() {
