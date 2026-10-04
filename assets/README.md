@@ -69,7 +69,7 @@ Letters accompany the colors. The real solve replay uses the upstream solver's
 canonical winning correspondence; scrolling index rows are sampled records,
 not a recording of the KD-tree traversal.
 
-`og.jpg` is a 1200×630 capture of `tools/og.html`; `noise.png` is a 96×96 random dither tile;
+`og.jpg` is a 1200×630 capture of `tools/og.html`; `noise.png` is a 48×48 random dither tile;
 `mark.svg`, `favicon.svg` and `apple-touch-icon.png` are the logo.
 
 ## Identity
