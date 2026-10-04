@@ -28,7 +28,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 80px; -webkit-text-size-adju
 html:focus-within { scroll-behavior: auto; }
 body {
   margin: 0; background: var(--bg); color: var(--ink-2);
-  font: 16px/1.65 var(--sans);
+  font: 16px/1.65 var(--sans); overflow-wrap: break-word;
   -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
 }
 ::selection { background: rgba(124, 196, 255, .3); color: #fff; }
@@ -55,13 +55,14 @@ section { position: relative; }
   background: linear-gradient(to bottom, rgba(5, 7, 13, .82), rgba(5, 7, 13, .55));
   border-bottom: 1px solid var(--line);
 }
-.site-nav .wrap { display: flex; align-items: center; gap: 1.5rem; height: 60px; }
+.site-nav .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem 1.5rem; min-height: 60px; }
 .brand { display: inline-flex; align-items: center; gap: .6rem; color: var(--ink); font-weight: 650;
-  letter-spacing: -.01em; font-size: 1.02rem; }
+  letter-spacing: -.01em; font-size: 1.02rem; min-width: 0; max-width: 100%; }
+.brand span { overflow-wrap: anywhere; }
 .brand:hover { text-decoration: none; }
 .brand .mark { width: 18px; height: 32px; }
 .brand b { font-weight: 650; color: var(--accent); }
-.site-nav nav { margin-left: auto; display: flex; gap: 1.4rem; font-size: .9rem; }
+.site-nav nav { margin-left: auto; display: flex; flex-wrap: wrap; gap: .2rem 1.4rem; font-size: .9rem; }
 .site-nav nav a { color: var(--ink-2); }
 .site-nav nav a { padding: .3rem 0; transition: color .2s, box-shadow .2s; }
 .site-nav nav a:hover, .site-nav nav a[aria-current] { color: var(--ink); text-decoration: none; }
@@ -69,8 +70,9 @@ section { position: relative; }
 @media (max-width: 640px) { .site-nav nav a.opt { display: none; } }
 
 /* Type */
-h1, h2, h3, h4 { color: var(--ink); line-height: 1.15; letter-spacing: -.02em; margin: 0 0 .6em; }
-h1 { font-size: clamp(2.4rem, 6vw, 4.6rem); font-weight: 700; letter-spacing: -.035em; }
+h1, h2, h3, h4 { color: var(--ink); line-height: 1.15; letter-spacing: -.02em; margin: 0 0 .6em; overflow-wrap: break-word; }
+/* The floor is capped by the viewport so very large user text sizes still fit narrow screens. */
+h1 { font-size: clamp(min(2.4rem, 11vw), 6vw, 4.6rem); font-weight: 700; letter-spacing: -.035em; }
 h2 { font-size: clamp(1.7rem, 3.4vw, 2.6rem); font-weight: 680; line-height: 1.08; text-wrap: balance; }
 h3 { font-size: 1.15rem; font-weight: 640; }
 p { margin: 0 0 1em; }
@@ -88,7 +90,8 @@ h1.mono { font-weight: 600; letter-spacing: -.04em; color: var(--ink); }
 /* Buttons */
 .btn { display: inline-flex; align-items: center; gap: .5rem; padding: .78rem 1.25rem; border-radius: 999px;
   font-weight: 600; font-size: .95rem; border: 1px solid var(--line-strong); color: var(--ink);
-  background: rgba(255, 255, 255, .03); transition: background .2s, border-color .2s, transform .2s, box-shadow .2s; }
+  background: rgba(255, 255, 255, .03); transition: background .2s, border-color .2s, transform .2s, box-shadow .2s;
+  max-width: 100%; overflow-wrap: anywhere; }
 .btn:hover { text-decoration: none; border-color: var(--accent); background: rgba(124, 196, 255, .08); transform: translateY(-1px); }
 .btn.primary { background: var(--ink); color: #05070d; border-color: var(--ink); }
 .btn.primary:hover { background: #fff; box-shadow: 0 10px 40px -8px rgba(124, 196, 255, .6); }
