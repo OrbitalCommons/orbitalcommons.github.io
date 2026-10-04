@@ -132,7 +132,9 @@
     if (!solveState) return;
     strokeField(fieldCorners(solveState.ra, solveState.dec, solveState.fov, 0), "rgba(124,196,255,0.9)", [6, 5]);
     var r = solveState.result;
-    if (r) strokeField(fieldCorners(r.ra, r.dec, solveState.fov, r.rotationDeg), "rgba(139,227,176,0.95)");
+    // The solved frame uses the recovered plate scale, so it shows scale errors as well as pointing.
+    if (r) strokeField(fieldCorners(r.ra, r.dec, 2 * Math.atan(r.scaleArcsecPerPx / 3600 * D2R * FRAME_W / 2) / D2R, r.rotationDeg),
+      "rgba(139,227,176,0.95)");
   }
   function gauss() { return Math.sqrt(-2 * Math.log(1 - Math.random())) * Math.cos(6.283 * Math.random()); }
   function angularArcsec(ra1, dec1, ra2, dec2) {
