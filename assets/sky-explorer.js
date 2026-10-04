@@ -25,7 +25,11 @@
     var pinned = null;
     location.hash.slice(1).split("&").forEach(function (kv) {
       var p = kv.split("=");
-      if (p[0] === "date" && /^\d{4}-\d{2}-\d{2}$/.test(p[1] || "")) pinned = Date.parse(p[1] + "T12:00:00Z");
+      if (p[0] === "date" && /^\d{4}-\d{2}-\d{2}$/.test(p[1] || "")) {
+        // Engines may roll impossible dates (2026-02-31) forward, so require an exact round trip.
+        var t = Date.parse(p[1] + "T12:00:00Z");
+        if (Number.isFinite(t) && new Date(t).toISOString().slice(0, 10) === p[1]) pinned = t;
+      }
       var v = parseFloat(p[1]);
       if (!Number.isFinite(v)) return;
       if (p[0] === "ra") state.ra = ((v % 360) + 360) % 360;
