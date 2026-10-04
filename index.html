@@ -36,7 +36,7 @@
 
 <main id="main">
   <section class="hero" aria-labelledby="hero-title">
-    <canvas id="sky" tabindex="0" aria-label="Interactive star map rendered from the Hipparcos catalogue. Drag or use arrow keys to look around. Click to plate-solve a synthetic frame around that point with zodiacal running in your browser." role="img"></canvas>
+    <canvas id="sky" tabindex="0" aria-label="Interactive star map rendered from the Hipparcos catalogue. Drag or use arrow keys to look around. Click, or press Enter or Space, to plate-solve a synthetic frame with zodiacal running in your browser." role="img"></canvas>
     <div class="hero-fade" aria-hidden="true"></div>
     <div class="wrap hero-inner">
       <p class="eyebrow">Open-source space software</p>
@@ -53,8 +53,8 @@
       </div>
     </div>
     <div class="wrap hero-foot">
-      <div class="hud-l"><button id="sky-solve" class="hud-btn" type="button">&#x25ce; solve a field</button><button id="sky-zenith" class="hud-btn" type="button" aria-pressed="false">&#x2316; roughly overhead</button><a id="sky-open" class="hud-btn" href="sky/">&#x2197; explore</a><p id="sky-hud" class="hud" aria-hidden="true">Hipparcos catalogue</p></div>
-      <p class="hud hint" aria-hidden="true">drag to look around · click to plate-solve</p>
+      <div class="hud-l"><button id="sky-pause" class="hud-btn" type="button" aria-pressed="false" hidden>&#x275a;&#x275a; pause sky</button><button id="sky-solve" class="hud-btn" type="button" hidden>&#x25ce; solve a field</button><button id="sky-zenith" class="hud-btn" type="button" aria-pressed="false" hidden>&#x2316; roughly overhead</button><a id="sky-open" class="hud-btn" href="sky/" hidden>&#x2197; explore</a><p id="sky-hud" class="hud" aria-hidden="true">Hipparcos catalogue</p></div>
+      <p class="hud hint" aria-hidden="true" hidden>drag to look around · click to plate-solve</p>
       <p id="sky-status" class="visually-hidden" role="status" aria-live="polite"></p>
     </div>
   </section>
