@@ -88,3 +88,21 @@ node tools/build_project_cards.cjs
 
 Set `CHROME_PATH` for a system Chrome or `SITE_URL` for another local preview
 address. The images are committed; no browser tooling runs during deployment.
+
+## Checking the published site
+
+The `Published site` workflow runs after a successful `github-pages` deployment
+and can also be started manually from Actions. It checks the deployed commit's
+public HTML and assets byte-for-byte, verifies browser-relevant content types
+(including `application/wasm`), and requests a nested missing path to confirm the
+custom error page returns HTTP 404. Brief retries allow CDN publication to settle.
+
+To run the same read-only check locally, check out the commit served by Pages:
+
+```sh
+python3 tools/check_deployed.py
+```
+
+The script uses only Python's standard library. It does not install, build,
+upload, or modify anything on the site. Checks of superseded deployments are
+cancelled when a newer deployment arrives.
