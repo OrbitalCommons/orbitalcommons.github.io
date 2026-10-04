@@ -20,7 +20,7 @@ test('explorer solves a synthetic field on demand and announces accessible resul
   await expect(result).toHaveAttribute('role', 'status');
   await expect(result).toContainText('least-squares fit');
   await expect(result).toContainText('not real-camera accuracy');
-  await expect(result).toContainText('0.0″ from the true centre');
+  await expect(result).toContainText('<0.1″ from the true centre');
   expect(engineRequests).toHaveLength(2);
   await expect(solve).toBeEnabled();
   const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();

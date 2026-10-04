@@ -79,3 +79,7 @@
     inset: auto; transform: none; width: 100%; }
   .explorer-panels .result { margin-bottom: .6rem; }
 }
+.result { padding-right: 2.6rem; }
+.result .r-close { position: absolute; top: .45rem; right: .45rem; width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
+  border: 1px solid var(--line); background: rgba(255, 255, 255, .03); color: var(--ink-2); font-size: 1.1rem; line-height: 1; }
+.result .r-close:hover { color: var(--ink); border-color: var(--accent); }
