@@ -41,6 +41,9 @@
     <script src="../../assets/sky-core.js" defer></script>
     <script src="../../assets/sky-art.js" defer></script>
     <script src="../project.js" defer></script>
+    <link rel="stylesheet" href="workbench.css" />
+    <script src="solver.js" defer></script>
+    <script src="workbench.js" defer></script>
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
@@ -178,15 +181,51 @@
             </div>
           </section>
           <section id="explore" aria-labelledby="explore-title">
-            <h2 id="explore-title">Rotate the pattern. Keep the match.</h2>
+            <h2 id="explore-title">A field of dots. A place in the sky.</h2>
             <p>
-              <a href="../../sky/"
-                >Solve a synthetic field in the sky explorer →</a
-              >
-              The browser demo runs a WebAssembly port of zodiacal’s matcher,
-              followed by site-specific least-squares refinement. The
-              illustration below explains the geometric idea.
+              Choose a synthetic camera field, rotate it, and ask zodiacal to find
+              its pointing. The solver receives only pixel positions and brightness;
+              the known coordinates stay outside the solver for comparison afterward.
             </p>
+            <div class="panel demo-panel plate-workbench" id="plate-workbench" hidden>
+              <div class="demo-topline">
+                <span class="demo-label">The blind-solve workbench</span>
+                <span class="demo-badge">Real WebAssembly</span>
+              </div>
+              <canvas id="plate-frame" width="1024" height="768" role="img"
+                aria-label="Synthetic camera source positions, waiting to be solved"></canvas>
+              <p class="plate-caption" id="plate-caption">White dots are measured source positions. After a solve, rings mark detections matched to the catalogue.</p>
+              <fieldset class="plate-controls" id="plate-controls">
+                <legend class="visually-hidden">Synthetic camera settings</legend>
+                <label for="plate-field">Field
+                  <select id="plate-field">
+                    <option value="orion">Orion</option>
+                    <option value="cassiopeia">Cassiopeia</option>
+                    <option value="crux">Crux &amp; Centaurus</option>
+                    <option value="leo">Leo</option>
+                  </select>
+                </label>
+                <label for="plate-roll">Camera roll
+                  <input id="plate-roll" type="range" min="-45" max="45" step="5" value="15">
+                  <output id="plate-roll-value" for="plate-roll">15°</output>
+                </label>
+                <label class="plate-noise" for="plate-noise">
+                  <input id="plate-noise" type="checkbox"> Add noise &amp; false detections
+                </label>
+              </fieldset>
+              <button class="btn primary" id="plate-solve" type="button">Solve this frame <span aria-hidden="true">↗</span></button>
+              <p class="demo-status" id="plate-status" role="status" aria-live="polite">Ready to match.</p>
+              <dl class="plate-results" id="plate-results" hidden></dl>
+              <details class="plate-method">
+                <summary>What this demo measures</summary>
+                <p>These are synthetic detections from the same reduced Hipparcos catalogue used to build the index. A small browser compatibility port of zodiacal 0.4.1 finds and verifies a match, then a site-specific least-squares fit refines its matched stars. Reported error measures synthetic self-consistency, not real-camera accuracy.</p>
+                <p>The noise option adds 0.6-pixel centroid noise, drops about 8% of stars, and inserts three false detections. Fields are 27° wide. Up to 200 bright detections reach the matcher; its compact index contains 79,077 quads. The engine and index download only when you solve, about 1 MiB before compression. Computation stays in this browser.</p>
+                <p><a href="https://github.com/OrbitalCommons/orbitalcommons.github.io/tree/main/demos/zodiacal-solver">Inspect the port, index builder, and validation →</a></p>
+              </details>
+            </div>
+            <noscript><p>The live workbench needs JavaScript and WebAssembly. The example and geometric illustration below are available without them.</p></noscript>
+            <p>For a field anywhere on the sky, <a href="../../sky/">open the sky explorer →</a></p>
+            <h3>Rotate the pattern. Keep the match.</h3>
             <p>
               Rotate or resize this four-star pattern. The distances change
               together, so their ratios stay the same. Geometric invariants make
