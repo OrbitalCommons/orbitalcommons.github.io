@@ -261,8 +261,9 @@
     }
     return best;
   };
-  // Planets with a ring and a label; labelAlpha(x, y) returns the label opacity.
-  View.prototype.drawPlanets = function (ctx, list, font, labelAlpha) {
+  // Planets with a ring and a label; labelAlpha(x, y) returns the label opacity and an optional
+  // Labels instance keeps planet names from overlapping other labels.
+  View.prototype.drawPlanets = function (ctx, list, font, labelAlpha, labels) {
     var pt = [0, 0];
     ctx.font = font;
     ctx.lineWidth = 1;
@@ -284,7 +285,8 @@
       if (la <= 0) continue;
       ctx.globalAlpha = la;
       ctx.fillStyle = "#ffc477";
-      ctx.fillText(P.name, pt[0] + pr + 8, pt[1] - pr - 4);
+      if (labels) labels.text(ctx, P.name, pt[0] + pr + 8, pt[1] - pr - 4, 11);
+      else ctx.fillText(P.name, pt[0] + pr + 8, pt[1] - pr - 4);
     }
     ctx.globalAlpha = 1;
   };
@@ -319,6 +321,25 @@
     return anchors;
   }
 
+  // Greedy label placement: returns false when the box overlaps one already placed. Callers place
+  // labels brightest first, so crowded groups such as Orion's Belt keep their brightest name.
+  function Labels() { this.boxes = []; }
+  Labels.prototype.place = function (x, y, w, h) {
+    for (var i = 0; i < this.boxes.length; i++) {
+      var b = this.boxes[i];
+      if (x < b[0] + b[2] && x + w > b[0] && y < b[1] + b[3] && y + h > b[1]) return false;
+    }
+    this.boxes.push([x, y, w, h]);
+    return true;
+  };
+  // Draw text at (x, y) baseline if its box is free; size from the current ctx.font.
+  Labels.prototype.text = function (ctx, str, x, y, h) {
+    var w = ctx.measureText(str).width;
+    if (!this.place(x - 2, y - h, w + 4, h + 4)) return false;
+    ctx.fillText(str, x, y);
+    return true;
+  };
+
   // A synthetic detector frame: catalogue stars under a gnomonic (TAN) projection centred on
   // (ra, dec), north up and east left, x right and y down in pixels, flux from V magnitude.
   // Brightest first; index is the star's position in the catalogue.
@@ -336,7 +357,7 @@
   }
 
   window.OCSky = {
-    D2R: D2R, catalog: catalog, View: View, planets: planets, tanField: tanField, constellations: constellations,
+    D2R: D2R, catalog: catalog, View: View, planets: planets, tanField: tanField, constellations: constellations, Labels: Labels,
     radec: radec, toRaDec: toRaDec, fmtRa: fmtRa, fmtDec: fmtDec
   };
 })();

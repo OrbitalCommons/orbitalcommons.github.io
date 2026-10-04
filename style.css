@@ -63,7 +63,9 @@ section { position: relative; }
 .brand b { font-weight: 650; color: var(--accent); }
 .site-nav nav { margin-left: auto; display: flex; gap: 1.4rem; font-size: .9rem; }
 .site-nav nav a { color: var(--ink-2); }
+.site-nav nav a { padding: .3rem 0; transition: color .2s, box-shadow .2s; }
 .site-nav nav a:hover, .site-nav nav a[aria-current] { color: var(--ink); text-decoration: none; }
+.site-nav nav a[aria-current] { box-shadow: inset 0 -1px var(--accent); }
 @media (max-width: 640px) { .site-nav nav a.opt { display: none; } }
 
 /* Type */

@@ -181,19 +181,18 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -3; pointer-even
     radial-gradient(circle at 211px 331px, rgba(255, 255, 255, .3) 0 0.6px, transparent 1.1px);
   background-size: 360px 360px; }
 
-.hud-l { display: flex; align-items: center; gap: 1rem; pointer-events: auto; }
+.hud-l { display: flex; align-items: center; gap: 1rem; pointer-events: auto; min-width: 0; flex: 1 1 auto; }
+.hint { flex: none; }
 .hud-btn { font: 600 .7rem/1 var(--mono); letter-spacing: .06em; color: var(--ink-2); cursor: pointer;
   background: rgba(5, 7, 13, .6); border: 1px solid var(--line-strong); border-radius: 999px; padding: .45rem .8rem;
   transition: color .2s, border-color .2s; }
 .hud-btn:hover, .hud-btn[aria-pressed="true"] { color: var(--ink); border-color: var(--accent); }
 #sky:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
-.site-nav nav a { padding: .3rem 0; transition: color .2s, box-shadow .2s; }
-.site-nav nav a[aria-current] { box-shadow: inset 0 -1px var(--accent); }
 
 .js #sky { animation: skyin 2.4s ease-out both; }
 @keyframes skyin { from { opacity: 0; } }
 .hud-btn { white-space: nowrap; }
-@media (max-width: 1320px) { .hint { display: none; } }
+@media (max-width: 1600px) { .hint { display: none; } }
 .hud-btn { text-decoration: none; } .hud-btn:hover { text-decoration: none; }
 @media (max-width: 760px) { .hud-l { flex-wrap: wrap; gap: .5rem; } }
 @media (max-width: 480px) { #sky-hud { display: none; } }
@@ -209,3 +208,9 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -3; pointer-even
 .sky-band-art canvas { display: block; }
 .sky-band-art figcaption { padding: .7rem 1rem; border-top: 1px solid var(--line); font: 500 .74rem var(--mono); color: var(--ink-3); }
 @media (max-width: 860px) { .sky-band-grid { grid-template-columns: 1fr; gap: 2rem; } }
+
+/* Benchmark chart follows the longer copy column; tighter project tags; hanging indent for wrapped commands. */
+@media (min-width: 861px) { .proof .chart { position: sticky; top: 6rem; } }
+.featured .meta { gap: .35rem; }
+.featured .meta span { padding: .32rem .45rem; }
+.term .cmd { display: inline-block; padding-left: 2ch; text-indent: -2ch; }

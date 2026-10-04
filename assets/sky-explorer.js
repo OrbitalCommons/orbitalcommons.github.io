@@ -72,28 +72,34 @@
     if (layers.lines) view.drawLines(ctx, 0.24);
     view.drawStars(ctx, 0, false);
 
-    if (layers.names && layers.lines && state.fov <= 120) {
-      ctx.font = "600 10px " + MONO;
-      ctx.fillStyle = "rgba(124,196,255,0.5)";
-      ctx.textAlign = "center";
-      S.constellations().forEach(function (c) {
-        if (view.project(c.x, c.y, c.z, pt) && pt[0] > 40 && pt[0] < W - 40 && pt[1] > 70 && pt[1] < H - 20) {
-          ctx.fillText(c.name.toUpperCase(), pt[0], pt[1]);
-        }
-      });
-      ctx.textAlign = "start";
+    // Labels in priority order (planets, then stars brightest first, then constellations), each
+    // skipped if it would overlap one already drawn.
+    var labels = new S.Labels();
+    if (layers.planets) {
+      if (layers.trails) drawTrails();
+      view.drawPlanets(ctx, planets, "600 11px " + MONO, null, labels);
     }
     if (layers.names) {
       ctx.font = "500 11px " + MONO;
       ctx.fillStyle = "rgba(180,189,210,0.75)";
       for (var key in names) {
         var i = +key;
-        if (view.VIS[i]) ctx.fillText(names[key], view.SX[i] + 9, view.SY[i] + 3.5);
+        if (view.VIS[i]) labels.text(ctx, names[key], view.SX[i] + 9, view.SY[i] + 3.5, 11);
       }
     }
-    if (layers.planets) {
-      if (layers.trails) drawTrails();
-      view.drawPlanets(ctx, planets, "600 11px " + MONO);
+    if (layers.names && layers.lines && state.fov <= 120) {
+      // Keep constellation names off the brighter stars themselves.
+      for (var b = 0; b < cat.FAINT; b++) {
+        if (view.VIS[b]) labels.place(view.SX[b] - 5, view.SY[b] - 5, 10, 10);
+      }
+      ctx.font = "600 10px " + MONO;
+      ctx.fillStyle = "rgba(124,196,255,0.5)";
+      S.constellations().forEach(function (c) {
+        if (view.project(c.x, c.y, c.z, pt) && pt[0] > 40 && pt[0] < W - 40 && pt[1] > 70 && pt[1] < H - 20) {
+          var label = c.name.toUpperCase(), lx = pt[0] - ctx.measureText(label).width / 2;
+          [0, 18, -18, 36].some(function (dy) { return labels.text(ctx, label, lx, pt[1] + dy, 10); });
+        }
+      });
     }
     drawSolveFields();
     drawHover();

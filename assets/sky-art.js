@@ -42,7 +42,8 @@
     if (mode.indexOf(" band ") >= 0) view.drawBand(ctx);
     if (mode.indexOf(" lines ") >= 0) view.drawLines(ctx, 0.28);
     view.drawStars(ctx, 0, false);
-    if (mode.indexOf(" planets ") >= 0) view.drawPlanets(ctx, S.planets(Date.now()), "600 11px " + MONO);
+    var labels = new S.Labels();
+    if (mode.indexOf(" planets ") >= 0) view.drawPlanets(ctx, S.planets(Date.now()), "600 11px " + MONO, null, labels);
 
     var SX = view.SX, SY = view.SY, VIS = view.VIS;
     if (mode.indexOf(" names ") >= 0) {
@@ -50,7 +51,7 @@
       ctx.fillStyle = "rgba(180,189,210,0.7)";
       for (var key in cat.names) {
         var i = +key;
-        if (VIS[i] && SX[i] > 8 && SX[i] < W - 80 && SY[i] > 14 && SY[i] < H - 8) ctx.fillText(cat.names[key], SX[i] + 9, SY[i] + 3.5);
+        if (VIS[i] && SX[i] > 8 && SX[i] < W - 80 && SY[i] > 14 && SY[i] < H - 8) labels.text(ctx, cat.names[key], SX[i] + 9, SY[i] + 3.5, 11);
       }
     }
     if (mode.indexOf(" quad ") >= 0) drawQuad(ctx, view, W, H, mode.indexOf(" readout ") >= 0);
