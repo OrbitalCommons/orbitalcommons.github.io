@@ -84,7 +84,7 @@
       return window.OCZodiacal.solve(sources, FRAME, FRAME, { timeoutMs: 8000 });
     }).then(function (r) {
       setBusy(false);
-      if (solve !== sv) return;
+      if (solve !== sv) { announce("The view changed before the solve finished, so its result was set aside."); return; }
       if (performance.now() / 1000 - sv.t0 > CYCLE - 1) sv.t0 = performance.now() / 1000 - 4.6;
       if (!r) {
         sv.real.status = "none";
@@ -100,7 +100,7 @@
       if (!running) frame(performance.now());
     }, function () {
       setBusy(false);
-      if (solve !== sv) return;
+      if (solve !== sv) { announce("The view changed before the solve finished, so its result was set aside."); return; }
       if (performance.now() / 1000 - sv.t0 > CYCLE - 1) sv.t0 = performance.now() / 1000 - 4.6;
       sv.real.status = "fail";
       announce("The solver could not load.");
@@ -433,7 +433,8 @@
 
   resize();
   frame(performance.now());
-  window.addEventListener("resize", function () { resize(); solve = null; if (!running) frame(performance.now()); });
+  // A pending visitor solve is anchored to the sky, so it survives a resize.
+  window.addEventListener("resize", function () { resize(); if (!pendingUserSolve()) solve = null; if (!running) frame(performance.now()); });
   document.addEventListener("visibilitychange", function () { document.hidden ? stop() : start(); });
   if ("IntersectionObserver" in window) {
     new IntersectionObserver(function (es) {
