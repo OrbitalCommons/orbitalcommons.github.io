@@ -177,3 +177,5 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -3; pointer-even
 
 .js #sky { animation: skyin 2.4s ease-out both; }
 @keyframes skyin { from { opacity: 0; } }
+.hud-btn { white-space: nowrap; }
+@media (max-width: 1000px) { .hint { display: none; } }
