@@ -80,7 +80,8 @@
     return solverReady;
   }
   function realSolve(sv) {
-    var truth = S.toRaDec(sv.v), fov = Math.max(15, Math.min(40, sv.size / view.scale / D2R));
+    // Phones show the sky at a smaller scale, so they solve the smallest frame to keep the quad on screen.
+    var truth = S.toRaDec(sv.v), fov = W < 760 ? 15 : Math.max(15, Math.min(40, sv.size / view.scale / D2R));
     var sources = S.tanField(truth[0], truth[1], fov, FRAME, FRAME, 6.3).map(function (p) { return { x: p.x, y: p.y, flux: p.flux }; });
     sv.real = { status: "pending", fov: fov, n: sources.length };
     setBusy(true);
@@ -532,7 +533,7 @@
   // Arrow keys pan when the map has focus.
   function solveDefault() {
     var mobile = W < 760;
-    solveAt(mobile ? W - 110 : W * 0.6, mobile ? H - 122 : H * 0.45);
+    solveAt(W * 0.6, mobile ? footTop() - 72 : H * 0.45);
   }
   var sbtn = document.getElementById("sky-solve");
   if (sbtn) sbtn.addEventListener("click", solveDefault);
