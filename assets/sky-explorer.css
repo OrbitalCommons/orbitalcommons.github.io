@@ -23,6 +23,8 @@
 .search input { flex: 1; min-width: 0; background: rgba(255, 255, 255, .04); border: 1px solid var(--line-strong);
   border-radius: 999px; padding: .45rem .9rem; }
 .search input[aria-invalid="true"] { border-color: #f7768e; }
+.zoom { display: flex; gap: .35rem; }
+.zoom .btn { font-size: 1rem; line-height: 1; }
 .time { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; flex: 2 1 260px; }
 .time input[type=range] { flex: 1 1 120px; min-width: 80px; accent-color: var(--accent-2); }
 .time output { min-width: 6.5em; text-align: center; color: var(--accent-2); }

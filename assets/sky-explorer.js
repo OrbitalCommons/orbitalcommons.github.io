@@ -225,6 +225,14 @@
     if (handled) { ev.preventDefault(); flight = null; changed(); }
   });
 
+  function zoomBy(f) {
+    flight = null;
+    state.fov = clamp(state.fov * f, 8, 160);
+    changed();
+  }
+  $("x-in").addEventListener("click", function () { zoomBy(1 / 1.3); });
+  $("x-out").addEventListener("click", function () { zoomBy(1.3); });
+
   // Search: named stars and planets.
   var dl = $("x-names");
   Object.keys(names).map(function (k) { return names[k]; })
