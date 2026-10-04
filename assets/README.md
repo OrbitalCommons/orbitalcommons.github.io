@@ -61,6 +61,14 @@ Uranus 9″ and Neptune 29″.
 
 ## Other files
 
+The quad role palette follows the canonical convention in
+[CosmicFrontierLabs/cfl-manimations, zodiacal_solver.py](https://github.com/CosmicFrontierLabs/cfl-manimations/blob/289d3ab6e113057712a38a2f9a42833df8839069/zodiacal_solver.py):
+A `#FC6255`, B `#83C167`, C `#58C4DD`, D `#FF862F`, A–B baseline `#FFFF00`,
+A–C/A–D reference lines `#58C4DD`, and a dashed `#888888` diameter circle.
+Letters accompany the colors. The real solve replay uses the upstream solver's
+canonical winning correspondence; scrolling index rows are sampled records,
+not a recording of the KD-tree traversal.
+
 `og.jpg` is a 1200×630 capture of `tools/og.html`; `noise.png` is a 96×96 random dither tile;
 `mark.svg`, `favicon.svg` and `apple-touch-icon.png` are the logo.
 

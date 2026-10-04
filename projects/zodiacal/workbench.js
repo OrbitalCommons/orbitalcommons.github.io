@@ -74,6 +74,29 @@
         ctx.strokeStyle = '#8be3b0'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(p.x, p.y, radius + 6, 0, 2 * Math.PI); ctx.stroke();
       }
     });
+    if (result && result.match) {
+      var points = result.match.pixels;
+      var colors = ['#FC6255', '#83C167', '#58C4DD', '#FF862F'];
+      var a = points[0], b = points[1];
+      ctx.save();
+      ctx.strokeStyle = '#888888'; ctx.lineWidth = 1.5; ctx.setLineDash([7, 6]);
+      ctx.beginPath(); ctx.arc((a.x + b.x) / 2, (a.y + b.y) / 2, Math.hypot(a.x - b.x, a.y - b.y) / 2, 0, 2 * Math.PI); ctx.stroke();
+      ctx.setLineDash([]);
+      [1, 2, 3].forEach(function (i) {
+        var p = points[i], d = Math.hypot(p.x - a.x, p.y - a.y);
+        if (d <= 20) return;
+        var dx = (p.x - a.x) / d, dy = (p.y - a.y) / d;
+        ctx.strokeStyle = i === 1 ? '#FFFF00' : '#58C4DD'; ctx.lineWidth = i === 1 ? 3 : 2;
+        ctx.beginPath(); ctx.moveTo(a.x + 10 * dx, a.y + 10 * dy); ctx.lineTo(p.x - 10 * dx, p.y - 10 * dy); ctx.stroke();
+      });
+      points.forEach(function (p, i) {
+        ctx.strokeStyle = colors[i]; ctx.fillStyle = colors[i]; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.arc(p.x, p.y, 9, 0, 2 * Math.PI); ctx.stroke();
+        ctx.font = 'bold 20px ui-monospace, monospace';
+        ctx.fillText('ABCD'[i], Math.min(W - 26, p.x + 15), Math.max(65, Math.min(H - 55, p.y - 12)));
+      });
+      ctx.restore();
+    }
     ctx.fillStyle = 'rgba(8,13,24,.9)'; ctx.fillRect(0, 0, W, 46); ctx.fillRect(0, H - 42, W, 42);
     ctx.font = '16px ui-monospace, monospace'; ctx.fillStyle = '#b4bdd2';
     ctx.fillText('SYNTHETIC DETECTIONS / 1024 × 768', 20, 29);
@@ -81,7 +104,7 @@
     ctx.fillStyle = result ? '#8be3b0' : '#7cc4ff';
     ctx.fillText(result ? matched.size + ' MATCHED DETECTIONS' : sources.length + ' DETECTIONS / POINTING UNKNOWN TO SOLVER', 20, H - 16);
     canvas.setAttribute('aria-label', 'Synthetic ' + field.options[field.selectedIndex].text + ' field, camera roll ' + truth.roll + ' degrees, ' + sources.length + ' detections. ' +
-      (result ? matched.size + ' detections have green match rings. Recovered coordinates follow below.' : 'Not yet solved.'));
+      (result ? matched.size + ' detections have green match rings. The winning quad is labelled A red, B green, C cyan, D orange, with a yellow A–B baseline. Recovered coordinates follow below.' : 'Not yet solved.'));
   }
   function metric(label, value) {
     var item = document.createElement('div'), dt = document.createElement('dt'), dd = document.createElement('dd');

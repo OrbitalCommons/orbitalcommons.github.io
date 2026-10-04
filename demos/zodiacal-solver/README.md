@@ -27,6 +27,12 @@ Load `projects/zodiacal/solver.js` before calling `window.OCZodiacal`:
   `sourcesUsed` and `inputSources` expose truncation; `wcs` includes the fitted
   TAN parameters. `pairs` contains `[sourceIndex, catalogIndex]` matches; source
   indices refer to the filtered, brightness-sorted, capped list used by the SDK.
+  `match` exposes the actual winning quad in canonical A/B/C/D order: source
+  and index indices, measured `pixels`, catalog `stars` (RA/Dec in degrees),
+  four-dimensional `code`, and A–B angular separation `abArcsec`. Its `rows`
+  are up to 16 adjacent records in the loaded index, each with its index ID,
+  anchor RA/Dec, A–B separation, code, and a `matched` flag. These are a visual
+  index sample, **not a chronological search trace**; zodiacal searches a KD-tree.
   `null` means no verified, refined match was found.
 
 The worker is terminated on timeout; a later call can initialize a new worker.

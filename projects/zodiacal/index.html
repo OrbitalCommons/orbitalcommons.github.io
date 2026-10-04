@@ -118,11 +118,14 @@
                 <path d="M25 190H355" />
                 <path d="M25 230H355" />
               </g>
-              <g stroke="#7aa2f7" fill="none">
-                <text x="143" y="41">B</text>
-                <text x="292" y="117">C</text>
-                <text x="235" y="216">D</text>
-                <text x="111" y="246">FOUR STARS. ONE PATTERN.</text>
+              <circle cx="185" cy="135" r="123.49" fill="none" stroke="#888888" stroke-dasharray="4 4" />
+              <path d="M80 70L290 200" stroke="#FFFF00" stroke-width="3" />
+              <path d="M80 70L150 160M80 70L210 105" fill="none" stroke="#58C4DD" stroke-width="2" />
+              <g font-family="monospace" font-size="14">
+                <circle cx="80" cy="70" r="5" fill="#FC6255" /><text x="62" y="61" fill="#FC6255">A</text>
+                <circle cx="290" cy="200" r="5" fill="#83C167" /><text x="301" y="213" fill="#83C167">B</text>
+                <circle cx="150" cy="160" r="5" fill="#58C4DD" /><text x="133" y="180" fill="#58C4DD">C</text>
+                <circle cx="210" cy="105" r="5" fill="#FF862F" /><text x="221" y="99" fill="#FF862F">D</text>
               </g></svg
             ><canvas
               class="sky-art"
@@ -196,7 +199,7 @@
               </div>
               <canvas id="plate-frame" width="1024" height="768" role="img"
                 aria-label="Synthetic camera source positions, waiting to be solved"></canvas>
-              <p class="plate-caption" id="plate-caption">White dots are measured source positions. After a solve, rings mark detections matched to the catalogue.</p>
+              <p class="plate-caption" id="plate-caption">White dots are measured source positions. After a solve, rings mark catalogue matches. The winning quad is labelled A (red), B (green), C (cyan), D (orange); yellow connects A–B.</p>
               <fieldset class="plate-controls" id="plate-controls">
                 <legend class="visually-hidden">Synthetic camera settings</legend>
                 <label for="plate-field">Field
@@ -259,58 +262,36 @@
                   <text x="394" y="34">CAMERA FRAME</text>
                 </g>
                 <g id="quad-reference" transform="translate(180 166)">
-                  <path
-                    d="M-80 45L-20 -75L85 -15L40 70Z"
-                    fill="none"
-                    stroke="#7aa2f7"
-                    stroke-width="1.4"
-                  />
-                  <path
-                    d="M-80 45L85 -15"
-                    fill="none"
-                    stroke="#e0af68"
-                    stroke-dasharray="4 4"
-                  />
-                  <g fill="#e0af68">
-                    <circle cx="-80" cy="45" r="4" />
-                    <circle cx="-20" cy="-75" r="4" />
-                    <circle cx="85" cy="-15" r="4" />
-                    <circle cx="40" cy="70" r="4" />
-                  </g>
-                  <g fill="#c0caf5" font-family="monospace" font-size="12">
-                    <text x="-98" y="43">A</text>
-                    <text x="-35" y="-85">B</text>
-                    <text x="97" y="-16">C</text>
-                    <text x="49" y="87">D</text>
+                  <circle cx="0" cy="0" r="113.14" fill="none" stroke="#888888" stroke-dasharray="4 4" />
+                  <path d="M-80 -80L80 80" fill="none" stroke="#FFFF00" stroke-width="3" />
+                  <path d="M-80 -80L-30 20M-80 -80L20 -30" fill="none" stroke="#58C4DD" stroke-width="2" />
+                  <circle cx="-80" cy="-80" r="5" fill="#FC6255" />
+                  <circle cx="80" cy="80" r="5" fill="#83C167" />
+                  <circle cx="-30" cy="20" r="5" fill="#58C4DD" />
+                  <circle cx="20" cy="-30" r="5" fill="#FF862F" />
+                  <g font-family="monospace" font-size="12">
+                    <text x="-98" y="-85" fill="#FC6255">A</text>
+                    <text x="89" y="95" fill="#83C167">B</text>
+                    <text x="-48" y="35" fill="#58C4DD">C</text>
+                    <text x="29" y="-36" fill="#FF862F">D</text>
                   </g>
                 </g>
                 <g
                   id="quad-transformed"
                   transform="translate(540 166) rotate(25) scale(.8)"
                 >
-                  <path
-                    d="M-80 45L-20 -75L85 -15L40 70Z"
-                    fill="none"
-                    stroke="#7aa2f7"
-                    stroke-width="1.4"
-                  />
-                  <path
-                    d="M-80 45L85 -15"
-                    fill="none"
-                    stroke="#e0af68"
-                    stroke-dasharray="4 4"
-                  />
-                  <g fill="#e0af68">
-                    <circle cx="-80" cy="45" r="4" />
-                    <circle cx="-20" cy="-75" r="4" />
-                    <circle cx="85" cy="-15" r="4" />
-                    <circle cx="40" cy="70" r="4" />
-                  </g>
-                  <g fill="#c0caf5" font-family="monospace" font-size="12">
-                    <text x="-98" y="43">A</text>
-                    <text x="-35" y="-85">B</text>
-                    <text x="97" y="-16">C</text>
-                    <text x="49" y="87">D</text>
+                  <circle cx="0" cy="0" r="113.14" fill="none" stroke="#888888" stroke-dasharray="4 4" />
+                  <path d="M-80 -80L80 80" fill="none" stroke="#FFFF00" stroke-width="3" />
+                  <path d="M-80 -80L-30 20M-80 -80L20 -30" fill="none" stroke="#58C4DD" stroke-width="2" />
+                  <circle cx="-80" cy="-80" r="5" fill="#FC6255" />
+                  <circle cx="80" cy="80" r="5" fill="#83C167" />
+                  <circle cx="-30" cy="20" r="5" fill="#58C4DD" />
+                  <circle cx="20" cy="-30" r="5" fill="#FF862F" />
+                  <g font-family="monospace" font-size="12">
+                    <text x="-98" y="-85" fill="#FC6255">A</text>
+                    <text x="89" y="95" fill="#83C167">B</text>
+                    <text x="-48" y="35" fill="#58C4DD">C</text>
+                    <text x="29" y="-36" fill="#FF862F">D</text>
                   </g>
                 </g>
               </svg>
@@ -343,7 +324,7 @@
                 </button>
               </div>
               <p class="demo-status" id="quad-status">
-                AC / AB = 1.3086 in both frames.
+                AC / AB = 0.4941 in both frames.
               </p>
             </div>
             <p class="demo-note">
