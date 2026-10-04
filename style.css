@@ -40,6 +40,7 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .skip { position: absolute; left: -999px; top: 0; z-index: 100; background: var(--accent); color: #000;
   padding: .5rem 1rem; border-radius: 0 0 8px 0; }
 .skip:focus { left: 0; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* Layout */
 .wrap { max-width: var(--max); margin: 0 auto; padding: 0 1.5rem; }

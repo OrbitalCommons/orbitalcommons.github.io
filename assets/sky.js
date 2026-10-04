@@ -76,14 +76,37 @@
     var truth = S.toRaDec(sv.v), fov = Math.max(15, Math.min(40, sv.size / view.scale / D2R));
     var sources = S.tanField(truth[0], truth[1], fov, FRAME, FRAME, 6.3).map(function (p) { return { x: p.x, y: p.y, flux: p.flux }; });
     sv.real = { status: "pending", fov: fov, n: sources.length };
+    announce("Solving a synthetic " + fov.toFixed(0) + " degree frame with " + sources.length + " catalogue stars.");
     loadSolver().then(function () {
       return window.OCZodiacal.solve(sources, FRAME, FRAME, { timeoutMs: 8000 });
     }).then(function (r) {
-      if (!r) { sv.real.status = "none"; return; }
-      var a = S.radec(truth[0], truth[1]), b = S.radec(r.ra, r.dec);
-      sv.real = { status: "done", fov: fov, n: sources.length, r: r,
-        err: Math.acos(Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2]))) / D2R * 60 };
-    }, function () { sv.real.status = "fail"; });
+      if (!r) {
+        sv.real.status = "none";
+        announce("No solution for this field.");
+      } else {
+        var a = S.radec(truth[0], truth[1]), b = S.radec(r.ra, r.dec);
+        sv.real = { status: "done", fov: fov, n: sources.length, r: r,
+          err: Math.acos(Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2]))) / D2R * 60 };
+        announce("Solved in " + Math.round(r.ms) + " milliseconds: right ascension " + S.fmtRa(r.ra) + ", declination " +
+          S.fmtDec(r.dec) + ", " + r.matched + " stars matched, " +
+          (sv.real.err * 60 < 0.1 ? "under 0.1" : (sv.real.err * 60).toFixed(1)) + " arcseconds from the true centre of the synthetic frame.");
+      }
+      if (!running) frame(performance.now());
+    }, function () {
+      sv.real.status = "fail";
+      announce("The solver could not load.");
+      if (!running) frame(performance.now());
+    });
+  }
+  var statusEl = document.getElementById("sky-status");
+  function announce(text) { if (statusEl) statusEl.textContent = text; }
+
+  // Solve the field at a screen point; with reduced motion the result is drawn statically.
+  function solveAt(x, y) {
+    cam.vra = cam.vdec = 0;
+    newSolve(performance.now() / 1000 - (reduced ? 6 : 0), [x, y]);
+    realSolve(solve);
+    if (reduced) frame(performance.now());
   }
 
   function solveStars(px, py, half) {
@@ -126,14 +149,19 @@
     }
     ctx.globalAlpha = 1;
 
-    if (!reduced) drawSolve(t);
+    drawSolve(t);
     drawHover();
   }
 
   function drawSolve(t) {
-    if (t - intro < 3.4 && !solve) return;
-    if (!solve || t - solve.t0 > CYCLE) newSolve(t);
-    var e = t - solve.t0, v = solve.v;
+    // With reduced motion there is no loop: only a solve the visitor asked for, shown in its final state.
+    if (reduced) {
+      if (!solve) return;
+    } else {
+      if (t - intro < 3.4 && !solve) return;
+      if (!solve || t - solve.t0 > CYCLE) newSolve(t);
+    }
+    var e = reduced ? 6 : t - solve.t0, v = solve.v;
     if (!view.project(v[0], v[1], v[2], pt2)) { solve = null; return; }
     var px = pt2[0], py = pt2[1], half = solve.size / 2;
     if (e > 1.1 && !solve.stars) solve.stars = solveStars(px, py, half);
@@ -249,8 +277,9 @@
   function updateHud() {
     if (openLink) openLink.href = "sky/#ra=" + (((cam.ra % 360) + 360) % 360).toFixed(1) + "&dec=" + cam.dec.toFixed(1) + "&fov=" + Math.round(4 * Math.atan(W / 4 / view.scale) / D2R);
     if (!hud) return;
-    hud.textContent = (overhead ? "≈ ZENITH  " : "") + "RA " + S.fmtRa(((cam.ra % 360) + 360) % 360).slice(0, 7) +
-      "  DEC " + S.fmtDec(cam.dec) + (W < 560 ? "" : "  ·  " + n.toLocaleString() + " Hipparcos stars");
+    hud.textContent = "RA " + S.fmtRa(((cam.ra % 360) + 360) % 360).slice(0, 7) + "  DEC " + S.fmtDec(cam.dec) +
+      (W < 560 ? "" : overhead ? "  ·  overhead guessed from your time zone, " + Math.abs(guessLat) + "°" + (guessLat < 0 ? "S" : "N")
+        : "  ·  " + n.toLocaleString() + " Hipparcos stars");
   }
 
   // Interaction: drag to look around, with inertia.
@@ -277,23 +306,24 @@
   // A click without a drag runs the illustration on the field under the pointer.
   canvas.addEventListener("pointerup", function (ev) {
     endDrag();
-    if (reduced || Math.abs(ev.clientX - downX) + Math.abs(ev.clientY - downY) > 6) return;
+    if (Math.abs(ev.clientX - downX) + Math.abs(ev.clientY - downY) > 6) return;
     var r = canvas.getBoundingClientRect();
-    cam.vra = cam.vdec = 0;
-    newSolve(performance.now() / 1000, [ev.clientX - r.left, ev.clientY - r.top]);
-    realSolve(solve);
+    solveAt(ev.clientX - r.left, ev.clientY - r.top);
   });
   canvas.addEventListener("pointercancel", endDrag);
 
-  // Fly to the local zenith: right ascension equals local sidereal time, declination equals latitude.
-  // Longitude is estimated from the timezone offset so no location permission is needed.
-  var goal = null, overhead = false;
+  // Fly roughly overhead: the zenith's right ascension is the local sidereal time and its declination
+  // is the latitude. Without asking for location we only have a guess: longitude from the UTC offset,
+  // hemisphere from the time-zone name, and a typical 35 degree latitude. The HUD says so.
+  var goal = null, overhead = false, guessLat = 35;
+  var SOUTH = /^(Australia|Antarctica)\/|^Pacific\/(Auckland|Chatham|Fiji|Tongatapu|Apia|Noumea|Efate)|^America\/(Argentina|Sao_Paulo|Santiago|Montevideo|Asuncion|Lima|La_Paz|Bahia|Recife|Fortaleza|Belem|Cuiaba|Campo_Grande|Punta_Arenas)|^Africa\/(Johannesburg|Maputo|Harare|Lusaka|Windhoek|Gaborone|Maseru|Mbabane|Blantyre|Lubumbashi)|^Indian\/(Mauritius|Reunion|Antananarivo)/;
   function zenith() {
     var jd = Date.now() / 86400000 + 2440587.5;
     var gmst = (280.46061837 + 360.98564736629 * (jd - 2451545)) % 360;
-    var lon = -new Date().getTimezoneOffset() / 60 * 15;
-    var lat = lon > -30 && lon < 60 ? 48 : lon >= 60 ? 30 : 38;
-    return [((gmst + lon) % 360 + 360) % 360, lat];
+    var lon = -new Date().getTimezoneOffset() / 60 * 15, tz = "";
+    try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (e) { tz = ""; }
+    guessLat = SOUTH.test(tz) ? -35 : 35;
+    return [((gmst + lon) % 360 + 360) % 360, guessLat];
   }
   function flyTo(ra, dec) {
     var ra0 = ((cam.ra % 360) + 360) % 360, dra = ((ra - ra0 + 540) % 360) - 180;
@@ -308,12 +338,20 @@
   if (zbtn) zbtn.addEventListener("click", function () {
     overhead = !overhead;
     zbtn.setAttribute("aria-pressed", overhead);
-    zbtn.textContent = overhead ? "↺ tour the sky" : "⌖ overhead now";
+    zbtn.textContent = overhead ? "↺ tour the sky" : "⌖ roughly overhead";
     if (overhead) { var z = zenith(); flyTo(z[0], z[1]); } else flyTo(98, -4);
   });
 
   // Arrow keys pan when the map has focus.
+  function solveDefault() {
+    var mobile = W < 760;
+    solveAt(mobile ? W - 80 : W * 0.72, mobile ? H - 122 : H * 0.45);
+  }
+  var sbtn = document.getElementById("sky-solve");
+  if (sbtn) sbtn.addEventListener("click", solveDefault);
+
   canvas.addEventListener("keydown", function (ev) {
+    if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); solveDefault(); return; }
     var k = { ArrowLeft: [1, 0], ArrowRight: [-1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[ev.key];
     if (!k) return;
     ev.preventDefault();
@@ -336,7 +374,7 @@
       cam.dec = Math.max(-80, Math.min(80, cam.dec + cam.vdec));
     }
     draw(t);
-    if (t - hudT > 0.25) { updateHud(); hudT = t; }
+    if (reduced || t - hudT > 0.25) { updateHud(); hudT = t; }
   }
   function loop(now) {
     if (!running) return;
