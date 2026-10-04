@@ -10,6 +10,7 @@
   var hud = document.getElementById("sky-hud");
   var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   var D2R = Math.PI / 180;
+  var MONO = getComputedStyle(document.body).getPropertyValue("--mono");
 
   // Unpack catalogue into unit vectors.
   var raw = data.stars, n = raw.length / 4;
@@ -130,11 +131,11 @@
 
   // Plate-solve demo: a field locks on, detects sources, matches a quad, reports the solution.
   var solve = null, CYCLE = 9.5;
-  function newSolve(t) {
+  function newSolve(t, at) {
     var mobile = W < 760;
     var size = mobile ? 116 : 190;
-    var sx = mobile ? W - size / 2 - 22 - Math.random() * 20 : W * (0.62 + Math.random() * 0.2);
-    var sy = mobile ? H - size / 2 - 64 : H * (0.3 + Math.random() * 0.35);
+    var sx = at ? at[0] : mobile ? W - size / 2 - 22 - Math.random() * 20 : W * (0.62 + Math.random() * 0.2);
+    var sy = at ? at[1] : mobile ? H - size / 2 - 64 : H * (0.3 + Math.random() * 0.35);
     solve = { t0: t, v: unproject(sx, sy), size: size, stars: null };
   }
 
@@ -200,14 +201,19 @@
       }
       ctx.globalAlpha = alpha;
       ctx.fillStyle = COLORS[COL[k]];
-      ctx.beginPath();
-      ctx.arc(SX[k], SY[k], r * 0.62, 0, 6.283);
-      ctx.fill();
+      var rr = r * 0.62;
+      if (rr < 0.9) {
+        ctx.fillRect(SX[k] - rr, SY[k] - rr, rr * 2, rr * 2);
+      } else {
+        ctx.beginPath();
+        ctx.arc(SX[k], SY[k], rr, 0, 6.283);
+        ctx.fill();
+      }
     }
     ctx.globalAlpha = 1;
 
     // Labels for named bright stars.
-    ctx.font = "500 10.5px " + getComputedStyle(document.body).getPropertyValue("--mono");
+    ctx.font = "500 10.5px " + MONO;
     ctx.fillStyle = "#b4bdd2";
     var labelFrom = W < 760 ? 0 : W * 0.42;
     for (var key in names) {
@@ -283,7 +289,7 @@
       var tx = px + h + 14, ty = py - h + 4;
       if (tx + 170 > W) tx = px - h - 184;
       var typed = Math.min(1, (e - 4.4) / 0.9);
-      ctx.font = "600 11px " + getComputedStyle(document.body).getPropertyValue("--mono");
+      ctx.font = "600 11px " + MONO;
       ctx.fillStyle = "rgba(5,7,13," + (0.72 * Math.min(1, typed * 3)) + ")";
       ctx.fillRect(tx - 8, ty - 4, 178, lines.length * 16 + 10);
       for (var l = 0; l < lines.length; l++) {
@@ -305,8 +311,9 @@
 
   // Interaction: drag to look around, with inertia.
   var dragging = false, lx = 0, ly = 0;
+  var downX = 0, downY = 0;
   canvas.addEventListener("pointerdown", function (ev) {
-    dragging = true; lx = ev.clientX; ly = ev.clientY;
+    dragging = true; lx = downX = ev.clientX; ly = downY = ev.clientY;
     canvas.setPointerCapture(ev.pointerId);
   });
   canvas.addEventListener("pointermove", function (ev) {
@@ -318,7 +325,14 @@
     if (reduced) frame(performance.now());
   });
   function endDrag() { dragging = false; }
-  canvas.addEventListener("pointerup", endDrag);
+  // A click without a drag solves the field under the pointer.
+  canvas.addEventListener("pointerup", function (ev) {
+    endDrag();
+    if (reduced || Math.abs(ev.clientX - downX) + Math.abs(ev.clientY - downY) > 6) return;
+    var r = canvas.getBoundingClientRect();
+    cam.vra = cam.vdec = 0;
+    newSolve(performance.now() / 1000, [ev.clientX - r.left, ev.clientY - r.top]);
+  });
   canvas.addEventListener("pointercancel", endDrag);
 
   var running = false, visible = true, last = 0, hudT = 0;
