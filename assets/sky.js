@@ -28,6 +28,22 @@
     view.size(W, H, W < 700 ? 80 : 112, W < 760 ? 5.8 : 99);
     baseScale = view.scale;
     frameNo = 0;
+    // Box around the headline copy, in canvas coordinates; labels are kept out of it.
+    textBox = null;
+    var copy = document.querySelectorAll(".hero-inner > *");
+    for (var i = 0; i < copy.length; i++) {
+      var b = copy[i].getBoundingClientRect();
+      if (!b.width) continue;
+      textBox = textBox || [Infinity, Infinity, -Infinity, -Infinity];
+      textBox[0] = Math.min(textBox[0], b.left - r.left - 24);
+      textBox[1] = Math.min(textBox[1], b.top - r.top - 24);
+      textBox[2] = Math.max(textBox[2], b.right - r.left + 24);
+      textBox[3] = Math.max(textBox[3], b.bottom - r.top + 24);
+    }
+  }
+  var textBox = null;
+  function inText(x, y) {
+    return textBox && x > textBox[0] - 80 && x < textBox[2] && y > textBox[1] && y < textBox[3];
   }
 
   // Plate-solve illustration: a field locks on, detects sources, matches a quad, reports the centre.
@@ -66,19 +82,16 @@
     view.drawLines(ctx);
     view.drawStars(ctx, t, !reduced);
     view.drawPlanets(ctx, planets, "600 10.5px " + MONO, function (x, y) {
-      return y < 60 ? 0 : W < 760 || x > W * 0.42 ? 0.9 : 0.35;
+      return y < 60 || inText(x, y) ? 0 : 0.9;
     });
 
-    // Labels for named bright stars, faded out behind the headline.
+    // Labels for named bright stars, kept clear of the headline copy.
     ctx.font = "500 10.5px " + MONO;
     ctx.fillStyle = "#b4bdd2";
-    var labelFrom = W < 760 ? 0 : W * 0.42;
+    ctx.globalAlpha = 0.55;
     for (var key in names) {
       var idx = +key;
-      if (!VIS[idx] || SX[idx] < labelFrom || SX[idx] > W - 90 || SY[idx] < 72) continue;
-      var la = W < 760 ? (SY[idx] > H * 0.55 ? 0.55 : 0) : Math.min(1, (SX[idx] - labelFrom) / (W * 0.12)) * 0.55;
-      if (la <= 0) continue;
-      ctx.globalAlpha = la;
+      if (!VIS[idx] || SX[idx] > W - 90 || SY[idx] < 72 || inText(SX[idx], SY[idx])) continue;
       ctx.fillText(names[key], SX[idx] + 9, SY[idx] + 3.5);
     }
     ctx.globalAlpha = 1;
