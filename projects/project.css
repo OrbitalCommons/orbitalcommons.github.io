@@ -3,6 +3,7 @@
    scrolling immediate so a retry does not move between pointer down and up. */
 html { scroll-behavior: auto; }
 .project-main {
+  padding-inline: min(1.5rem, 24px);
   padding-bottom: 2rem;
 }
 .project-main .crumb {
@@ -385,15 +386,19 @@ html { scroll-behavior: auto; }
   padding: 0.5rem 0;
 }
 .related-project {
-  display: grid;
-  grid-template-columns: 1fr auto;
+  display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   align-items: center;
   border: 1px solid var(--line);
-  padding: 1.4rem;
+  padding: clamp(16px, 4vw, 22.4px);
   border-radius: 12px;
   color: var(--ink);
   background: linear-gradient(115deg, rgba(124, 196, 255, 0.06), transparent);
+}
+.related-project > div {
+  flex: 1 1 12rem;
+  min-width: 0;
 }
 .related-project:hover {
   text-decoration: none;
@@ -581,7 +586,7 @@ html { scroll-behavior: auto; }
     grid-column: 2;
   }
   .demo-panel {
-    padding: 1rem;
+    padding: min(1rem, 16px);
   }
   .demo-topline {
     align-items: flex-start;
@@ -593,15 +598,17 @@ html { scroll-behavior: auto; }
     grid-template-columns: 1fr;
   }
   .cache-stages {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .cache-stages li {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
-    padding: 0.75rem;
+    padding: min(0.75rem, 12px);
   }
+  .cache-stages li > * { min-width: 0; }
   .cache-stages b {
     margin: 0;
   }

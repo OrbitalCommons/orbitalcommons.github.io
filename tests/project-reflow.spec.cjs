@@ -1,8 +1,8 @@
 const { test, expect } = require('@playwright/test');
 
-for (const name of ['starfield', 'fitsio-pure', 'zodiacal']) {
-  test(`${name} demo controls remain inside the page at 200% text size`, async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
+for (const name of ['starfield', 'fitsio-pure', 'zodiacal', 'rizzma', 'starfield-datastore', 'scicamera']) {
+  test(`${name} demo controls and related links remain inside the page at 200% text size`, async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 844 });
     await page.goto(`/projects/${name}/`);
     await page.addStyleTag({ content: 'html { font-size: 200% !important }' });
     // Inspect controls even inside an overflow:hidden panel, which could hide a regression.
@@ -11,6 +11,11 @@ for (const name of ['starfield', 'fitsio-pure', 'zodiacal']) {
       return r.width && (r.right > innerWidth || r.left < 0);
     }).map(el => el.id || el.className));
     expect(overflow).toEqual([]);
+    await page.locator('.related-project').scrollIntoViewIfNeeded();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    const card = await page.locator('.related-project').boundingBox();
+    const arrow = await page.locator('.related-arrow').boundingBox();
+    expect(arrow.x + arrow.width).toBeLessThanOrEqual(card.x + card.width);
     if (name === 'zodiacal') {
       await page.locator('#plate-field').selectOption('crux');
       await expect(page.locator('#plate-field')).toHaveValue('crux');
