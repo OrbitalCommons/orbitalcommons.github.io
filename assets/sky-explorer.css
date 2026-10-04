@@ -9,7 +9,8 @@
 
 .nojs { position: absolute; top: 45%; left: 0; right: 0; text-align: center; }
 
-.readout { position: absolute; top: 76px; left: max(1.5rem, calc((100% - var(--max)) / 2 + 1.5rem)); right: 1.5rem; pointer-events: none;
+.explorer { --nav-h: 60px; }
+.readout { position: absolute; top: calc(var(--nav-h) + 16px); left: max(1.5rem, calc((100% - var(--max)) / 2 + 1.5rem)); right: 1.5rem; pointer-events: none;
   font: 500 .78rem/1.6 var(--mono); letter-spacing: .04em; color: var(--ink-2); }
 .readout p { margin: 0 0 .25rem; width: fit-content; max-width: 100%; padding: .15rem .55rem; border-radius: 6px;
   background: rgba(5, 7, 13, .65); }
@@ -39,7 +40,7 @@
   .dock { bottom: .75rem; gap: .6rem; padding: .7rem; }
   .layers { font-size: .76rem; gap: .2rem .7rem; }
   .dock .credit { font-size: .75rem; }
-  .readout { top: 68px; left: 1rem; font-size: .75rem; }
+  .readout { top: calc(var(--nav-h) + 8px); left: 1rem; font-size: .75rem; }
 }
 
 /* Dither the dark gradients so they do not band. */
@@ -56,7 +57,7 @@
 .dock .credit { order: 6; }
 .solve label { display: inline-flex; align-items: center; gap: .35rem; cursor: pointer; min-height: 28px; }
 .solve input { accent-color: var(--accent); width: 18px; height: 18px; margin: 0; }
-.result { position: absolute; z-index: 2; top: 76px; right: 1.5rem; width: min(330px, calc(100% - 3rem)); padding: 1rem 1.1rem;
+.result { position: absolute; z-index: 2; top: calc(var(--nav-h) + 16px); right: 1.5rem; width: min(330px, calc(100% - 3rem)); padding: 1rem 1.1rem;
   background: rgba(10, 14, 25, .88); font-size: .82rem; }
 .result p { margin: 0 0 .5rem; }
 .result p:last-child { margin: .6rem 0 0; font-size: .76rem; }
@@ -66,14 +67,14 @@
 .result dl { display: grid; grid-template-columns: auto 1fr; gap: .25rem .9rem; margin: .4rem 0 0; font: .8rem var(--mono); }
 .result dt { color: var(--ink-3); }
 .result dd { margin: 0; color: var(--ink); font-variant-numeric: tabular-nums; }
-@media (max-width: 640px) { .result { top: 96px; right: 1rem; left: 1rem; width: auto; } }
+@media (max-width: 640px) { .result { top: calc(var(--nav-h) + 36px); right: 1rem; left: 1rem; width: auto; } }
 
 /* On compact screens, results and controls share a scroll area instead of
    covering each other. Keep the sky readout visible above it. */
 .explorer-panels { display: contents; }
 @media (max-width: 640px), (max-height: 600px) {
   .explorer-panels { display: block; position: absolute; z-index: 2;
-    left: 1rem; right: 1rem; bottom: .75rem; max-height: calc(100% - 140px);
+    left: 1rem; right: 1rem; bottom: .75rem; max-height: calc(100% - var(--nav-h) - 5em);
     overflow-y: auto; overscroll-behavior: contain; border-radius: var(--radius);
     scrollbar-width: thin; }
   .explorer-panels .dock, .explorer-panels .result { position: relative;
