@@ -235,7 +235,7 @@
     }
     // Readout for the field centre.
     if (e > 4.4) {
-      var rd = S.toRaDec(v), fov = 2 * half / view.scale / D2R, real = solve.real, good = found.length >= 4;
+      var rd = S.toRaDec(v), fov = 4 * Math.atan(half / (2 * view.scale)) / D2R, real = solve.real, good = found.length >= 4;
       var lines = [
         good ? "QUAD MATCHED" : "TOO FEW STARS",
         "RA  " + S.fmtRa(rd[0]),

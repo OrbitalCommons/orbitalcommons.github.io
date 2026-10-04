@@ -104,7 +104,7 @@
       ctx.stroke();
     }
     if (readout) {
-      var rd = S.toRaDec(view.unproject(cx, cy)), fov = 2 * half / view.scale / S.D2R;
+      var rd = S.toRaDec(view.unproject(cx, cy)), fov = 4 * Math.atan(half / (2 * view.scale)) / S.D2R;
       var lines = ["RA  " + S.fmtRa(rd[0]), "DEC " + S.fmtDec(rd[1]), "FOV " + fov.toFixed(1) + "°  ·  " + found.length + " src"];
       ctx.font = "600 11px " + MONO;
       var top = H - 16 - lines.length * 16;
