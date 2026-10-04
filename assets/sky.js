@@ -119,7 +119,7 @@
 
   // Camera state: centre (ra0, dec0) in degrees, horizontal field of view.
   var cam = { ra: 98, dec: -4, vra: 0, vdec: 0 };
-  var W = 0, H = 0, dpr = 1, scale = 1, baseScale = 1, intro = -1, cx = 0, cy = 0;
+  var W = 0, H = 0, dpr = 1, scale = 1, baseScale = 1, intro = -1, nDraw = 0, cx = 0, cy = 0;
   var basis = { e: [0, 0, 0], nn: [0, 0, 0], f: [0, 0, 0] };
 
   function resize() {
@@ -132,6 +132,8 @@
     baseScale = (W / 2) / (2 * Math.tan(fov / 4));
     scale = baseScale;
     cx = W / 2; cy = H / 2;
+    var lim = W < 760 ? 5.8 : 99;
+    for (nDraw = 0; nDraw < n && MAG[nDraw] <= lim; nDraw++);
   }
 
   function setBasis() {
@@ -206,6 +208,7 @@
     ctx.clearRect(0, 0, W, H);
 
     for (var i = 0; i < n; i++) {
+      if (i >= nDraw) { VIS[i] = 0; continue; }
       if (project(X[i], Y[i], Z[i], pt) && pt[0] > -40 && pt[0] < W + 40 && pt[1] > -40 && pt[1] < H + 40) {
         SX[i] = pt[0]; SY[i] = pt[1]; VIS[i] = 1;
       } else VIS[i] = 0;
@@ -239,7 +242,7 @@
     ctx.stroke();
 
     // Stars, faintest first so bright glows sit on top.
-    for (var k = n - 1; k >= 0; k--) {
+    for (var k = nDraw - 1; k >= 0; k--) {
       if (!VIS[k]) continue;
       var m = MAG[k];
       var tw = m < 3.5 && !reduced ? 0.82 + 0.18 * Math.sin(t * (1.3 + (k % 7) * 0.31) + PH[k]) : 1;
