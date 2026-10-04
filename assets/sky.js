@@ -371,7 +371,7 @@
     if (reduced) { cam.ra += cam.vra; cam.dec = Math.max(-80, Math.min(80, cam.dec + cam.vdec)); frame(performance.now()); }
   });
 
-  var running = false, visible = true, last = 0, hudT = 0;
+  var running = false, visible = true, last = 0, hudT = -1;
   function frame(now) {
     var t = now / 1000, dt = Math.min(0.05, t - (last || t));
     last = t;
