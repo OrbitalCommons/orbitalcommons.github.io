@@ -38,3 +38,23 @@ test('project skip link bypasses navigation and section links stay keyboard reac
   expect(heading.y).toBeGreaterThanOrEqual(60);
   expect(heading.y).toBeLessThan(700);
 });
+
+
+test('custom 404 recovery links remain reachable with enlarged text', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 720 });
+  await page.goto('/404.html');
+  await page.addStyleTag({ content: 'html { font-size: 200% !important }' });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  for (const name of [/Return home/, /Explore the sky/]) {
+    const link = page.getByRole('link', { name, exact: false });
+    await link.scrollIntoViewIfNeeded();
+    const bounds = await link.boundingBox();
+    expect(bounds.x).toBeGreaterThanOrEqual(0);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(320);
+  }
+  const home = page.getByRole('link', { name: /Return home/ });
+  await home.focus();
+  await home.press('Enter');
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.locator('#hero-title')).toBeVisible();
+});
