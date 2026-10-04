@@ -35,7 +35,7 @@
 
 <main id="main">
   <section class="hero" aria-labelledby="hero-title">
-    <canvas id="sky" tabindex="0" aria-label="Interactive star map rendered from the Hipparcos catalogue. Drag or use arrow keys to look around, click to run a plate solve." role="img"></canvas>
+    <canvas id="sky" tabindex="0" aria-label="Interactive star map rendered from the Hipparcos catalogue. Drag or use arrow keys to look around, click to illustrate how a plate solver matches star patterns." role="img"></canvas>
     <div class="hero-fade" aria-hidden="true"></div>
     <div class="wrap hero-inner">
       <p class="eyebrow">Open-source space software</p>
@@ -53,7 +53,7 @@
     </div>
     <div class="wrap hero-foot">
       <div class="hud-l"><button id="sky-zenith" class="hud-btn" type="button" aria-pressed="false">&#x2316; overhead now</button><p id="sky-hud" class="hud" aria-hidden="true">Hipparcos catalogue</p></div>
-      <p class="hud hint" aria-hidden="true">drag to look around · click to plate-solve</p>
+      <p class="hud hint" aria-hidden="true">drag to look around · click for a plate-solve illustration</p>
     </div>
   </section>
 
@@ -259,7 +259,7 @@
       </div>
       <div class="term reveal" role="group" aria-label="Install command">
         <div class="term-bar"><i></i><i></i><i></i><span>~/observatory</span></div>
-        <pre><code><span class="c"># the whole stack</span>
+        <pre tabindex="0" aria-label="Installation commands"><code><span class="c"># the whole stack</span>
 <span class="f">$</span> cargo add starfield zodiacal fitsio-pure rizzma
 <span class="c">    Updating crates.io index</span>
 <span class="s">      Adding</span> starfield <span class="n">v0.18.1</span>
@@ -283,7 +283,9 @@
       <div><h4>Elsewhere</h4><a href="https://github.com/OrbitalCommons">GitHub</a><a href="https://crates.io/search?q=starfield">crates.io</a><a href="https://docs.rs/starfield">docs.rs</a></div>
     </div>
   </div>
-  <div class="wrap credit"><p class="muted">Star map: ESA Hipparcos catalogue, constellation figures from Stellarium, planet positions from JPL’s Keplerian elements for today’s date.</p></div>
+  <div class="wrap credit"><p class="muted">Star map: ESA Hipparcos catalogue, constellation figures from Stellarium, planet positions from JPL’s Keplerian elements for today’s date.</p>
+    <p class="muted">This page is under 100&nbsp;kB compressed: no frameworks, no trackers, no external requests.
+    <a href="https://github.com/OrbitalCommons/orbitalcommons.github.io">View source</a>.</p></div>
 </footer>
 
 <script src="assets/stars.js"></script>
