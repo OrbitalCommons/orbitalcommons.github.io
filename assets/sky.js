@@ -53,7 +53,37 @@
     var size = mobile ? 116 : 190;
     var sx = at ? at[0] : mobile ? W - size / 2 - 22 - Math.random() * 20 : W * (0.62 + Math.random() * 0.2);
     var sy = at ? at[1] : mobile ? H - size / 2 - 64 : H * (0.3 + Math.random() * 0.35);
-    solve = { t0: t, v: view.unproject(sx, sy), size: size, stars: null };
+    solve = { t0: t, v: view.unproject(sx, sy), size: size, stars: null, real: null };
+  }
+
+  // A click runs zodiacal for real (compiled to WebAssembly, fetched on first use) on a synthetic
+  // TAN frame of the catalogue around the clicked point; the auto-play loop stays an illustration.
+  var solverReady = null, FRAME = 1024;
+  function loadSolver() {
+    if (solverReady) return solverReady;
+    solverReady = new Promise(function (resolve, reject) {
+      if (window.OCZodiacal) return resolve();
+      var s = document.createElement("script");
+      s.src = "projects/zodiacal/solver.js";
+      s.onload = function () { window.OCZodiacal ? resolve() : reject(new Error("no solver")); };
+      s.onerror = function () { reject(new Error("solver failed to load")); };
+      document.head.appendChild(s);
+    }).then(function () { return window.OCZodiacal.load(); });
+    solverReady.catch(function () { solverReady = null; });
+    return solverReady;
+  }
+  function realSolve(sv) {
+    var truth = S.toRaDec(sv.v), fov = Math.max(15, Math.min(40, sv.size / view.scale / D2R));
+    var sources = S.tanField(truth[0], truth[1], fov, FRAME, FRAME, 6.3).map(function (p) { return { x: p.x, y: p.y, flux: p.flux }; });
+    sv.real = { status: "pending", fov: fov, n: sources.length };
+    loadSolver().then(function () {
+      return window.OCZodiacal.solve(sources, FRAME, FRAME, { timeoutMs: 8000 });
+    }).then(function (r) {
+      if (!r) { sv.real.status = "none"; return; }
+      var a = S.radec(truth[0], truth[1]), b = S.radec(r.ra, r.dec);
+      sv.real = { status: "done", fov: fov, n: sources.length, r: r,
+        err: Math.acos(Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2]))) / D2R * 60 };
+    }, function () { sv.real.status = "fail"; });
   }
 
   function solveStars(px, py, half) {
@@ -151,13 +181,27 @@
     }
     // Readout for the field centre.
     if (e > 4.4) {
-      var rd = S.toRaDec(v), fov = 2 * half / view.scale / D2R;
+      var rd = S.toRaDec(v), fov = 2 * half / view.scale / D2R, real = solve.real, good = found.length >= 4;
       var lines = [
-        found.length >= 4 ? "QUAD MATCHED" : "TOO FEW STARS",
+        good ? "QUAD MATCHED" : "TOO FEW STARS",
         "RA  " + S.fmtRa(rd[0]),
         "DEC " + S.fmtDec(rd[1]),
         "FOV " + fov.toFixed(1) + "°  ·  " + found.length + " src"
       ];
+      if (real && real.status === "done") {
+        good = true;
+        lines = [
+          "SOLVED  " + (real.r.ms < 10 ? real.r.ms.toFixed(1) : Math.round(real.r.ms)) + " ms",
+          "RA  " + S.fmtRa(real.r.ra),
+          "DEC " + S.fmtDec(real.r.dec),
+          "ERR " + (real.err < 1 ? (real.err * 60).toFixed(0) + "″" : real.err.toFixed(1) + "′") + "  ·  " + real.r.matched + " matched",
+          "zodiacal · WebAssembly"
+        ];
+      } else if (real) {
+        good = false;
+        lines = [real.status === "pending" ? "SOLVING…" : real.status === "none" ? "NO SOLUTION" : "SOLVER UNAVAILABLE",
+          real.n + " src  ·  " + real.fov.toFixed(0) + "° field", "zodiacal · WebAssembly"];
+      }
       var tx = px + h + 14, ty = py - h + 4;
       if (tx + 170 > W) tx = px - h - 184;
       var typed = Math.min(1, (e - 4.4) / 0.9);
@@ -165,9 +209,9 @@
       ctx.fillStyle = "rgba(5,7,13," + (0.72 * Math.min(1, typed * 3)) + ")";
       ctx.fillRect(tx - 8, ty - 4, 178, lines.length * 16 + 10);
       for (var l = 0; l < lines.length; l++) {
-        var str = lines[l], shown = Math.floor(str.length * Math.min(1, typed * 1.6 - l * 0.2));
+        var str = lines[l], shown = Math.floor(str.length * Math.min(1, typed * (1 + 0.2 * lines.length) - l * 0.2));
         if (shown <= 0) continue;
-        ctx.fillStyle = l === 0 ? (found.length >= 4 ? "#8be3b0" : "#ffc477") : "rgba(232,236,246,0.85)";
+        ctx.fillStyle = l === 0 ? (good ? "#8be3b0" : "#ffc477") : "rgba(232,236,246,0.85)";
         ctx.fillText(str.slice(0, shown), tx, ty + 10 + l * 16);
       }
     }
@@ -234,6 +278,7 @@
     var r = canvas.getBoundingClientRect();
     cam.vra = cam.vdec = 0;
     newSolve(performance.now() / 1000, [ev.clientX - r.left, ev.clientY - r.top]);
+    realSolve(solve);
   });
   canvas.addEventListener("pointercancel", endDrag);
 
