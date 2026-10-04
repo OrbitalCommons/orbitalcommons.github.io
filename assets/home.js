@@ -61,13 +61,25 @@
     });
   });
 
+  // Copy via the Clipboard API; if that is unavailable or denied, select the command for manual copying.
   document.querySelectorAll("[data-copy]").forEach(function (btn) {
+    function flash(text) {
+      btn.textContent = text;
+      setTimeout(function () { btn.textContent = "Copy"; }, 1800);
+    }
+    function selectCode() {
+      var code = btn.parentNode.querySelector(".cmd") || btn.parentNode.querySelector("pre");
+      if (!code) return;
+      var range = document.createRange();
+      range.selectNodeContents(code);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      flash("Press \u2318/Ctrl+C");
+    }
     btn.addEventListener("click", function () {
-      if (!navigator.clipboard) return;
-      navigator.clipboard.writeText(btn.dataset.copy).then(function () {
-        btn.textContent = "Copied";
-        setTimeout(function () { btn.textContent = "Copy"; }, 1600);
-      });
+      if (!navigator.clipboard || !window.isSecureContext) return selectCode();
+      navigator.clipboard.writeText(btn.dataset.copy).then(function () { flash("Copied"); }, selectCode);
     });
   });
 })();
