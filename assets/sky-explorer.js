@@ -417,4 +417,19 @@
   draw();
   window.addEventListener("resize", function () { resize(); redraw(); });
   window.addEventListener("hashchange", function () { readHash(); computePlanets(); updateDate(); redraw(); });
+
+  // Follow the reduced-motion preference live: a flight in progress jumps straight to its end.
+  var motionQuery = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)");
+  if (motionQuery && motionQuery.addEventListener) motionQuery.addEventListener("change", function (e) {
+    reduced = e.matches;
+    if (reduced && flight) {
+      state.ra = flight.ra0 + flight.dra;
+      state.dec = flight.dec;
+      state.fov = flight.fov;
+      flight = null;
+      changed();
+    }
+  });
+  // Time spent in a hidden tab does not advance the date while playing.
+  document.addEventListener("visibilitychange", function () { playLast = 0; });
 })();
