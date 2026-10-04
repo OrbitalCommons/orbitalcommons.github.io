@@ -27,6 +27,15 @@
     COL[i] = bv < -0.1 ? 0 : bv < 0.15 ? 1 : bv < 0.45 ? 2 : bv < 0.75 ? 3 : bv < 1.1 ? 4 : 5;
     PH[i] = Math.random() * 6.283;
   }
+  // Stars are sorted by brightness; everything from FAINT on is batch drawn in magnitude bins.
+  var FAINT = 0;
+  while (FAINT < n && MAG[FAINT] < 3.9) FAINT++;
+  var groups = [], gkey = {};
+  for (var fi = FAINT; fi < n; fi++) {
+    var bin = Math.floor((MAG[fi] - 3.9) / 0.4), key = COL[fi] * 64 + bin;
+    if (!gkey[key]) { gkey[key] = { col: COL[fi], mag: 3.9 + (bin + 0.5) * 0.4, idx: [] }; groups.push(gkey[key]); }
+    gkey[key].idx.push(fi);
+  }
   var COLORS = ["#a8bfff", "#d0dcff", "#f6f6ff", "#fff1df", "#ffd9a8", "#ffbf80"];
   var lineSets = Object.keys(data.lines).map(function (k) { return data.lines[k]; });
   var names = data.names;
@@ -68,6 +77,7 @@
     g.fillStyle = grd;
     g.fillRect(0, 0, 128, 128);
   })();
+  var bandC = document.createElement("canvas"), bctx = bandC.getContext("2d"), bandDrawn = false, frameNo = 0;
   function radec(ra, dec) {
     ra *= D2R; dec *= D2R;
     return [Math.cos(dec) * Math.cos(ra), Math.cos(dec) * Math.sin(ra), Math.sin(dec)];
@@ -132,6 +142,9 @@
     baseScale = (W / 2) / (2 * Math.tan(fov / 4));
     scale = baseScale;
     cx = W / 2; cy = H / 2;
+    bandC.width = Math.max(1, Math.round(W / 8));
+    bandC.height = Math.max(1, Math.round(H / 8));
+    bandDrawn = false;
     var lim = W < 760 ? 5.8 : 99;
     for (nDraw = 0; nDraw < n && MAG[nDraw] <= lim; nDraw++);
   }
@@ -214,14 +227,19 @@
       } else VIS[i] = 0;
     }
 
-    var bs = scale * 0.62;
-    for (var b0 = 0; b0 < band.length; b0++) {
-      var B = band[b0];
-      if (!project(B[0], B[1], B[2], pt)) continue;
-      ctx.globalAlpha = 0.16 * B[3];
-      ctx.drawImage(blob, pt[0] - bs, pt[1] - bs * 0.7, bs * 2, bs * 1.4);
+    // The Milky Way is soft, so render it at an eighth of the resolution and every other frame.
+    if (!(frameNo++ & 1) || !bandDrawn) {
+      var bw = bandC.width, bh = bandC.height, q = bw / W, bs = scale * 0.62 * q;
+      bctx.clearRect(0, 0, bw, bh);
+      for (var b0 = 0; b0 < band.length; b0++) {
+        var B = band[b0];
+        if (!project(B[0], B[1], B[2], pt)) continue;
+        bctx.globalAlpha = 0.16 * B[3];
+        bctx.drawImage(blob, pt[0] * q - bs, pt[1] * q - bs * 0.7, bs * 2, bs * 1.4);
+      }
+      bandDrawn = true;
     }
-    ctx.globalAlpha = 1;
+    ctx.drawImage(bandC, 0, 0, W, H);
 
     // Constellation figures.
     ctx.lineWidth = 1;
@@ -241,8 +259,21 @@
     }
     ctx.stroke();
 
-    // Stars, faintest first so bright glows sit on top.
-    for (var k = nDraw - 1; k >= 0; k--) {
+    // Faint stars never twinkle, so draw them in batches sharing colour, size and alpha.
+    for (var g = 0; g < groups.length; g++) {
+      var G = groups[g], gm = G.mag, gr = Math.max(0.65, 3.3 - gm * 0.48) * 0.62;
+      ctx.globalAlpha = Math.max(0.24, Math.min(1, 1.4 - gm * 0.16));
+      ctx.fillStyle = COLORS[G.col];
+      ctx.beginPath();
+      for (var gi = 0; gi < G.idx.length; gi++) {
+        var q = G.idx[gi];
+        if (q < nDraw && VIS[q]) ctx.rect(SX[q] - gr, SY[q] - gr, gr * 2, gr * 2);
+      }
+      ctx.fill();
+    }
+
+    // Bright stars individually, faintest first so glows sit on top.
+    for (var k = FAINT - 1; k >= 0; k--) {
       if (!VIS[k]) continue;
       var m = MAG[k];
       var tw = m < 3.5 && !reduced ? 0.82 + 0.18 * Math.sin(t * (1.3 + (k % 7) * 0.31) + PH[k]) : 1;
