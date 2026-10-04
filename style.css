@@ -23,7 +23,9 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; -webkit-text-size-adjust: 100%; }
+/* Focus scrolling must settle before the user activates a nearby control. */
+html:focus-within { scroll-behavior: auto; }
 body {
   margin: 0; background: var(--bg); color: var(--ink-2);
   font: 16px/1.65 var(--sans);

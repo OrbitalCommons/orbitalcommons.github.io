@@ -2,8 +2,8 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 
-test('the shipped FITS parser has a hard 128 MiB linear-memory limit', async () => {
-  const module = await WebAssembly.compile(fs.readFileSync('projects/fitsio-pure/wasm/fits_inspector_bg.wasm'));
+for (const [name, file] of [['FITS parser', 'projects/fitsio-pure/wasm/fits_inspector_bg.wasm'], ['zodiacal solver', 'projects/zodiacal/wasm/zodiacal_browser_bg.wasm']]) test(`the shipped ${name} has a hard 128 MiB linear-memory limit`, async () => {
+  const module = await WebAssembly.compile(fs.readFileSync(file));
   const imports = {};
   for (const entry of WebAssembly.Module.imports(module)) {
     assert.equal(entry.kind, 'function');
