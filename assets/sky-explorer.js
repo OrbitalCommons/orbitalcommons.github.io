@@ -177,9 +177,12 @@
         "<dl><dt>Centre</dt><dd>" + S.fmtRa(r.ra) + " &nbsp;" + S.fmtDec(r.dec) + "</dd>" +
         "<dt>Rotation</dt><dd>" + r.rotationDeg.toFixed(2) + "&deg;</dd>" +
         "<dt>Scale</dt><dd>" + r.scaleArcsecPerPx.toFixed(2) + "&Prime;/px</dd>" +
-        "<dt>Matched</dt><dd>" + r.matched + " of " + sources.length + " sources</dd>" +
+        "<dt>Matched</dt><dd>" + r.matched + " of " + (r.sourcesUsed || sources.length) + " sources used</dd>" +
         "<dt>Error</dt><dd>" + (err < 60 ? err.toFixed(1) + "&Prime;" : (err / 60).toFixed(1) + "&prime;") + " from the true centre</dd></dl>" +
-        "<p class=\"muted\">zodiacal running in your browser via WebAssembly. Dashed: the frame we made. Green: where the solver put it.</p>");
+        "<p class=\"muted\">zodiacal's quad matching running in your browser via WebAssembly" +
+        (r.refined ? ", then a least-squares fit on its matched stars" : "") +
+        ". The frame is synthetic, built from the catalogue, so the error measures self-consistency, not real-camera accuracy. " +
+        "Dashed: the frame we made. Green: where the solver put it.</p>");
     }, function (err) {
       solveBtn.disabled = false;
       showResult("<p class=\"r-title warn\">Solver unavailable</p><p class=\"muted\">" + String(err && err.message || err) + "</p>");
