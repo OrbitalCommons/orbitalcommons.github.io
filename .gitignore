@@ -3,3 +3,4 @@ playwright-report/
 test-results/
 __pycache__/
 /demos/*/target/
+/demos/code-examples/src/

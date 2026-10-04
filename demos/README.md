@@ -48,3 +48,11 @@ The starfield catalog explorer uses the bundled Hipparcos data in
 `assets/stars.js`; see that file and the assets source notes for provenance. The
 zodiacal geometry and datastore scenarios are explanatory JavaScript
 illustrations. They do not claim to execute either Rust library.
+
+## Checking the published code examples
+
+`python3 demos/check_examples.py` extracts the Rust snippets from the project
+pages and compiles them against the exact release versions recorded in
+`demos/code-examples/Cargo.toml` and its lockfile. Generated Rust files are
+ignored; edit the HTML examples directly. CI runs this check and the FITS
+adapter's parsing tests, so the displayed examples stay executable.

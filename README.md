@@ -50,9 +50,11 @@ npm test
 `npm run test:links` checks local links, fragment identifiers, image alternative
 text, and basic document metadata with Python's standard library.
 `npm run test:browser` opens every page at desktop and mobile sizes and checks
-for script errors, failed local requests, and horizontal overflow. Set
+for script errors, failed local requests, and horizontal overflow. It also exercises
+the project demos and audits their default and populated states with axe-core. Set
 `CHROME_PATH` to use a locally installed Chrome instead of Playwright's browser.
 GitHub Actions runs both on pull requests and pushes to `main`, and uploads
-browser traces and screenshots when a check fails.
+browser traces and screenshots when a check fails. A separate Rust job compiles
+the exact examples displayed on the pages and tests the FITS adapter.
 
 For a local preview, run `npm run serve` and open <http://127.0.0.1:4173>.

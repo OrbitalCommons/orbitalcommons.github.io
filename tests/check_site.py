@@ -2,10 +2,11 @@
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
+import os
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-IGNORED = {"node_modules", ".git", ".worktrees", "test-results", "playwright-report"}
+IGNORED = {"node_modules", ".git", ".worktrees", "test-results", "playwright-report", "target"}
 
 
 class Page(HTMLParser):
@@ -41,12 +42,15 @@ class Page(HTMLParser):
 def check():
     pages = {}
     errors = []
-    for path in ROOT.rglob("*.html"):
-        if IGNORED.intersection(path.relative_to(ROOT).parts):
-            continue
-        page = Page(path)
-        page.feed(path.read_text())
-        pages[path] = page
+    for directory, subdirs, files in os.walk(ROOT):
+        subdirs[:] = [name for name in subdirs if name not in IGNORED]
+        for name in files:
+            if not name.endswith(".html"):
+                continue
+            path = Path(directory) / name
+            page = Page(path)
+            page.feed(path.read_text())
+            pages[path] = page
     for path, page in pages.items():
         name = path.relative_to(ROOT)
         for required in ("title", "lang", "viewport"):
