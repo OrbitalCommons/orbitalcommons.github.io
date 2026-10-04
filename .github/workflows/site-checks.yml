@@ -45,6 +45,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt
+          targets: wasm32-unknown-unknown
       - run: python3 demos/check_examples.py --extract-only
       - uses: Swatinem/rust-cache@v2
         with:
@@ -52,8 +53,13 @@ jobs:
             demos/fits-inspector
             demos/plots
             demos/code-examples
+            demos/zodiacal-solver
       - run: cargo fmt --manifest-path demos/fits-inspector/Cargo.toml -- --check
       - run: cargo fmt --manifest-path demos/plots/Cargo.toml -- --check
+      - run: cargo fmt --manifest-path demos/zodiacal-solver/Cargo.toml -- --check
+      - run: cargo check --locked --target wasm32-unknown-unknown --manifest-path demos/zodiacal-solver/Cargo.toml
+        env:
+          RUSTFLAGS: '--cfg getrandom_backend="wasm_js"'
       - run: cargo test --locked --manifest-path demos/fits-inspector/Cargo.toml
       - run: cargo check --locked --manifest-path demos/plots/Cargo.toml
       - run: python3 demos/check_examples.py

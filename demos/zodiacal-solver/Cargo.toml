@@ -1,0 +1,23 @@
+[package]
+name = "zodiacal-browser"
+version = "0.1.0"
+edition = "2024"
+publish = false
+license = "Apache-2.0"
+[lib]
+crate-type = ["cdylib", "rlib"]
+[dependencies]
+zodiacal = { version = "=0.4.1", default-features = false }
+wasm-bindgen = "=0.2.128"
+serde_json = "1"
+nalgebra = "0.32"
+getrandom = { version = "0.3", features = ["wasm_js"] }
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[patch.crates-io]
+zodiacal = { path = "vendor/zodiacal" }
