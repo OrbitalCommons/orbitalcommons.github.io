@@ -146,7 +146,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 3rem 0; }
 .site-foot a { color: var(--ink-2); }
 .site-foot .cols { display: flex; flex-wrap: wrap; gap: 1rem 3rem; }
 .site-foot .cols div { display: flex; flex-direction: column; gap: .35rem; }
-.site-foot h4 { font: 600 .7rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 .5rem; }
+.site-foot h4, .site-foot .foot-h { font: 600 .7rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 .5rem; }
 
 /* Reveal on scroll (enabled by JS adding .js to <html>) */
 .js .reveal { opacity: 0; transform: translateY(18px); transition: opacity .8s ease, transform .8s cubic-bezier(.2, .7, .2, 1); }
