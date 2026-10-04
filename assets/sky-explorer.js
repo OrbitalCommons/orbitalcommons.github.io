@@ -19,17 +19,27 @@
   var $ = function (id) { return document.getElementById(id); };
 
   // URL hash: #ra=84.0&dec=0.0&fov=90&d=0
+  // `d` is days from the viewer's today (the live address bar); `date=YYYY-MM-DD` pins an absolute
+  // day for shared links and wins when both are present.
   function readHash() {
+    var pinned = null;
     location.hash.slice(1).split("&").forEach(function (kv) {
-      var p = kv.split("="), v = parseFloat(p[1]);
+      var p = kv.split("=");
+      if (p[0] === "date" && /^\d{4}-\d{2}-\d{2}$/.test(p[1] || "")) pinned = Date.parse(p[1] + "T12:00:00Z");
+      var v = parseFloat(p[1]);
       if (!Number.isFinite(v)) return;
       if (p[0] === "ra") state.ra = ((v % 360) + 360) % 360;
       if (p[0] === "dec") state.dec = clamp(v, -89, 89);
       if (p[0] === "fov") state.fov = clamp(v, 8, 160);
       if (p[0] === "d") state.days = clamp(Math.round(v), -730, 730);
     });
+    if (Number.isFinite(pinned)) state.days = clamp(Math.round((pinned - today) / DAY), -730, 730);
   }
   var hashTimer = 0;
+  function sharedHash() {
+    var view = hashFor().replace(/&d=-?\d+$/, "");
+    return view + "&date=" + new Date(today + state.days * DAY).toISOString().slice(0, 10);
+  }
   function hashFor() {
     return "#ra=" + norm(state.ra).toFixed(2) + "&dec=" + state.dec.toFixed(2) + "&fov=" + state.fov.toFixed(0) + "&d=" + state.days;
   }
@@ -361,7 +371,7 @@
   // Copy a link to exactly this view and date; if the clipboard is unavailable, show the link instead.
   var shareBtn = $("x-share");
   shareBtn.addEventListener("click", function () {
-    var url = location.origin + location.pathname + hashFor();
+    var url = location.origin + location.pathname + sharedHash();
     if (history.replaceState) history.replaceState(null, "", hashFor());
     $("x-q").removeAttribute("aria-invalid");
     function done(text) {
