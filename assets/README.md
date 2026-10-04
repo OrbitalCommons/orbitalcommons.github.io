@@ -63,3 +63,23 @@ Uranus 9″ and Neptune 29″.
 
 `og.jpg` is a 1200×630 capture of `tools/og.html`; `noise.png` is a 96×96 random dither tile;
 `mark.svg`, `favicon.svg` and `apple-touch-icon.png` are the logo.
+
+## Identity
+
+`mark.svg` redraws the three descending four-point stars from the
+[OrbitalCommons GitHub organization avatar](https://github.com/OrbitalCommons).
+The curves and spacing are refined for a narrow vertical mark beside the
+wordmark. `favicon.svg` uses slightly broader stars for small sizes on an opaque
+dark background. These are editable vector paths, with no font dependency.
+
+With the local preview server running, regenerate the raster brand assets:
+
+```sh
+node tools/build_brand_assets.cjs
+node tools/build_project_cards.cjs
+```
+
+The first command renders the 180-pixel Apple touch icon and the 1200 × 630
+homepage card; the second refreshes the six project cards. Set `CHROME_PATH` for
+a system Chrome or `SITE_URL` for a different local preview address. The
+homepage card fixes `Math.random` at 0.35 and requests reduced motion.

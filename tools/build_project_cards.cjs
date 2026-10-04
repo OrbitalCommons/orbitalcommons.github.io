@@ -61,7 +61,7 @@ const projects = [
           body { margin:0; width:1200px; height:630px; overflow:hidden; background:#05070d; }
           .social-card { height:100%; padding:48px 60px 36px; border-top:4px solid #7cc4ff; display:flex; flex-direction:column; background:radial-gradient(ellipse at 90% 30%,#111a2b 0%,#05070d 65%); }
           .social-card header { display:flex; align-items:center; }
-          .brand { font-size:24px; gap:12px; } .brand .mark { width:34px; height:34px; }
+          .brand { font-size:24px; gap:12px; } .brand .mark { width:24px; height:42px; }
           .social-card main { display:grid; grid-template-columns:580px 440px; gap:60px; align-items:center; flex:1; }
           .social-text .eyebrow { margin:0 0 16px; font-size:14px; }
           .social-text h1 { font-size:${name.textContent.length > 15 ? 46 : 66}px; line-height:1.1; margin:0 0 22px; letter-spacing:-.05em; }

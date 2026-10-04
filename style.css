@@ -59,7 +59,7 @@ section { position: relative; }
 .brand { display: inline-flex; align-items: center; gap: .6rem; color: var(--ink); font-weight: 650;
   letter-spacing: -.01em; font-size: 1.02rem; }
 .brand:hover { text-decoration: none; }
-.brand .mark { width: 26px; height: 26px; }
+.brand .mark { width: 18px; height: 32px; }
 .brand b { font-weight: 650; color: var(--accent); }
 .site-nav nav { margin-left: auto; display: flex; gap: 1.4rem; font-size: .9rem; }
 .site-nav nav a { color: var(--ink-2); }
