@@ -3,102 +3,291 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>OrbitalCommons</title>
-<meta name="description" content="High-quality, open-source libraries and tools for satellite imaging, satellite navigation, and space exploration.">
+<title>OrbitalCommons · Open-source software for seeing, navigating and exploring space</title>
+<meta name="description" content="High-quality, open-source libraries and tools for satellite imaging, satellite navigation, and space exploration. Free for astronomers and commercial enterprise alike.">
+<meta name="theme-color" content="#05070d">
 <meta property="og:title" content="OrbitalCommons">
 <meta property="og:description" content="Open-source tools for satellite imaging, navigation, and space exploration. Free for astronomers and commercial enterprise alike.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://orbitalcommons.github.io/">
-<link rel="icon" href="data:,">
+<meta property="og:image" content="https://orbitalcommons.github.io/assets/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="stylesheet" href="style.css">
-<style>
-  .wrap { max-width: 980px; padding-top: 4rem; }
-</style>
+<link rel="stylesheet" href="assets/home.css">
+<script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
-<div class="wrap">
-  <h1>OrbitalCommons</h1>
-  <p class="tag">High-quality, open-source libraries and tools for satellite imaging, satellite
-  navigation, and space exploration. Free for astronomers and commercial enterprise alike.</p>
+<a class="skip" href="#main">Skip to content</a>
 
-  <p>The foundational tools for working with space data should be fast, reliable, and accessible
-  to everyone. We use the right language for each job: Rust where performance and safety matter
-  most, Python where the ecosystem and ergonomics win.</p>
-
-  <h2>Projects</h2>
-  <div class="grid">
-    <article class="card">
-      <h3><a href="starfield/">starfield</a></h3>
-      <p>Star catalogs, coordinate systems, ephemerides, and star finding. Skyfield-inspired, pure Rust.</p>
-      <div class="meta"><span class="lang">Rust</span><span class="dl">7,725 downloads</span></div>
-      <div class="links"><a href="starfield/">overview</a> · <a href="https://github.com/OrbitalCommons/starfield">source</a> · <a href="https://crates.io/crates/starfield">package</a> · <a href="https://docs.rs/starfield">docs</a></div>
-    </article>
-    <article class="card">
-      <h3>zodiacal</h3>
-      <p>Blind astrometry. Identify what you are looking at from the pattern of stars alone, no prior pointing required.</p>
-      <div class="meta"><span class="lang">Rust</span><span class="dl">230 downloads</span></div>
-      <div class="links"><a href="https://github.com/OrbitalCommons/zodiacal">source</a> · <a href="https://crates.io/crates/zodiacal">package</a> · <a href="https://docs.rs/zodiacal">docs</a></div>
-    </article>
-    <article class="card">
-      <h3><a href="fitsio-pure/">fitsio-pure</a></h3>
-      <p>A pure Rust implementation of the FITS file format. No C dependencies, no unsafe, builds for wasm.</p>
-      <div class="meta"><span class="lang">Rust</span><span class="dl">3,136 downloads</span></div>
-      <div class="links"><a href="fitsio-pure/">overview</a> · <a href="https://github.com/OrbitalCommons/fitsio-pure">source</a> · <a href="https://crates.io/crates/fitsio-pure">package</a> · <a href="https://docs.rs/fitsio-pure">docs</a></div>
-    </article>
-    <article class="card">
-      <h3><a href="rizzma/">rizzma</a></h3>
-      <p>matplotlib-style plotting in Rust, with first-class WebAssembly. Figures that stay interactive wherever they land.</p>
-      <div class="meta"><span class="lang">Rust</span><span class="dl">1,885 downloads</span></div>
-      <div class="links"><a href="rizzma/">overview</a> · <a href="https://github.com/OrbitalCommons/rizzma">source</a> · <a href="https://crates.io/crates/rizzma">package</a> · <a href="https://docs.rs/rizzma">docs</a></div>
-    </article>
-    <article class="card">
-      <h3>starfield-datastore</h3>
-      <p>Pull-through artifact cache and ephemeris server: local disk, then mirror, then upstream archives, with fail-closed validation.</p>
-      <div class="meta"><span class="lang">Rust</span><span class="dl">888 downloads</span></div>
-      <div class="links"><a href="https://github.com/OrbitalCommons/starfield-datastore">source</a> · <a href="https://crates.io/crates/starfield-datastore">package</a> · <a href="https://docs.rs/starfield-datastore">docs</a></div>
-    </article>
-    <article class="card">
-      <h3>zodiacal-web</h3>
-      <p>Upload a sky image, get back coordinates, orientation, pixel scale and field of view.</p>
-      <div class="meta"><span class="lang">Rust</span></div>
-      <div class="links"><a href="https://github.com/OrbitalCommons/zodiacal-web">source</a></div>
-    </article>
-    <article class="card">
-      <h3>planet9</h3>
-      <p>Research and analysis on the hypothesized ninth planet in the outer Solar System.</p>
-      <div class="meta"><span class="lang">Rust</span></div>
-      <div class="links"><a href="https://github.com/OrbitalCommons/planet9">source</a></div>
-    </article>
-    <article class="card">
-      <h3>scicamera</h3>
-      <p>Scientific camera capture built on libcamera.</p>
-      <div class="meta"><span class="lang">Python</span></div>
-      <div class="links"><a href="https://github.com/OrbitalCommons/scicamera">source</a> · <a href="https://pypi.org/project/scicamera/">package</a></div>
-    </article>
-    <article class="card">
-      <h3>sky-light-estimator</h3>
-      <p>Estimate light pollution for a given latitude and longitude.</p>
-      <div class="meta"><span class="lang">Python</span></div>
-      <div class="links"><a href="https://github.com/OrbitalCommons/sky-light-estimator">source</a></div>
-    </article>
+<header class="site-nav">
+  <div class="wrap">
+    <a class="brand" href="./"><img class="mark" src="assets/mark.svg" alt=""><span>Orbital<b>Commons</b></span></a>
+    <nav aria-label="Primary">
+      <a href="#stack" class="opt">Stack</a>
+      <a href="#projects">Projects</a>
+      <a href="#principles" class="opt">Principles</a>
+      <a href="https://github.com/OrbitalCommons">GitHub</a>
+    </nav>
   </div>
+</header>
 
-  <h2>What we are building toward</h2>
-  <ul>
-    <li><strong>Satellite imaging.</strong> Capturing, storing and processing astronomical image
-      data on open standards like FITS.</li>
-    <li><strong>Satellite navigation.</strong> Blind astrometry and star field identification for
-      autonomous celestial navigation.</li>
-    <li><strong>Space exploration.</strong> Simulation, planning and analysis libraries that lower
-      the barrier to working with space data.</li>
-  </ul>
+<main id="main">
+  <section class="hero" aria-labelledby="hero-title">
+    <canvas id="sky" tabindex="0" aria-label="Interactive star map rendered from the Hipparcos catalogue. Drag or use arrow keys to look around, click to run a plate solve." role="img"></canvas>
+    <div class="hero-fade" aria-hidden="true"></div>
+    <div class="wrap hero-inner">
+      <p class="eyebrow">Open-source space software</p>
+      <h1 id="hero-title">The open toolkit for <span class="grad">seeing, navigating</span> and exploring space.</h1>
+      <p class="lede">Fast, dependable libraries for satellite imaging, celestial navigation and space
+      science. Written in Rust where performance and safety matter, Python where the ecosystem wins.
+      Free for astronomers and commercial enterprise alike.</p>
+      <div class="actions">
+        <a class="btn primary" href="#stack">Explore the stack
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 4v12M5 11l5 5 5-5"/></svg></a>
+        <a class="btn" href="https://github.com/OrbitalCommons">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+          github.com/OrbitalCommons</a>
+      </div>
+    </div>
+    <div class="wrap hero-foot">
+      <div class="hud-l"><button id="sky-zenith" class="hud-btn" type="button" aria-pressed="false">&#x2316; overhead now</button><p id="sky-hud" class="hud" aria-hidden="true">Hipparcos catalogue</p></div>
+      <p class="hud hint" aria-hidden="true">drag to look around · click to plate-solve</p>
+    </div>
+  </section>
 
-  <p>Whether you are running a university observatory, building a CubeSat, or pointing a telescope
-  in your back garden, these tools are for you. Contributions and ideas welcome.</p>
+  <section class="stats" aria-label="By the numbers">
+    <div class="wrap stats-row">
+      <div class="stat reveal"><b data-count="13900">13,900</b><span>crate downloads</span></div>
+      <div class="stat reveal"><b data-count="98.5" data-dec="1">98.5</b><i>%</i><span>blind solve rate, 1,000 simulated fields</span></div>
+      <div class="stat reveal"><b>0</b><span>C dependencies to read FITS</span></div>
+      <div class="stat reveal"><b data-count="12">12</b><span>open repositories</span></div>
+    </div>
+  </section>
 
-  <footer>
-    <a href="https://github.com/OrbitalCommons">github.com/OrbitalCommons</a>
-  </footer>
-</div>
+  <section id="stack" class="section" aria-labelledby="stack-title">
+    <div class="wrap">
+      <p class="eyebrow reveal">The stack</p>
+      <h2 id="stack-title" class="reveal">From photons to answers.</h2>
+      <p class="lede reveal">Each library does one job well, and they compose. Capture a frame, store it in a
+      standard format, work out where you were pointing, reduce it against the catalogues and plot
+      the result, without leaving one toolchain.</p>
+
+      <ol class="pipeline">
+        <li class="stage reveal" style="--i:0">
+          <span class="step">01</span>
+          <svg class="ico" viewBox="0 0 32 32" aria-hidden="true"><rect x="4" y="9" width="24" height="17" rx="3"/><circle cx="16" cy="17.5" r="5"/><path d="M11 9l2-3h6l2 3"/></svg>
+          <h3>Capture</h3>
+          <p>Scientific camera control on libcamera.</p>
+          <a href="https://github.com/OrbitalCommons/scicamera" class="pkg">scicamera</a>
+        </li>
+        <li class="stage reveal" style="--i:1">
+          <span class="step">02</span>
+          <svg class="ico" viewBox="0 0 32 32" aria-hidden="true"><path d="M8 4h11l7 7v17H8z"/><path d="M19 4v7h7"/><path d="M12 17h10M12 21h10M12 25h6"/></svg>
+          <h3>Store</h3>
+          <p>FITS in pure Rust. No C, no unsafe, runs in wasm.</p>
+          <a href="projects/fitsio-pure/" class="pkg">fitsio-pure</a>
+        </li>
+        <li class="stage reveal" style="--i:2">
+          <span class="step">03</span>
+          <svg class="ico" viewBox="0 0 32 32" aria-hidden="true"><path d="M5 10V5h5M27 10V5h-5M5 22v5h5M27 22v5h-5"/><circle cx="11" cy="12" r="1.6"/><circle cx="21" cy="10" r="1.6"/><circle cx="20" cy="21" r="1.6"/><circle cx="12" cy="20" r="1.6"/><path d="M11 12l10-2-1 11-8-1z" stroke-dasharray="2 2"/></svg>
+          <h3>Solve</h3>
+          <p>Blind astrometry from the star pattern alone.</p>
+          <a href="projects/zodiacal/" class="pkg">zodiacal</a>
+        </li>
+        <li class="stage reveal" style="--i:3">
+          <span class="step">04</span>
+          <svg class="ico" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="11"/><ellipse cx="16" cy="16" rx="11" ry="4.5"/><path d="M16 5v22"/><circle cx="22" cy="11" r="1.8" class="fill"/></svg>
+          <h3>Reduce</h3>
+          <p>Catalogues, frames, time and ephemerides.</p>
+          <a href="projects/starfield/" class="pkg">starfield</a>
+        </li>
+        <li class="stage reveal" style="--i:4">
+          <span class="step">05</span>
+          <svg class="ico" viewBox="0 0 32 32" aria-hidden="true"><rect x="5" y="5" width="22" height="8" rx="2"/><rect x="5" y="19" width="22" height="8" rx="2"/><path d="M16 13v6"/><circle cx="9.5" cy="9" r="1" class="fill"/><circle cx="9.5" cy="23" r="1" class="fill"/></svg>
+          <h3>Serve</h3>
+          <p>Pull-through cache for catalogues and ephemerides.</p>
+          <a href="projects/starfield-datastore/" class="pkg">starfield-datastore</a>
+        </li>
+        <li class="stage reveal" style="--i:5">
+          <span class="step">06</span>
+          <svg class="ico" viewBox="0 0 32 32" aria-hidden="true"><path d="M5 5v22h22"/><path d="M9 22c3-1 4-9 7-9s3 5 6 5 3-8 5-10"/></svg>
+          <h3>Visualise</h3>
+          <p>matplotlib-style plots, native and in the browser.</p>
+          <a href="projects/rizzma/" class="pkg">rizzma</a>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="proof" class="section proof" aria-labelledby="proof-title">
+    <div class="wrap proof-grid">
+      <div class="proof-copy">
+        <p class="eyebrow reveal">Measured, not promised</p>
+        <h2 id="proof-title" class="reveal">Lost in space? Found in about a second.</h2>
+        <p class="reveal">zodiacal is benchmarked on 1,000 simulated fields with known pointing
+        (9568&times;6380 px, 0.13&Prime;/px, about 20&prime;&times;13&prime;), with no hint of where
+        the camera was aimed. The best configuration solves 985 of them.</p>
+        <table class="reveal">
+          <caption class="muted">Solve rate by index configuration</caption>
+          <thead><tr><th scope="col">Index</th><th scope="col">Solved</th><th scope="col">Median</th></tr></thead>
+          <tbody>
+            <tr><td>Mag 16, 4 bands</td><td>96.2%</td><td>0.62 s</td></tr>
+            <tr><td>Mag 16 + verify catalogue</td><td>96.7%</td><td>&mdash;</td></tr>
+            <tr><td>Mag 19, 4 bands</td><td>97.2%</td><td>&mdash;</td></tr>
+            <tr class="best"><td>Mag 19, 12 bands</td><td>98.5%</td><td>1.07 s</td></tr>
+          </tbody>
+        </table>
+        <p class="muted small">Source: <a href="https://github.com/OrbitalCommons/zodiacal#results">zodiacal README</a>,
+        test corpus in <a href="https://github.com/OrbitalCommons/zodiacal-test-cases">zodiacal-test-cases</a>.</p>
+      </div>
+      <figure class="panel chart reveal" aria-labelledby="chart-title">
+        <figcaption>
+          <h3 id="chart-title">Time to solution</h3>
+          <p class="muted">Share of the 985 solved fields, best configuration</p>
+        </figcaption>
+        <div class="bars" role="list">
+          <div class="bar" role="listitem" style="--v:48" tabindex="0" aria-label="48% solved in under 1 second"><b>48%</b><i></i><span>&lt; 1 s</span></div>
+          <div class="bar" role="listitem" style="--v:83" tabindex="0" aria-label="83% solved in under 5 seconds"><b>83%</b><i></i><span>&lt; 5 s</span></div>
+          <div class="bar" role="listitem" style="--v:93" tabindex="0" aria-label="93% solved in under 10 seconds"><b>93%</b><i></i><span>&lt; 10 s</span></div>
+          <div class="bar" role="listitem" style="--v:99" tabindex="0" aria-label="99% solved in under 30 seconds"><b>99%</b><i></i><span>&lt; 30 s</span></div>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <section id="projects" class="section" aria-labelledby="projects-title">
+    <div class="wrap">
+      <p class="eyebrow reveal">Projects</p>
+      <h2 id="projects-title" class="reveal">Published, documented, in use.</h2>
+
+      <div class="grid featured">
+        <article class="card reveal">
+          <p class="role">Reduce</p>
+          <h3><a href="projects/starfield/">starfield</a></h3>
+          <p>Star catalogues, coordinate systems, ephemerides and star finding. Inspired by Skyfield, in pure Rust.</p>
+          <div class="meta"><span class="lang rust">Rust</span><span>MIT</span><span>7,738 downloads</span></div>
+          <div class="links"><a href="https://github.com/OrbitalCommons/starfield">source</a><a href="https://crates.io/crates/starfield">crates.io</a><a href="https://docs.rs/starfield">docs</a></div>
+        </article>
+        <article class="card reveal">
+          <p class="role">Solve</p>
+          <h3><a href="projects/zodiacal/">zodiacal</a></h3>
+          <p>Blind plate solving: pointing, rotation and plate scale from the pattern of stars alone, no prior pointing required.</p>
+          <div class="meta"><span class="lang rust">Rust</span><span>Apache-2.0</span><span>230 downloads</span></div>
+          <div class="links"><a href="https://github.com/OrbitalCommons/zodiacal">source</a><a href="https://crates.io/crates/zodiacal">crates.io</a><a href="https://docs.rs/zodiacal">docs</a></div>
+        </article>
+        <article class="card reveal">
+          <p class="role">Store</p>
+          <h3><a href="projects/fitsio-pure/">fitsio-pure</a></h3>
+          <p>The FITS file format in pure Rust. No C dependencies, no unsafe code, <code>no_std</code> core that builds for wasm.</p>
+          <div class="meta"><span class="lang rust">Rust</span><span>Apache-2.0</span><span>3,151 downloads</span></div>
+          <div class="links"><a href="https://github.com/OrbitalCommons/fitsio-pure">source</a><a href="https://crates.io/crates/fitsio-pure">crates.io</a><a href="https://docs.rs/fitsio-pure">docs</a></div>
+        </article>
+        <article class="card reveal">
+          <p class="role">Visualise</p>
+          <h3><a href="projects/rizzma/">rizzma</a></h3>
+          <p>matplotlib-style plotting in Rust with first-class WebAssembly. Figures that stay interactive wherever they land.</p>
+          <div class="meta"><span class="lang rust">Rust</span><span>MIT / Apache-2.0</span><span>1,886 downloads</span></div>
+          <div class="links"><a href="https://github.com/OrbitalCommons/rizzma">source</a><a href="https://crates.io/crates/rizzma">crates.io</a><a href="https://docs.rs/rizzma">docs</a><a href="https://orbitalcommons.github.io/rizzma/">gallery</a></div>
+        </article>
+        <article class="card reveal">
+          <p class="role">Serve</p>
+          <h3><a href="projects/starfield-datastore/">starfield-datastore</a></h3>
+          <p>Pull-through artifact cache and ephemeris server: local disk, then mirror, then upstream archives, with fail-closed validation.</p>
+          <div class="meta"><span class="lang rust">Rust</span><span>MIT</span><span>895 downloads</span></div>
+          <div class="links"><a href="https://github.com/OrbitalCommons/starfield-datastore">source</a><a href="https://crates.io/crates/starfield-datastore">crates.io</a><a href="https://docs.rs/starfield-datastore">docs</a></div>
+        </article>
+        <article class="card reveal">
+          <p class="role">Capture</p>
+          <h3><a href="https://github.com/OrbitalCommons/scicamera">scicamera</a></h3>
+          <p>Scientific camera capture built on libcamera, for Raspberry Pi class hardware and beyond.</p>
+          <div class="meta"><span class="lang python">Python</span><span>BSD-2</span></div>
+          <div class="links"><a href="https://github.com/OrbitalCommons/scicamera">source</a><a href="https://pypi.org/project/scicamera/">PyPI</a></div>
+        </article>
+      </div>
+
+      <h3 class="sub reveal">Also in the lab</h3>
+      <ul class="lab reveal">
+        <li><a href="https://github.com/OrbitalCommons/zodiacal-web"><code>zodiacal-web</code></a><span>Upload a sky image, get back coordinates, orientation, pixel scale and field of view.</span></li>
+        <li><a href="https://github.com/OrbitalCommons/starfield-datasources"><code>starfield-datasources</code></a><span>Astronomical data source clients for the starfield ecosystem.</span></li>
+        <li><a href="https://github.com/OrbitalCommons/planet9"><code>planet9</code></a><span>Research and analysis on the hypothesised ninth planet of the outer Solar System.</span></li>
+        <li><a href="https://github.com/OrbitalCommons/fits-test-cases"><code>fits-test-cases</code></a><span>Curated FITS files for regression testing readers and writers.</span></li>
+        <li><a href="https://github.com/OrbitalCommons/sky-light-estimator"><code>sky-light-estimator</code></a><span>Estimate light pollution for a given latitude and longitude.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="principles" class="section" aria-labelledby="principles-title">
+    <div class="wrap">
+      <p class="eyebrow reveal">Principles</p>
+      <h2 id="principles-title" class="reveal">Built like it has to fly.</h2>
+      <div class="pillars">
+        <div class="pillar reveal">
+          <svg class="ico" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3l11 5v7c0 7-5 12-11 14C10 27 5 22 5 15V8z"/><path d="M11 16l4 4 7-8"/></svg>
+          <h3>Correct first</h3>
+          <p>Results are compared against reference implementations like Skyfield and SPICE,
+          benchmarked on fields with known answers, and regression-tested on curated real data.</p>
+        </div>
+        <div class="pillar reveal">
+          <svg class="ico" viewBox="0 0 32 32" aria-hidden="true"><path d="M18 3L7 18h8l-2 11 12-16h-8z"/></svg>
+          <h3>Fast and portable</h3>
+          <p>Pure Rust with no system libraries to install. The same code builds for servers,
+          single-board computers at the telescope, and the browser via WebAssembly.</p>
+        </div>
+        <div class="pillar reveal">
+          <svg class="ico" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="12"/><path d="M4 16h24M16 4c4 4 4 20 0 24M16 4c-4 4-4 20 0 24"/></svg>
+          <h3>Open to everyone</h3>
+          <p>Permissive MIT, Apache-2.0 and BSD licences. Use it in a university observatory, a
+          CubeSat, a commercial constellation or a telescope in your back garden.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="start" class="section" aria-labelledby="start-title">
+    <div class="wrap start">
+      <div class="start-copy">
+        <p class="eyebrow reveal">Get started</p>
+        <h2 id="start-title" class="reveal">One line away.</h2>
+        <p class="reveal">Every library is on crates.io with API docs on docs.rs. Add what you need and
+        go. Questions, bugs and ideas are welcome on GitHub.</p>
+        <div class="actions reveal">
+          <a class="btn primary" href="https://github.com/OrbitalCommons">Browse the code</a>
+          <a class="btn" href="#projects">Pick a project</a>
+        </div>
+      </div>
+      <div class="term reveal" role="group" aria-label="Install command">
+        <div class="term-bar"><i></i><i></i><i></i><span>~/observatory</span></div>
+        <pre><code><span class="c"># the whole stack</span>
+<span class="f">$</span> cargo add starfield zodiacal fitsio-pure rizzma
+<span class="c">    Updating crates.io index</span>
+<span class="s">      Adding</span> starfield <span class="n">v0.18.1</span>
+<span class="s">      Adding</span> zodiacal <span class="n">v0.4.1</span>
+<span class="s">      Adding</span> fitsio-pure <span class="n">v0.13.5</span>
+<span class="s">      Adding</span> rizzma <span class="n">v1.13.3</span></code></pre>
+        <button class="copy" type="button" data-copy="cargo add starfield zodiacal fitsio-pure rizzma">Copy</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div>
+      <a class="brand" href="./"><img class="mark" src="assets/mark.svg" alt=""><span>Orbital<b>Commons</b></span></a>
+      <p class="muted">Open-source software for seeing, navigating<br>and exploring space.</p>
+    </div>
+    <div class="cols">
+      <div><h4>Projects</h4><a href="projects/starfield/">starfield</a><a href="projects/zodiacal/">zodiacal</a><a href="projects/fitsio-pure/">fitsio-pure</a><a href="projects/rizzma/">rizzma</a><a href="projects/starfield-datastore/">starfield-datastore</a></div>
+      <div><h4>Elsewhere</h4><a href="https://github.com/OrbitalCommons">GitHub</a><a href="https://crates.io/search?q=starfield">crates.io</a><a href="https://docs.rs/starfield">docs.rs</a></div>
+    </div>
+  </div>
+  <div class="wrap credit"><p class="muted">Star map: ESA Hipparcos catalogue, constellation figures from Stellarium, planet positions from JPL’s Keplerian elements for today’s date.</p></div>
+</footer>
+
+<script src="assets/stars.js"></script>
+<script src="assets/sky.js"></script>
+<script src="assets/home.js"></script>
 </body>
 </html>
