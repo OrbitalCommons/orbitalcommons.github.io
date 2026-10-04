@@ -178,17 +178,15 @@
       const slider = one("#magnitude");
       const guides = one("#constellations");
       const stars = sky.stars;
-      const W = 760,
-        H = 380,
-        left = 55,
-        top = 25,
-        width = 680,
-        height = 305;
-      const point = (i) => [
-        left + (1 - stars[i * 4] / 20 / 360) * width,
-        top + ((90 - stars[i * 4 + 1] / 20) / 180) * height,
-      ];
       const draw = () => {
+        const W = Math.max(200, canvas.getBoundingClientRect().width);
+        const H = Math.max(240, W / 2);
+        const left = 42, top = 20, width = W - 60, height = H - 70;
+        const point = (i) => [
+          left + (1 - stars[i * 4] / 20 / 360) * width,
+          top + ((90 - stars[i * 4 + 1] / 20) / 180) * height,
+        ];
+        canvas.style.height = `${H}px`;
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
         canvas.width = W * dpr;
         canvas.height = H * dpr;
@@ -208,7 +206,7 @@
           ctx.textAlign = "right";
           ctx.fillText(`${dec > 0 ? "+" : ""}${dec}°`, left - 10, y + 4);
         }
-        for (let ra = 0; ra <= 24; ra += 4) {
+        for (let ra = 0; ra <= 24; ra += W < 400 ? 8 : 4) {
           const x = left + (1 - ra / 24) * width;
           ctx.beginPath();
           ctx.moveTo(x, top);
@@ -254,6 +252,12 @@
       };
       slider.addEventListener("input", draw);
       guides.addEventListener("change", draw);
+      let previousWidth = 0;
+      new ResizeObserver(([entry]) => {
+        if (Math.abs(entry.contentRect.width - previousWidth) < 1) return;
+        previousWidth = entry.contentRect.width;
+        draw();
+      }).observe(canvas);
       draw();
     };
     if (window.OC_SKY) {

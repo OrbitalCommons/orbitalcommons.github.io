@@ -105,6 +105,13 @@ test("catalog filtering responds to keyboard input and reports counts", async ({
   await expect(page.locator("#catalog-status")).toContainText("magnitude 6.0");
   await page.getByLabel("Constellation guides").uncheck();
   await expect(page.getByLabel("Constellation guides")).not.toBeChecked();
+  // Resizing must redraw at CSS-sized coordinates, not shrink 760px axis labels.
+  await page.setViewportSize({ width: 320, height: 700 });
+  await expect.poll(() => page.locator("#catalog-canvas").evaluate(c =>
+    Math.abs(c.width - c.getBoundingClientRect().width * Math.min(devicePixelRatio, 2))
+  )).toBeLessThan(2);
+  expect(await page.locator("#catalog-canvas").evaluate(c => c.getBoundingClientRect().height)).toBeGreaterThanOrEqual(240);
+
 });
 
 test("quad illustration transforms and resets", async ({ page }) => {

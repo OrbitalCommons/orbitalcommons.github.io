@@ -142,14 +142,16 @@
   padding: 1.1rem;
 }
 .copy-button {
-  background: none;
-  color: var(--accent);
-  border: 0;
-  padding: 0.2rem 0.4rem;
+  background: rgba(255, 255, 255, .04);
+  color: var(--ink-2);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: .35rem .65rem;
   cursor: pointer;
-  font: inherit;
+  font: 600 .72rem var(--mono);
   min-height: 30px;
 }
+.copy-button:hover { color: var(--ink); border-color: var(--accent); }
 .code-note,
 .demo-note {
   color: var(--ink-3);
@@ -501,11 +503,13 @@
   .project-index {
     position: static;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
     gap: 0.3rem 1.3rem;
     border-bottom: 1px solid var(--line);
     padding-bottom: 1rem;
   }
+  .project-index a { white-space: nowrap; }
   .project-index p {
     display: none;
   }
@@ -619,4 +623,10 @@
   clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
+}
+
+@media (max-width: 640px) {
+  .code-block pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .table-scroll table { min-width: 100%; }
+  .table-scroll td:first-child { white-space: nowrap; }
 }
