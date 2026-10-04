@@ -2,6 +2,9 @@
 .project-main {
   padding-bottom: 2rem;
 }
+.project-main .crumb {
+  line-height: 1.6;
+}
 .project-head {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(240px, 1fr);
@@ -18,6 +21,10 @@
 }
 .project-head .eyebrow {
   margin-bottom: 1.4rem;
+  line-height: 1.55;
+}
+.project-head .eyebrow::before {
+  flex-shrink: 0;
 }
 .project-art {
   margin: 0;
@@ -69,7 +76,8 @@
   min-width: 0;
 }
 .project-content section {
-  scroll-margin-top: 90px;
+  /* Adds to the root 80px scroll padding for the sticky navigation. */
+  scroll-margin-top: 10px;
   margin-bottom: 4rem;
 }
 .project-content h2 {
