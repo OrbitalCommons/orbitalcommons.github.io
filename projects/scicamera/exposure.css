@@ -1,0 +1,15 @@
+.sensor-lab { margin: 1.5rem 0 2rem; padding: clamp(1rem, 3vw, 1.7rem); border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
+.sensor-layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 1.5rem; align-items: center; }
+.sensor-lab figure { margin: 0; min-width: 0; }
+.sensor-lab canvas { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; background: #000; image-rendering: pixelated; }
+.sensor-lab figcaption, .sensor-lab details { color: var(--ink-2); font-size: .85rem; }
+.sensor-lab figcaption { margin-top: .65rem; }
+.sensor-controls label { display: block; color: var(--ink); }
+.sensor-controls input[type=range] { width: 100%; min-height: 44px; accent-color: var(--accent); }
+.sensor-controls input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--accent); vertical-align: middle; margin-right: .4rem; }
+.sensor-controls .sensor-noise { padding: .65rem 0; }
+.sensor-lab output { float: right; font-family: var(--mono); color: var(--accent); }
+.sensor-lab .sensor-status { font-family: var(--mono); font-size: .8rem; color: var(--ink-2); min-height: 3em; }
+.sensor-lab details { margin-top: 1.4rem; }
+.sensor-lab summary { cursor: pointer; padding: .4rem 0; color: var(--ink); }
+@media (max-width: 640px) { .sensor-layout { grid-template-columns: 1fr; } }
