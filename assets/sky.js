@@ -73,6 +73,50 @@
     return [Math.cos(dec) * Math.cos(ra), Math.cos(dec) * Math.sin(ra), Math.sin(dec)];
   }
 
+  // Planets for the current date, J2000 frame to match the catalogue.
+  // JPL "Approximate Positions of the Planets" (Standish), valid 1800-2050.
+  var EL = {
+    Mercury: [0.38709927, 0.00000037, 0.20563593, 0.00001906, 7.00497902, -0.00594749, 252.25032350, 149472.67411175, 77.45779628, 0.16047689, 48.33076593, -0.12534081],
+    Venus: [0.72333566, 0.00000390, 0.00677672, -0.00004107, 3.39467605, -0.00078890, 181.97909950, 58517.81538729, 131.60246718, 0.00268329, 76.67984255, -0.27769418],
+    Earth: [1.00000261, 0.00000562, 0.01671123, -0.00004392, -0.00001531, -0.01294668, 100.46457166, 35999.37244981, 102.93768193, 0.32327364, 0, 0],
+    Mars: [1.52371034, 0.00001847, 0.09339410, 0.00007882, 1.84969142, -0.00813131, -4.55343205, 19140.30268499, -23.94362959, 0.44441088, 49.55953891, -0.29257343],
+    Jupiter: [5.20288700, -0.00011607, 0.04838624, -0.00013253, 1.30439695, -0.00183714, 34.39644051, 3034.74612775, 14.72847983, 0.21252668, 100.47390909, 0.20469106],
+    Saturn: [9.53667594, -0.00125060, 0.05386179, -0.00050991, 2.48599187, 0.00193609, 49.95424423, 1222.49362201, 92.59887831, -0.41897216, 113.66242448, -0.28867794],
+    Uranus: [19.18916464, -0.00196176, 0.04725744, -0.00004397, 0.77263783, -0.00242939, 313.23810451, 428.48202785, 170.95427630, 0.40805281, 74.01692503, 0.04240589],
+    Neptune: [30.06992276, 0.00026291, 0.00859048, 0.00005105, 1.77004347, 0.00035372, -55.12002969, 218.45945325, 44.96476227, -0.32241464, 131.78422574, -0.00508664]
+  };
+  function helio(e, T) {
+    var R = Math.PI / 180, a = e[0] + e[1] * T, ec = e[2] + e[3] * T, I = (e[4] + e[5] * T) * R,
+      L = e[6] + e[7] * T, w = e[8] + e[9] * T, O = e[10] + e[11] * T;
+    var M = ((L - w) % 360 + 540) % 360 - 180, E = M * R;
+    for (var k = 0; k < 8; k++) E -= (E - ec * Math.sin(E) - M * R) / (1 - ec * Math.cos(E));
+    var xp = a * (Math.cos(E) - ec), yp = a * Math.sqrt(1 - ec * ec) * Math.sin(E);
+    var om = (w - O) * R, Or = O * R, co = Math.cos(om), so = Math.sin(om), cO = Math.cos(Or), sO = Math.sin(Or), cI = Math.cos(I), sI = Math.sin(I);
+    return [(co * cO - so * sO * cI) * xp + (-so * cO - co * sO * cI) * yp,
+      (co * sO + so * cO * cI) * xp + (-so * sO + co * cO * cI) * yp,
+      so * sI * xp + co * sI * yp];
+  }
+  function planetsRaDec(ms) {
+    var T = (ms / 86400000 + 2440587.5 - 2451545) / 36525, eps = 23.43928 * Math.PI / 180;
+    var earth = helio(EL.Earth, T), out = {};
+    Object.keys(EL).forEach(function (k) {
+      if (k === "Earth") return;
+      var p = helio(EL[k], T), x = p[0] - earth[0], y = p[1] - earth[1], z = p[2] - earth[2];
+      var ye = y * Math.cos(eps) - z * Math.sin(eps), ze = y * Math.sin(eps) + z * Math.cos(eps);
+      var ra = Math.atan2(ye, x) * 180 / Math.PI;
+      out[k] = [(ra + 360) % 360, Math.atan2(ze, Math.hypot(x, ye)) * 180 / Math.PI];
+    });
+    return out;
+  }
+  var PCOL = { Mercury: "#c9c3b8", Venus: "#fff3d6", Mars: "#ff9a6b", Jupiter: "#f3d9b0", Saturn: "#e8d18f", Uranus: "#a9e7ef", Neptune: "#8fa8ff" };
+  var planets = (function () {
+    var pos = planetsRaDec(Date.now());
+    return Object.keys(pos).map(function (k) {
+      var v = radec(pos[k][0], pos[k][1]);
+      return { name: k, x: v[0], y: v[1], z: v[2] };
+    });
+  })();
+
   // Camera state: centre (ra0, dec0) in degrees, horizontal field of view.
   var cam = { ra: 98, dec: -4, vra: 0, vdec: 0 };
   var W = 0, H = 0, dpr = 1, scale = 1, cx = 0, cy = 0;
@@ -212,6 +256,29 @@
     }
     ctx.globalAlpha = 1;
 
+    // Planets where they are tonight.
+    ctx.font = "600 10.5px " + MONO;
+    for (var pi = 0; pi < planets.length; pi++) {
+      var P = planets[pi];
+      if (!project(P.x, P.y, P.z, pt) || pt[0] < -20 || pt[0] > W + 20 || pt[1] < 60 || pt[1] > H + 20) continue;
+      var pr = P.name === "Uranus" || P.name === "Neptune" ? 2 : 3.2;
+      ctx.globalAlpha = 0.9;
+      ctx.drawImage(sprites[3], pt[0] - pr * 4, pt[1] - pr * 4, pr * 8, pr * 8);
+      ctx.fillStyle = PCOL[P.name];
+      ctx.beginPath();
+      ctx.arc(pt[0], pt[1], pr, 0, 6.283);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255,196,119,0.55)";
+      ctx.beginPath();
+      ctx.arc(pt[0], pt[1], pr + 4, 0, 6.283);
+      ctx.stroke();
+      var pa = W < 760 || pt[0] > W * 0.42 ? 0.9 : 0.35;
+      ctx.globalAlpha = pa;
+      ctx.fillStyle = "#ffc477";
+      ctx.fillText(P.name, pt[0] + pr + 8, pt[1] - pr - 4);
+    }
+    ctx.globalAlpha = 1;
+
     // Labels for named bright stars.
     ctx.font = "500 10.5px " + MONO;
     ctx.fillStyle = "#b4bdd2";
@@ -329,7 +396,7 @@
     ctx.fillStyle = "#b4bdd2";
     ctx.fillText(info, tx + 8, ty + (name ? 31 : 15));
   }
-  canvas.addEventListener("pointerleave", function () { hover = null; });
+  canvas.addEventListener("pointerleave", function () { hover = null; if (reduced) frame(performance.now()); });
 
   function corner(x, y, dx, dy) { ctx.moveTo(x + dx, y); ctx.lineTo(x, y); ctx.lineTo(x, y + dy); }
 
