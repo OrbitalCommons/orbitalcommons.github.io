@@ -174,3 +174,6 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -3; pointer-even
 #sky:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
 .site-nav nav a { padding: .3rem 0; transition: color .2s, box-shadow .2s; }
 .site-nav nav a[aria-current] { box-shadow: inset 0 -1px var(--accent); }
+
+.js #sky { animation: skyin 2.4s ease-out both; }
+@keyframes skyin { from { opacity: 0; } }

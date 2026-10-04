@@ -119,7 +119,7 @@
 
   // Camera state: centre (ra0, dec0) in degrees, horizontal field of view.
   var cam = { ra: 98, dec: -4, vra: 0, vdec: 0 };
-  var W = 0, H = 0, dpr = 1, scale = 1, cx = 0, cy = 0;
+  var W = 0, H = 0, dpr = 1, scale = 1, baseScale = 1, intro = -1, cx = 0, cy = 0;
   var basis = { e: [0, 0, 0], nn: [0, 0, 0], f: [0, 0, 0] };
 
   function resize() {
@@ -129,7 +129,8 @@
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
     var fov = (W < 700 ? 80 : 112) * D2R;
-    scale = (W / 2) / (2 * Math.tan(fov / 4));
+    baseScale = (W / 2) / (2 * Math.tan(fov / 4));
+    scale = baseScale;
     cx = W / 2; cy = H / 2;
   }
 
@@ -194,6 +195,12 @@
 
   var pt = [0, 0], pt2 = [0, 0];
   function draw(t) {
+    // Opening shot: ease in from a wider field.
+    if (!reduced) {
+      if (intro < 0) intro = t;
+      var ip = Math.min(1, (t - intro) / 3.2);
+      scale = baseScale * (0.62 + 0.38 * (1 - Math.pow(1 - ip, 3)));
+    }
     setBasis();
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
@@ -298,6 +305,7 @@
   }
 
   function drawSolve(t) {
+    if (t - intro < 3.4 && !solve) return;
     if (!solve || t - solve.t0 > CYCLE) newSolve(t);
     var e = t - solve.t0, v = solve.v;
     if (!project(v[0], v[1], v[2], pt2)) { solve = null; return; }
