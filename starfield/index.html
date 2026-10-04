@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>starfield · OrbitalCommons</title>
+<meta name="description" content="Astronomical data reduction in Rust: star catalogs, coordinate systems, ephemerides and star finding.">
+<meta property="og:title" content="starfield · OrbitalCommons">
+<meta property="og:description" content="Astronomical data reduction in Rust: star catalogs, coordinate systems, ephemerides and star finding.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb"><a href="../">&larr; OrbitalCommons</a></p>
+  <h1 class="mono">starfield</h1>
+  <p class="tag">Astronomical data reduction toolkit in Rust. Star catalogs, coordinate systems,
+  ephemerides and star finding, inspired by Skyfield.</p>
+  <div class="meta"><span>Rust</span><span>7,725 downloads</span><span>0.18</span></div>
+  <p class="links"><a href="https://github.com/OrbitalCommons/starfield">source</a> ·
+  <a href="https://crates.io/crates/starfield">crates.io</a> ·
+  <a href="https://docs.rs/starfield">docs</a></p>
+
+  <h2>What it does</h2>
+  <ul>
+    <li>Celestial coordinate transformations.</li>
+    <li>Star catalog management for Hipparcos and Gaia.</li>
+    <li>Precession, nutation and earth-rotation calculations.</li>
+    <li>Time and date handling for astronomical work.</li>
+    <li>Planetary constants: NAIF text kernel parsing, plus an embedded IAU 2015 table of radii
+      and rotational elements.</li>
+    <li>Body-fixed reference frames from the IAU rotational elements, matching SPICE
+      <code>IAU_MARS</code>, <code>IAU_MOON</code> and the rest.</li>
+    <li>Synthetic catalog generation for testing, and optional Python interop for comparing
+      results against Skyfield.</li>
+  </ul>
+
+  <h2>Install</h2>
+  <p>One facade crate, with feature groups so small consumers avoid unrelated dependencies.</p>
+  <pre><code>starfield = { version = "0.18", features = ["catalogs", "jpl"] }</code></pre>
+  <p>Defaults enable core calculations and datastore support. Optional groups are
+  <code>catalogs</code>, <code>jpl</code> and <code>surfaces</code>; individual features such as
+  <code>hipparcos</code> narrow it further. The release family contains six packages:
+  <code>starfield</code>, <code>starfield-core</code>, <code>starfield-catalogs</code>,
+  <code>starfield-jpl</code>, <code>starfield-surfaces</code> and <code>starfield-tools</code>.</p>
+
+  <h2>Example</h2>
+  <pre><code>use starfield::time::Time;
+use starfield::catalogs::hipparcos::HipparcosCatalog;
+use starfield::catalogs::StarCatalog;
+
+let catalog = HipparcosCatalog::create_synthetic();
+let time = Time::now();
+let bright = catalog.brighter_than(3.0);
+println!("Found {} bright stars at {}", bright.len(), time);</code></pre>
+  <footer><a href="https://github.com/OrbitalCommons">github.com/OrbitalCommons</a></footer>
+</div>
+</body>
+</html>

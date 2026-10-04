@@ -10,29 +10,9 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://orbitalcommons.github.io/">
 <link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
 <style>
-  :root { color-scheme: dark; }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: #0f1117; color: #d7dbe6;
-         font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-  .wrap { max-width: 980px; margin: 0 auto; padding: 4rem 1.25rem 5rem; }
-  h1 { font-size: 2.6rem; margin: 0 0 .5rem; letter-spacing: -.02em; }
-  .tag { font-size: 1.15rem; color: #9aa3b8; margin: 0 0 2rem; max-width: 62ch; }
-  h2 { font-size: 1.1rem; text-transform: uppercase; letter-spacing: .09em;
-        color: #7f8aa3; margin: 3rem 0 1rem; font-weight: 600; }
-  .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); }
-  .card { background: #161925; border: 1px solid #242938; border-radius: 8px; padding: 1.1rem 1.2rem; }
-  .card h3 { margin: 0 0 .45rem; font-size: 1.05rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #8fb4ff; }
-  .card p { margin: 0 0 .8rem; font-size: .92rem; color: #b8c0d0; }
-  .meta { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .6rem; }
-  .meta span { font-size: .72rem; padding: .12rem .5rem; border-radius: 3px; background: #1e2334; color: #8d97ad; }
-  .links { font-size: .85rem; }
-  a { color: #8fb4ff; text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  ul { max-width: 70ch; padding-left: 1.2rem; }
-  li { margin-bottom: .5rem; }
-  footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid #242938;
-            color: #6f7890; font-size: .9rem; }
+  .wrap { max-width: 980px; padding-top: 4rem; }
 </style>
 </head>
 <body>
@@ -48,10 +28,10 @@
   <h2>Projects</h2>
   <div class="grid">
     <article class="card">
-      <h3>starfield</h3>
+      <h3><a href="starfield/">starfield</a></h3>
       <p>Star catalogs, coordinate systems, ephemerides, and star finding. Skyfield-inspired, pure Rust.</p>
       <div class="meta"><span class="lang">Rust</span><span class="dl">7,725 downloads</span></div>
-      <div class="links"><a href="https://github.com/OrbitalCommons/starfield">source</a> · <a href="https://crates.io/crates/starfield">package</a> · <a href="https://docs.rs/starfield">docs</a></div>
+      <div class="links"><a href="starfield/">overview</a> · <a href="https://github.com/OrbitalCommons/starfield">source</a> · <a href="https://crates.io/crates/starfield">package</a> · <a href="https://docs.rs/starfield">docs</a></div>
     </article>
     <article class="card">
       <h3>zodiacal</h3>
@@ -60,16 +40,16 @@
       <div class="links"><a href="https://github.com/OrbitalCommons/zodiacal">source</a> · <a href="https://crates.io/crates/zodiacal">package</a> · <a href="https://docs.rs/zodiacal">docs</a></div>
     </article>
     <article class="card">
-      <h3>fitsio-pure</h3>
+      <h3><a href="fitsio-pure/">fitsio-pure</a></h3>
       <p>A pure Rust implementation of the FITS file format. No C dependencies, no unsafe, builds for wasm.</p>
       <div class="meta"><span class="lang">Rust</span><span class="dl">3,136 downloads</span></div>
-      <div class="links"><a href="https://github.com/OrbitalCommons/fitsio-pure">source</a> · <a href="https://crates.io/crates/fitsio-pure">package</a> · <a href="https://docs.rs/fitsio-pure">docs</a></div>
+      <div class="links"><a href="fitsio-pure/">overview</a> · <a href="https://github.com/OrbitalCommons/fitsio-pure">source</a> · <a href="https://crates.io/crates/fitsio-pure">package</a> · <a href="https://docs.rs/fitsio-pure">docs</a></div>
     </article>
     <article class="card">
-      <h3>rizzma</h3>
+      <h3><a href="rizzma/">rizzma</a></h3>
       <p>matplotlib-style plotting in Rust, with first-class WebAssembly. Figures that stay interactive wherever they land.</p>
       <div class="meta"><span class="lang">Rust</span><span class="dl">1,885 downloads</span></div>
-      <div class="links"><a href="https://github.com/OrbitalCommons/rizzma">source</a> · <a href="https://crates.io/crates/rizzma">package</a> · <a href="https://docs.rs/rizzma">docs</a></div>
+      <div class="links"><a href="rizzma/">overview</a> · <a href="https://github.com/OrbitalCommons/rizzma">source</a> · <a href="https://crates.io/crates/rizzma">package</a> · <a href="https://docs.rs/rizzma">docs</a></div>
     </article>
     <article class="card">
       <h3>starfield-datastore</h3>

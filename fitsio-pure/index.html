@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fitsio-pure · OrbitalCommons</title>
+<meta name="description" content="A pure Rust implementation of the FITS file format. No C dependencies, no unsafe code, wasm-ready.">
+<meta property="og:title" content="fitsio-pure · OrbitalCommons">
+<meta property="og:description" content="A pure Rust implementation of the FITS file format. No C dependencies, no unsafe code, wasm-ready.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb"><a href="../">&larr; OrbitalCommons</a></p>
+  <h1 class="mono">fitsio-pure</h1>
+  <p class="tag">A pure Rust implementation of the FITS file format. No C dependencies, no unsafe
+  code, and fully compatible with <code>wasm32</code> targets.</p>
+  <div class="meta"><span>Rust</span><span>3,136 downloads</span></div>
+  <p class="links"><a href="https://github.com/OrbitalCommons/fitsio-pure">source</a> ·
+  <a href="https://crates.io/crates/fitsio-pure">crates.io</a> ·
+  <a href="https://docs.rs/fitsio-pure">docs</a></p>
+
+  <h2>Why pure Rust</h2>
+  <p>The established <code>fitsio</code> crate wraps the C library <code>cfitsio</code>, which
+  needs a system-level install and a C toolchain. That costs you:</p>
+  <ul>
+    <li><strong>Cross-platform builds.</strong> <code>cfitsio</code> has to be installed
+      separately on macOS, Windows and Linux. This builds with <code>cargo build</code>
+      anywhere, with no external dependencies.</li>
+    <li><strong>Build time.</strong> No C compilation step, no <code>pkg-config</code>, no
+      linking against system libraries.</li>
+    <li><strong>WebAssembly.</strong> Compiles straight to <code>wasm32-unknown-unknown</code>
+      with <code>--no-default-features</code>.</li>
+    <li><strong>Cross-compilation.</strong> <code>cargo build --target
+      aarch64-unknown-linux-gnu</code> just works.</li>
+  </ul>
+
+  <h2>Features</h2>
+  <table>
+    <tr><th>Feature</th><th>Default</th><th>Description</th></tr>
+    <tr><td><code>std</code></td><td>yes</td><td>Standard library support</td></tr>
+    <tr><td><code>compat</code></td><td>no</td><td>Drop-in API matching the <code>fitsio</code> crate</td></tr>
+    <tr><td><code>cli</code></td><td>no</td><td>CLI binaries: <code>fitsinfo</code>, <code>fitsconv</code></td></tr>
+    <tr><td><code>array</code></td><td>no</td><td>ndarray integration</td></tr>
+  </table>
+  <p>The core library is <code>no_std</code> compatible with <code>alloc</code>.</p>
+
+  <h2>In-memory files</h2>
+  <p>The compat <code>FitsFile</code> works entirely in memory, which <code>fitsio</code> cannot,
+  because cfitsio needs a path. Open bytes you already hold, such as an upload, a network
+  response or an embedded asset.</p>
+  <pre><code>use fitsio_pure::compat::fitsfile::FitsFile;
+
+let fits = FitsFile::from_bytes(uploaded_bytes)?;
+let hdu = fits.hdu(1)?;
+let prob: Vec&lt;f64&gt; = hdu.read_col(&amp;fits, "PROB")?;</code></pre>
+
+  <h2>Install</h2>
+  <pre><code>cargo add fitsio-pure</code></pre>
+  <footer><a href="https://github.com/OrbitalCommons">github.com/OrbitalCommons</a></footer>
+</div>
+</body>
+</html>
