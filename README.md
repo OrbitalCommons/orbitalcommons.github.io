@@ -2,8 +2,8 @@
 
 The OrbitalCommons landing page, served at <https://orbitalcommons.github.io/>.
 
-Plain static HTML, CSS and JavaScript with no build step and no external requests. Merge to
-`main`; GitHub Pages publishes from the repository root. `.nojekyll` keeps Pages from running
+Plain static HTML, CSS and JavaScript with no deployment build step and no external runtime
+requests. Merge to `main`; GitHub Pages publishes from the repository root. `.nojekyll` keeps Pages from running
 the files through Jekyll.
 
 | Path | What it is |
@@ -25,9 +25,16 @@ To regenerate the star data, point the script at the Hipparcos main catalogue (C
 python3 tools/build_stars.py hip_main.dat constellationship.fab > assets/stars.js
 ```
 
-Per-project sites live under their own paths (for example `/rizzma/`, published from that
-repository's `gh-pages` branch) and take precedence over anything at the same path here. That is
-why overview pages live under `projects/`.
+Project overviews live under `/projects/<name>/`. Independently published project
+sites keep their own paths: `/rizzma/`, for example, is the plotting gallery from
+that repository's `gh-pages` branch. Use its absolute URL when linking across
+those separately deployed sites. The old `/starfield/` and `/fitsio-pure/` URLs
+redirect to their overviews.
+
+The project pages share `projects/project.css` and progressive enhancements in
+`projects/project.js`. The FITS workbench lazy-loads a checked-in WebAssembly
+module; the plotting gallery uses checked-in outputs from rizzma. See
+[demos/README.md](demos/README.md) to reproduce them.
 
 ## Development checks
 
