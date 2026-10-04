@@ -19,7 +19,7 @@
 
   // Camera state: centre (ra, dec) in degrees.
   var cam = { ra: 98, dec: -4, vra: 0, vdec: 0 };
-  var W = 0, H = 0, dpr = 1, baseScale = 1, intro = -1, frameNo = 0;
+  var W = 0, H = 0, dpr = 1, baseScale = 1, intro = null, frameNo = 0;
 
   function resize() {
     var r = canvas.getBoundingClientRect();
@@ -159,7 +159,7 @@
   function draw(t) {
     // Opening shot: ease in from a wider field.
     if (!reduced) {
-      if (intro < 0) intro = t;
+      if (intro === null) intro = t;
       var ip = Math.min(1, (t - intro) / 3.2);
       view.scale = baseScale * (0.62 + 0.38 * (1 - Math.pow(1 - ip, 3)));
     }
