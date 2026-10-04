@@ -9,6 +9,40 @@ ROOT = Path(__file__).resolve().parents[1]
 IGNORED = {"node_modules", ".git", ".worktrees", "test-results", "playwright-report", "target"}
 
 
+def srcset_urls(value):
+    """Collect candidate URLs without splitting commas inside URLs (including data:).
+
+    Follows the URL/token boundaries in the HTML srcset parsing algorithm;
+    descriptor validation remains the browser's job.
+    https://html.spec.whatwg.org/multipage/images.html#parsing-a-srcset-attribute
+    """
+    space = " \t\n\r\f"
+    pos = 0
+    while pos < len(value):
+        while pos < len(value) and value[pos] in space + ",":
+            pos += 1
+        start = pos
+        while pos < len(value) and value[pos] not in space:
+            pos += 1
+        url = value[start:pos]
+        if not url:
+            break
+        yield url.rstrip(",")
+        if url.endswith(","):
+            continue
+        # Descriptors end at a comma outside parentheses.
+        parens = False
+        while pos < len(value):
+            char = value[pos]
+            pos += 1
+            if char == "(":
+                parens = True
+            elif char == ")":
+                parens = False
+            elif char == "," and not parens:
+                break
+
+
 class Page(HTMLParser):
     def __init__(self, path):
         super().__init__(convert_charrefs=True)
@@ -37,6 +71,8 @@ class Page(HTMLParser):
         for attr in ("href", "src", "poster"):
             if attrs.get(attr):
                 self.links.append(attrs[attr])
+        for attr in ("srcset", "imagesrcset"):
+            self.links.extend(srcset_urls(attrs.get(attr) or ""))
 
 
 def check():
