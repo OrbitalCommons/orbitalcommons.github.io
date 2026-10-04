@@ -1,9 +1,11 @@
-// Static real-sky art for project pages. Requires stars.js and sky-core.js.
+// Static real-sky art. Requires stars.js and sky-core.js.
 //
 //   <svg class="sky-art-fallback">...</svg>
 //   <canvas class="sky-art" hidden data-ra="83.8" data-dec="-3" data-fov="34"
 //           data-mode="band lines names planets quad readout" data-aspect="1.33"
 //           role="img" aria-label="..."></canvas>
+//
+// data-follow="Jupiter" (any planet) centres on that planet today instead of data-ra/data-dec.
 //
 // Each canvas renders once (and again on resize); after the first successful frame it is shown
 // and a preceding .sky-art-fallback sibling is hidden, so the fallback stays when scripts fail.
@@ -25,7 +27,12 @@
 
     var view = canvas._ocView || (canvas._ocView = new S.View()), cat = view.cat;
     view.size(W, H, parseFloat(canvas.dataset.fov) || 40, parseFloat(canvas.dataset.maglimit) || 99);
-    view.point(parseFloat(canvas.dataset.ra) || 0, parseFloat(canvas.dataset.dec) || 0);
+    var ra = parseFloat(canvas.dataset.ra) || 0, dec = parseFloat(canvas.dataset.dec) || 0;
+    // data-follow centres the panel on a planet's position today.
+    S.planets(Date.now()).forEach(function (p) {
+      if (p.name === canvas.dataset.follow) { var rd = S.toRaDec([p.x, p.y, p.z]); ra = rd[0]; dec = rd[1]; }
+    });
+    view.point(ra, dec);
     view.layout();
 
     var ctx = canvas.getContext("2d");

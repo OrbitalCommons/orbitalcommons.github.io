@@ -250,6 +250,27 @@
     </div>
   </section>
 
+  <section id="sky-band" class="section sky-band" aria-labelledby="sky-band-title">
+    <div class="wrap sky-band-grid">
+      <figure class="sky-band-art reveal">
+        <svg class="sky-art-fallback" viewBox="0 0 16 10" aria-hidden="true"><rect width="16" height="10" fill="#05070d"/>
+          <circle cx="8" cy="5" r=".35" fill="#f3d9b0"/><circle cx="3" cy="2" r=".08" fill="#d0dcff"/><circle cx="12.5" cy="7.2" r=".1" fill="#fff1df"/>
+          <circle cx="5.5" cy="8" r=".07" fill="#d0dcff"/><circle cx="13.8" cy="2.6" r=".09" fill="#ffd9a8"/></svg>
+        <canvas class="sky-art" hidden data-follow="Jupiter" data-fov="60" data-aspect="1.6" data-mode="band lines names planets"
+          role="img" aria-label="The sky around Jupiter today, from the Hipparcos catalogue with planets from JPL orbital elements."></canvas>
+        <figcaption>Around Jupiter, today &middot; computed in your browser</figcaption>
+      </figure>
+      <div class="sky-band-copy">
+        <p class="eyebrow reveal">Sky explorer</p>
+        <h2 id="sky-band-title" class="reveal">The whole sky, computed here.</h2>
+        <p class="reveal">Every star on this site comes from the Hipparcos catalogue and every planet from JPL&rsquo;s
+        orbital elements, worked out in your browser for today&rsquo;s date. The explorer adds search, zoom,
+        planet trails across four years, and zodiacal plate solving compiled to WebAssembly.</p>
+        <div class="actions reveal"><a class="btn primary" href="sky/">Open the sky explorer</a></div>
+      </div>
+    </div>
+  </section>
+
   <section id="start" class="section" aria-labelledby="start-title">
     <div class="wrap start">
       <div class="start-copy">
@@ -296,6 +317,7 @@
 <script src="assets/stars.js"></script>
 <script src="assets/sky-core.js"></script>
 <script src="assets/sky.js"></script>
+<script src="assets/sky-art.js"></script>
 <script src="assets/home.js"></script>
 </body>
 </html>
