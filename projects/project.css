@@ -1,4 +1,7 @@
 /* Project overviews: shared layout and progressively enhanced demonstrations. */
+/* Async workbench states can blur/re-enable focused buttons. Keep viewport
+   scrolling immediate so a retry does not move between pointer down and up. */
+html { scroll-behavior: auto; }
 .project-main {
   padding-bottom: 2rem;
 }
@@ -55,7 +58,7 @@
 .project-index {
   align-self: start;
   position: sticky;
-  top: 90px;
+  top: calc(var(--nav-height, 60px) + 30px);
 }
 .project-index p {
   font: 0.68rem var(--mono);
@@ -76,7 +79,7 @@
   min-width: 0;
 }
 .project-content section {
-  /* Adds to the root 80px scroll padding for the sticky navigation. */
+  /* Adds to the root padding, which follows the measured navigation height. */
   scroll-margin-top: 10px;
   margin-bottom: 4rem;
 }
