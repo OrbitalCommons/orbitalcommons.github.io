@@ -29,6 +29,21 @@ html { scroll-behavior: auto; }
 .project-head .eyebrow::before {
   flex-shrink: 0;
 }
+.project-head .demo-link {
+  display: inline-block;
+  margin-top: 1.25rem;
+  padding: .3rem 0;
+  color: var(--accent);
+  font-size: .88rem;
+  line-height: 1.5;
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: .3em;
+}
+.project-head .demo-link:hover {
+  color: var(--ink);
+  text-decoration-color: currentColor;
+}
 .project-art {
   margin: 0;
   position: relative;
