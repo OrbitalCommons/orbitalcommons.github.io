@@ -53,7 +53,60 @@
     var size = mobile ? 116 : 190;
     var sx = at ? at[0] : mobile ? W - size / 2 - 22 - Math.random() * 20 : W * (0.62 + Math.random() * 0.2);
     var sy = at ? at[1] : mobile ? H - size / 2 - 64 : H * (0.3 + Math.random() * 0.35);
-    solve = { t0: t, v: view.unproject(sx, sy), size: size, stars: null };
+    solve = { t0: t, v: view.unproject(sx, sy), size: size, stars: null, real: null };
+  }
+
+  // A click runs zodiacal for real (compiled to WebAssembly, fetched on first use) on a synthetic
+  // TAN frame of the catalogue around the clicked point; the auto-play loop stays an illustration.
+  var solverReady = null, FRAME = 1024;
+  function loadSolver() {
+    if (solverReady) return solverReady;
+    solverReady = new Promise(function (resolve, reject) {
+      if (window.OCZodiacal) return resolve();
+      var s = document.createElement("script");
+      s.src = "projects/zodiacal/solver.js";
+      s.onload = function () { window.OCZodiacal ? resolve() : reject(new Error("no solver")); };
+      s.onerror = function () { reject(new Error("solver failed to load")); };
+      document.head.appendChild(s);
+    }).then(function () { return window.OCZodiacal.load(); });
+    solverReady.catch(function () { solverReady = null; });
+    return solverReady;
+  }
+  function realSolve(sv) {
+    var truth = S.toRaDec(sv.v), fov = Math.max(15, Math.min(40, sv.size / view.scale / D2R));
+    var sources = S.tanField(truth[0], truth[1], fov, FRAME, FRAME, 6.3).map(function (p) { return { x: p.x, y: p.y, flux: p.flux }; });
+    sv.real = { status: "pending", fov: fov, n: sources.length };
+    announce("Solving a synthetic " + fov.toFixed(0) + " degree frame with " + sources.length + " catalogue stars.");
+    loadSolver().then(function () {
+      return window.OCZodiacal.solve(sources, FRAME, FRAME, { timeoutMs: 8000 });
+    }).then(function (r) {
+      if (!r) {
+        sv.real.status = "none";
+        announce("No solution for this field.");
+      } else {
+        var a = S.radec(truth[0], truth[1]), b = S.radec(r.ra, r.dec);
+        sv.real = { status: "done", fov: fov, n: sources.length, r: r,
+          err: Math.acos(Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2]))) / D2R * 60 };
+        announce("Solved in " + Math.round(r.ms) + " milliseconds: right ascension " + S.fmtRa(r.ra) + ", declination " +
+          S.fmtDec(r.dec) + ", " + r.matched + " stars matched, " +
+          (sv.real.err * 60 < 0.1 ? "under 0.1" : (sv.real.err * 60).toFixed(1)) + " arcseconds from the true centre of the synthetic frame.");
+      }
+      if (!running) frame(performance.now());
+    }, function () {
+      sv.real.status = "fail";
+      announce("The solver could not load.");
+      if (!running) frame(performance.now());
+    });
+  }
+  var statusEl = document.getElementById("sky-status");
+  function announce(text) { if (statusEl) statusEl.textContent = text; }
+
+  // Solve the field at a screen point; with reduced motion the result is drawn statically.
+  function solveAt(x, y) {
+    cam.vra = cam.vdec = 0;
+    newSolve(performance.now() / 1000 - (reduced ? 6 : 0), [x, y]);
+    realSolve(solve);
+    if (reduced) frame(performance.now());
   }
 
   function solveStars(px, py, half) {
@@ -96,14 +149,19 @@
     }
     ctx.globalAlpha = 1;
 
-    if (!reduced) drawSolve(t);
+    drawSolve(t);
     drawHover();
   }
 
   function drawSolve(t) {
-    if (t - intro < 3.4 && !solve) return;
-    if (!solve || t - solve.t0 > CYCLE) newSolve(t);
-    var e = t - solve.t0, v = solve.v;
+    // With reduced motion there is no loop: only a solve the visitor asked for, shown in its final state.
+    if (reduced) {
+      if (!solve) return;
+    } else {
+      if (t - intro < 3.4 && !solve) return;
+      if (!solve || t - solve.t0 > CYCLE) newSolve(t);
+    }
+    var e = reduced ? 6 : t - solve.t0, v = solve.v;
     if (!view.project(v[0], v[1], v[2], pt2)) { solve = null; return; }
     var px = pt2[0], py = pt2[1], half = solve.size / 2;
     if (e > 1.1 && !solve.stars) solve.stars = solveStars(px, py, half);
@@ -151,23 +209,40 @@
     }
     // Readout for the field centre.
     if (e > 4.4) {
-      var rd = S.toRaDec(v), fov = 2 * half / view.scale / D2R;
+      var rd = S.toRaDec(v), fov = 2 * half / view.scale / D2R, real = solve.real, good = found.length >= 4;
       var lines = [
-        found.length >= 4 ? "QUAD MATCHED" : "TOO FEW STARS",
+        good ? "QUAD MATCHED" : "TOO FEW STARS",
         "RA  " + S.fmtRa(rd[0]),
         "DEC " + S.fmtDec(rd[1]),
         "FOV " + fov.toFixed(1) + "°  ·  " + found.length + " src"
       ];
-      var tx = px + h + 14, ty = py - h + 4;
-      if (tx + 170 > W) tx = px - h - 184;
-      var typed = Math.min(1, (e - 4.4) / 0.9);
+      if (real && real.status === "done") {
+        good = true;
+        lines = [
+          "SOLVED  " + (real.r.ms < 10 ? real.r.ms.toFixed(1) : Math.round(real.r.ms)) + " ms",
+          "RA  " + S.fmtRa(real.r.ra),
+          "DEC " + S.fmtDec(real.r.dec),
+          "ERR " + (real.err * 60 < 1 ? "<1″" : real.err < 1 ? (real.err * 60).toFixed(0) + "″" : real.err.toFixed(1) + "′") + "  ·  " + real.r.matched + " matched",
+          "zodiacal wasm · synthetic frame"
+        ];
+      } else if (real) {
+        good = false;
+        lines = [real.status === "pending" ? "SOLVING…" : real.status === "none" ? "NO SOLUTION" : "SOLVER UNAVAILABLE",
+          real.n + " src  ·  " + real.fov.toFixed(0) + "° field", "zodiacal wasm · synthetic frame"];
+      }
       ctx.font = "600 11px " + MONO;
+      var bw = 0;
+      for (var m = 0; m < lines.length; m++) bw = Math.max(bw, ctx.measureText(lines[m]).width);
+      bw += 16;
+      var tx = px + h + 14, ty = py - h + 4;
+      if (tx + bw > W) tx = px - h - bw - 6;
+      var typed = Math.min(1, (e - 4.4) / 0.9);
       ctx.fillStyle = "rgba(5,7,13," + (0.72 * Math.min(1, typed * 3)) + ")";
-      ctx.fillRect(tx - 8, ty - 4, 178, lines.length * 16 + 10);
+      ctx.fillRect(tx - 8, ty - 4, bw, lines.length * 16 + 10);
       for (var l = 0; l < lines.length; l++) {
-        var str = lines[l], shown = Math.floor(str.length * Math.min(1, typed * 1.6 - l * 0.2));
+        var str = lines[l], shown = Math.floor(str.length * Math.min(1, typed * (1 + 0.2 * lines.length) - l * 0.2));
         if (shown <= 0) continue;
-        ctx.fillStyle = l === 0 ? (found.length >= 4 ? "#8be3b0" : "#ffc477") : "rgba(232,236,246,0.85)";
+        ctx.fillStyle = l === 0 ? (good ? "#8be3b0" : "#ffc477") : "rgba(232,236,246,0.85)";
         ctx.fillText(str.slice(0, shown), tx, ty + 10 + l * 16);
       }
     }
@@ -202,8 +277,9 @@
   function updateHud() {
     if (openLink) openLink.href = "sky/#ra=" + (((cam.ra % 360) + 360) % 360).toFixed(1) + "&dec=" + cam.dec.toFixed(1) + "&fov=" + Math.round(4 * Math.atan(W / 4 / view.scale) / D2R);
     if (!hud) return;
-    hud.textContent = (overhead ? "≈ ZENITH  " : "") + "RA " + S.fmtRa(((cam.ra % 360) + 360) % 360).slice(0, 7) +
-      "  DEC " + S.fmtDec(cam.dec) + (W < 560 ? "" : "  ·  " + n.toLocaleString() + " Hipparcos stars");
+    hud.textContent = "RA " + S.fmtRa(((cam.ra % 360) + 360) % 360).slice(0, 7) + "  DEC " + S.fmtDec(cam.dec) +
+      (W < 560 ? "" : overhead ? "  ·  overhead guessed from your time zone, " + Math.abs(guessLat) + "°" + (guessLat < 0 ? "S" : "N")
+        : "  ·  " + n.toLocaleString() + " Hipparcos stars");
   }
 
   // Interaction: drag to look around, with inertia.
@@ -230,22 +306,24 @@
   // A click without a drag runs the illustration on the field under the pointer.
   canvas.addEventListener("pointerup", function (ev) {
     endDrag();
-    if (reduced || Math.abs(ev.clientX - downX) + Math.abs(ev.clientY - downY) > 6) return;
+    if (Math.abs(ev.clientX - downX) + Math.abs(ev.clientY - downY) > 6) return;
     var r = canvas.getBoundingClientRect();
-    cam.vra = cam.vdec = 0;
-    newSolve(performance.now() / 1000, [ev.clientX - r.left, ev.clientY - r.top]);
+    solveAt(ev.clientX - r.left, ev.clientY - r.top);
   });
   canvas.addEventListener("pointercancel", endDrag);
 
-  // Fly to the local zenith: right ascension equals local sidereal time, declination equals latitude.
-  // Longitude is estimated from the timezone offset so no location permission is needed.
-  var goal = null, overhead = false;
+  // Fly roughly overhead: the zenith's right ascension is the local sidereal time and its declination
+  // is the latitude. Without asking for location we only have a guess: longitude from the UTC offset,
+  // hemisphere from the time-zone name, and a typical 35 degree latitude. The HUD says so.
+  var goal = null, overhead = false, guessLat = 35;
+  var SOUTH = /^(Australia|Antarctica)\/|^Pacific\/(Auckland|Chatham|Fiji|Tongatapu|Apia|Noumea|Efate)|^America\/(Argentina|Sao_Paulo|Santiago|Montevideo|Asuncion|Lima|La_Paz|Bahia|Recife|Fortaleza|Belem|Cuiaba|Campo_Grande|Punta_Arenas)|^Africa\/(Johannesburg|Maputo|Harare|Lusaka|Windhoek|Gaborone|Maseru|Mbabane|Blantyre|Lubumbashi)|^Indian\/(Mauritius|Reunion|Antananarivo)/;
   function zenith() {
     var jd = Date.now() / 86400000 + 2440587.5;
     var gmst = (280.46061837 + 360.98564736629 * (jd - 2451545)) % 360;
-    var lon = -new Date().getTimezoneOffset() / 60 * 15;
-    var lat = lon > -30 && lon < 60 ? 48 : lon >= 60 ? 30 : 38;
-    return [((gmst + lon) % 360 + 360) % 360, lat];
+    var lon = -new Date().getTimezoneOffset() / 60 * 15, tz = "";
+    try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (e) { tz = ""; }
+    guessLat = SOUTH.test(tz) ? -35 : 35;
+    return [((gmst + lon) % 360 + 360) % 360, guessLat];
   }
   function flyTo(ra, dec) {
     var ra0 = ((cam.ra % 360) + 360) % 360, dra = ((ra - ra0 + 540) % 360) - 180;
@@ -260,12 +338,20 @@
   if (zbtn) zbtn.addEventListener("click", function () {
     overhead = !overhead;
     zbtn.setAttribute("aria-pressed", overhead);
-    zbtn.textContent = overhead ? "↺ tour the sky" : "⌖ overhead now";
+    zbtn.textContent = overhead ? "↺ tour the sky" : "⌖ roughly overhead";
     if (overhead) { var z = zenith(); flyTo(z[0], z[1]); } else flyTo(98, -4);
   });
 
   // Arrow keys pan when the map has focus.
+  function solveDefault() {
+    var mobile = W < 760;
+    solveAt(mobile ? W - 80 : W * 0.72, mobile ? H - 122 : H * 0.45);
+  }
+  var sbtn = document.getElementById("sky-solve");
+  if (sbtn) sbtn.addEventListener("click", solveDefault);
+
   canvas.addEventListener("keydown", function (ev) {
+    if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); solveDefault(); return; }
     var k = { ArrowLeft: [1, 0], ArrowRight: [-1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[ev.key];
     if (!k) return;
     ev.preventDefault();
@@ -288,7 +374,7 @@
       cam.dec = Math.max(-80, Math.min(80, cam.dec + cam.vdec));
     }
     draw(t);
-    if (t - hudT > 0.25) { updateHud(); hudT = t; }
+    if (reduced || t - hudT > 0.25) { updateHud(); hudT = t; }
   }
   function loop(now) {
     if (!running) return;

@@ -195,4 +195,8 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -3; pointer-even
 .hud-btn { white-space: nowrap; }
 @media (max-width: 1320px) { .hint { display: none; } }
 .hud-btn { text-decoration: none; } .hud-btn:hover { text-decoration: none; }
-@media (max-width: 480px) { #sky-hud { display: none; } .hud-l { gap: .5rem; } }
+@media (max-width: 760px) { .hud-l { flex-wrap: wrap; gap: .5rem; } }
+@media (max-width: 480px) { #sky-hud { display: none; } }
+.proof .try { margin-top: 1.6rem; padding: 1rem 1.1rem; border: 1px solid var(--line-strong); border-radius: 12px;
+  background: rgba(139, 227, 176, .05); font-size: .92rem; }
+.proof .try strong { color: var(--ok); }
