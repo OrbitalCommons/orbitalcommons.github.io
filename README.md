@@ -72,3 +72,16 @@ For a local preview, run `npm run serve` and open <http://127.0.0.1:4173>.
 When testing multiple worktrees on the same machine, give each suite its own
 port: `PORT=4191 npm run test:browser`. Playwright reuses an existing server on
 that port locally, so it must serve the worktree you intend to test.
+
+## Project social previews
+
+Each project ships a 1200 × 630 social card at `projects/<name>/og.jpg`, rendered
+from its own header artwork and overview title. Regenerate after changing that
+artwork or text, with the local preview server running:
+
+```sh
+node tools/build_project_cards.cjs
+```
+
+Set `CHROME_PATH` for a system Chrome or `SITE_URL` for another local preview
+address. The images are committed; no browser tooling runs during deployment.
