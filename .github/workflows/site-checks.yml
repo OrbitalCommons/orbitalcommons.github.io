@@ -45,6 +45,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt
+      - run: python3 demos/check_examples.py --extract-only
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: |
