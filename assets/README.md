@@ -82,4 +82,5 @@ node tools/build_project_cards.cjs
 The first command renders the 180-pixel Apple touch icon and the 1200 × 630
 homepage card; the second refreshes the six project cards. Set `CHROME_PATH` for
 a system Chrome or `SITE_URL` for a different local preview address. The
-homepage card fixes `Math.random` at 0.35 and requests reduced motion.
+homepage card fixes `Math.random` at 0.35 and captures the illustrative quad
+after 9.6 seconds of animation.
