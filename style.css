@@ -23,7 +23,7 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 80px; -webkit-text-size-adjust: 100%; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-height, 60px) + 20px); -webkit-text-size-adjust: 100%; }
 /* Focus scrolling must settle before the user activates a nearby control. */
 html:focus-within { scroll-behavior: auto; }
 body {
@@ -50,11 +50,13 @@ section { position: relative; }
 
 /* Navigation */
 .site-nav {
-  position: sticky; top: 0; z-index: 50;
+  position: relative; top: 0; z-index: 50;
   backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%);
   background: linear-gradient(to bottom, rgba(5, 7, 13, .82), rgba(5, 7, 13, .55));
   border-bottom: 1px solid var(--line);
 }
+/* The header only sticks once assets/nav.js has measured it, so anchors are never hidden under it. */
+.nav-ready .site-nav { position: sticky; }
 .site-nav .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem 1.5rem; min-height: 60px; }
 .brand { display: inline-flex; align-items: center; gap: .6rem; color: var(--ink); font-weight: 650;
   letter-spacing: -.01em; font-size: 1.02rem; min-width: 0; max-width: 100%; }

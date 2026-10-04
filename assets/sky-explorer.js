@@ -37,7 +37,8 @@
       if (p[0] === "fov") state.fov = clamp(v, 8, 160);
       if (p[0] === "d") state.days = clamp(Math.round(v), -730, 730);
     });
-    if (Number.isFinite(pinned)) state.days = clamp(Math.round((pinned - today) / DAY), -730, 730);
+    // Whole UTC day numbers, so the offset matches the ISO date shown at any time of day.
+    if (Number.isFinite(pinned)) state.days = clamp(Math.floor(pinned / DAY) - Math.floor(today / DAY), -730, 730);
   }
   var hashTimer = 0;
   function sharedHash() {
