@@ -114,12 +114,28 @@
     }
   }
 
-  var canvases = Array.prototype.slice.call(document.querySelectorAll("canvas.sky-art"));
-  function renderAll() { canvases.forEach(function (c) { try { render(c); } catch (e) { /* keep the fallback */ } }); }
-  renderAll();
+  // Render each panel when it nears the viewport, so panels further down cost nothing at load.
+  var canvases = Array.prototype.slice.call(document.querySelectorAll("canvas.sky-art")), shown = [];
+  function draw(c) { try { render(c); } catch (e) { /* keep the fallback */ } }
+  if ("IntersectionObserver" in window) {
+    // The canvas stays hidden until drawn, so observe its parent instead.
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        var c = e.target.querySelector("canvas.sky-art");
+        shown.push(c);
+        draw(c);
+      });
+    }, { rootMargin: "300px 0px" });
+    canvases.forEach(function (c) { io.observe(c.parentNode); });
+  } else {
+    shown = canvases;
+    shown.forEach(draw);
+  }
   var timer = 0;
   window.addEventListener("resize", function () {
     clearTimeout(timer);
-    timer = setTimeout(renderAll, 150);
+    timer = setTimeout(function () { shown.forEach(draw); }, 150);
   });
 })();
