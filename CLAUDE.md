@@ -5,8 +5,14 @@ Static GitHub Pages site for the OrbitalCommons organisation. See README.md for 
 - No build step, no CDNs, no web fonts, no external requests at runtime. Everything ships from
   this repository. Node and Python are for development checks only.
 - Run `npm test` before pushing: `tests/check_site.py` (links, alt text, viewport, metadata) and
-  Playwright desktop/mobile checks for script errors and horizontal overflow. Every `.html` file in
-  the repo is checked, including `tools/og.html`.
+  Playwright checks (Chromium, Firefox, WebKit; desktop and mobile; axe; interactions). Every `.html`
+  file in the repo is checked, including `tools/og.html`. Playwright reuses any server already on
+  the port, so when several worktrees are active run with a distinct `PORT=41xx npm test`, or you
+  will silently test another checkout.
+- Star-map code is layered: `assets/sky-core.js` (catalogue, projection, planets, drawing) is shared
+  by the hero (`sky.js`), project art (`sky-art.js`) and the explorer (`sky-explorer.js`). Keep the
+  hero's per-frame cost low: Lighthouse mobile runs at 4x CPU throttle and the hero animates.
+- Label anything that is an illustration rather than real software output as such.
 - Other OrbitalCommons repositories with their own Pages sites (currently `rizzma`) are served at
   `/<repo>/` and shadow anything at that path here. Project overview pages therefore live under
   `projects/<name>/`.
