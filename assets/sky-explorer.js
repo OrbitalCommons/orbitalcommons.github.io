@@ -95,8 +95,104 @@
       if (layers.trails) drawTrails();
       view.drawPlanets(ctx, planets, "600 11px " + MONO);
     }
+    drawSolveFields();
     drawHover();
     updateReadout();
+  }
+
+  // Plate solving with zodiacal compiled to WebAssembly, when the solver script is present.
+  // A synthetic frame is built from the catalogue under a TAN projection, roughened with
+  // centroid noise, dropouts and false detections, and the solver gets only pixel positions.
+  var FRAME_W = 1024, FRAME_H = 768, solveState = null;
+  function fieldCorners(ra, dec, fovDeg, rotDeg) {
+    var a = ra * D2R, d = dec * D2R, ca = Math.cos(a), sa = Math.sin(a), cd = Math.cos(d), sd = Math.sin(d);
+    var f = [cd * ca, cd * sa, sd], e = [-sa, ca, 0], nn = [-sd * ca, -sd * sa, cd];
+    var t = Math.tan(fovDeg * D2R / 2), h = t * FRAME_H / FRAME_W, r = (rotDeg || 0) * D2R, out = [];
+    [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(function (c) {
+      var u = -c[0] * t, v = -c[1] * h, ur = u * Math.cos(r) - v * Math.sin(r), vr = u * Math.sin(r) + v * Math.cos(r);
+      var x = f[0] + ur * e[0] + vr * nn[0], y = f[1] + ur * e[1] + vr * nn[1], z = f[2] + vr * nn[2], m = Math.sqrt(x * x + y * y + z * z);
+      out.push([x / m, y / m, z / m]);
+    });
+    return out;
+  }
+  function strokeField(corners, color, dash) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash(dash || []);
+    ctx.beginPath();
+    for (var i = 0; i <= 4; i++) {
+      var c = corners[i % 4];
+      if (!view.project(c[0], c[1], c[2], pt)) { ctx.setLineDash([]); return; }
+      if (i) ctx.lineTo(pt[0], pt[1]); else ctx.moveTo(pt[0], pt[1]);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  function drawSolveFields() {
+    if (!solveState) return;
+    strokeField(fieldCorners(solveState.ra, solveState.dec, solveState.fov, 0), "rgba(124,196,255,0.9)", [6, 5]);
+    var r = solveState.result;
+    // The solved frame uses the recovered plate scale, so it shows scale errors as well as pointing.
+    if (r) strokeField(fieldCorners(r.ra, r.dec, 2 * Math.atan(r.scaleArcsecPerPx / 3600 * D2R * FRAME_W / 2) / D2R, r.rotationDeg),
+      "rgba(139,227,176,0.95)");
+  }
+  function gauss() { return Math.sqrt(-2 * Math.log(1 - Math.random())) * Math.cos(6.283 * Math.random()); }
+  function angularArcsec(ra1, dec1, ra2, dec2) {
+    var a = S.radec(ra1, dec1), b = S.radec(ra2, dec2);
+    return Math.acos(clamp(a[0] * b[0] + a[1] * b[1] + a[2] * b[2], -1, 1)) / D2R * 3600;
+  }
+  var solveBtn = $("x-solve"), resultEl = $("x-result");
+  function showResult(html) { resultEl.hidden = false; resultEl.innerHTML = html; }
+  function runSolve() {
+    var fov = clamp(state.fov * 0.45, 15, 40), truth = { ra: norm(state.ra), dec: state.dec, fov: fov, result: null };
+    var noisy = $("x-noise").checked;
+    var sources = S.tanField(truth.ra, truth.dec, fov, FRAME_W, FRAME_H, 6.3).map(function (s) {
+      return { x: s.x, y: s.y, flux: s.flux };
+    });
+    if (noisy) {
+      sources = sources.filter(function () { return Math.random() > 0.08; }).map(function (s) {
+        return { x: s.x + gauss() * 0.6, y: s.y + gauss() * 0.6, flux: s.flux * (1 + 0.05 * gauss()) };
+      });
+      for (var k = 0; k < 3; k++) sources.push({ x: Math.random() * FRAME_W, y: Math.random() * FRAME_H, flux: Math.pow(10, -0.4 * (5 + Math.random())) });
+      sources.sort(function (p, q) { return q.flux - p.flux; });
+    }
+    solveState = truth;
+    redraw();
+    solveBtn.disabled = true;
+    showResult("<p class=\"r-title\">Solving&hellip;</p><p class=\"muted\">A synthetic " + FRAME_W + "&times;" + FRAME_H +
+      " frame, " + fov.toFixed(1) + "&deg; wide, made from the catalogue" + (noisy ? " with centroid noise, dropouts and false detections" : "") +
+      ": " + sources.length + " sources. The solver sees pixel positions only.</p>");
+    window.OCZodiacal.load().then(function () {
+      return window.OCZodiacal.solve(sources, FRAME_W, FRAME_H, { timeoutMs: 10000 });
+    }).then(function (r) {
+      solveBtn.disabled = false;
+      if (solveState !== truth) return;
+      if (!r) {
+        showResult("<p class=\"r-title warn\">No solution</p><p class=\"muted\">" + sources.length +
+          " sources were not enough to match a quad in this index. Try a richer or wider field.</p>");
+        return;
+      }
+      truth.result = r;
+      redraw();
+      var err = angularArcsec(truth.ra, truth.dec, r.ra, r.dec);
+      showResult("<p class=\"r-title ok\">Solved in " + Math.round(r.ms) + "&nbsp;ms</p>" +
+        "<dl><dt>Centre</dt><dd>" + S.fmtRa(r.ra) + " &nbsp;" + S.fmtDec(r.dec) + "</dd>" +
+        "<dt>Rotation</dt><dd>" + r.rotationDeg.toFixed(2) + "&deg;</dd>" +
+        "<dt>Scale</dt><dd>" + r.scaleArcsecPerPx.toFixed(2) + "&Prime;/px</dd>" +
+        "<dt>Matched</dt><dd>" + r.matched + " of " + (r.sourcesUsed || sources.length) + " sources used</dd>" +
+        "<dt>Error</dt><dd>" + (err < 60 ? err.toFixed(1) + "&Prime;" : (err / 60).toFixed(1) + "&prime;") + " from the true centre</dd></dl>" +
+        "<p class=\"muted\">zodiacal's quad matching running in your browser via WebAssembly" +
+        (r.refined ? ", then a least-squares fit on its matched stars" : "") +
+        ". The frame is synthetic, built from the catalogue, so the error measures self-consistency, not real-camera accuracy. " +
+        "Dashed: the frame we made. Green: where the solver put it.</p>");
+    }, function (err) {
+      solveBtn.disabled = false;
+      showResult("<p class=\"r-title warn\">Solver unavailable</p><p class=\"muted\">" + String(err && err.message || err) + "</p>");
+    });
+  }
+  if (window.OCZodiacal) {
+    $("x-solve-group").hidden = false;
+    solveBtn.addEventListener("click", runSolve);
   }
 
   function drawTrails() {
