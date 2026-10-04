@@ -196,3 +196,6 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -3; pointer-even
 @media (max-width: 1320px) { .hint { display: none; } }
 .hud-btn { text-decoration: none; } .hud-btn:hover { text-decoration: none; }
 @media (max-width: 480px) { #sky-hud { display: none; } .hud-l { gap: .5rem; } }
+.proof .try { margin-top: 1.6rem; padding: 1rem 1.1rem; border: 1px solid var(--line-strong); border-radius: 12px;
+  background: rgba(139, 227, 176, .05); font-size: .92rem; }
+.proof .try strong { color: var(--ok); }
