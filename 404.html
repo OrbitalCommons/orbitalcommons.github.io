@@ -1,19 +1,168 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Uncharted territory · OrbitalCommons</title>
-<meta name="description" content="This coordinate is uncharted. Find your way back to OrbitalCommons and its open-source space tools.">
-<meta name="robots" content="noindex"><meta name="theme-color" content="#05070d">
-<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/style.css">
-<style>
-.error-page { min-height: 80svh; display: grid; align-content: center; padding-top: 5rem; padding-bottom: 5rem; max-width: 760px; }
-.error-code { font: 600 clamp(5rem, 20vw, 10rem)/1 var(--mono); letter-spacing: -.09em; color: var(--accent); margin: 0 0 2rem; }
-.error-page .lede { margin-bottom: 2rem; }
-</style>
-</head>
-<body><a class="skip" href="#main">Skip to content</a>
-<header class="site-nav"><div class="wrap"><a class="brand" href="/"><img class="mark" src="/assets/mark.svg" alt="" width="26" height="26"><span>Orbital<b>Commons</b></span></a><nav aria-label="Main navigation"><a href="/#projects">Projects</a><a href="https://github.com/OrbitalCommons">GitHub</a></nav></div></header>
-<main id="main" class="wrap error-page"><p class="eyebrow">Signal not found</p><p class="error-code" aria-hidden="true">404<span style="color:var(--accent-2)">.</span></p><h1>Uncharted territory.</h1><p class="lede">There is no page at these coordinates. Head back to the observatory, or find a tool for your next mission.</p><div class="actions"><a class="btn primary" href="/">Return to the observatory <span aria-hidden="true">↗</span></a><a class="btn" href="/#projects">Explore the projects</a></div></main>
-<footer class="site-foot"><div class="wrap"><p>Open tools. A shared sky.</p><a href="https://github.com/OrbitalCommons">GitHub →</a></div></footer>
-</body></html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Uncharted territory · OrbitalCommons</title>
+    <meta
+      name="description"
+      content="This coordinate is uncharted. Find your way back to OrbitalCommons and its open-source space tools."
+    />
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/style.css" />
+    <style>
+      .error-page {
+        min-height: 80svh;
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: clamp(2rem, 5vw, 5rem);
+        align-items: center;
+        padding-top: 5rem;
+        padding-bottom: 5rem;
+      }
+      .error-code {
+        font: 600 clamp(5rem, 14vw, 10rem) / 1 var(--mono);
+        letter-spacing: -0.09em;
+        color: var(--accent);
+        margin: 0 0 1.5rem;
+      }
+      .error-page h1 {
+        font-size: clamp(2rem, 4vw, 3rem);
+      }
+      .error-page .lede {
+        margin-bottom: 2rem;
+      }
+      .error-sky {
+        margin: 0;
+        min-width: 0;
+      }
+      .error-sky .map {
+        overflow: hidden;
+        border: 1px solid var(--line-strong);
+        border-radius: var(--radius);
+        background: #1a1b26;
+      }
+      .error-sky svg,
+      .error-sky canvas {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .error-sky canvas[hidden] {
+        display: none;
+      }
+      .error-sky figcaption {
+        color: var(--ink-3);
+        font: 0.72rem/1.7 var(--mono);
+        margin-top: 1rem;
+      }
+      @media (max-width: 760px) {
+        .error-page {
+          grid-template-columns: 1fr;
+          padding-top: 3rem;
+        }
+        .error-sky {
+          max-width: 520px;
+          width: 100%;
+        }
+      }
+    </style>
+    <script src="/assets/stars.js" defer></script>
+    <script src="/assets/sky-core.js" defer></script>
+    <script src="/assets/sky-art.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="/"
+          ><img
+            class="mark"
+            src="/assets/mark.svg"
+            alt=""
+            width="26"
+            height="26"
+          /><span>Orbital<b>Commons</b></span></a
+        >
+        <nav aria-label="Main navigation">
+          <a href="/#projects">Projects</a><a href="/sky/" class="opt">Sky</a
+          ><a href="https://github.com/OrbitalCommons">GitHub</a>
+        </nav>
+      </div>
+    </header>
+    <main id="main" class="wrap error-page">
+      <div>
+        <p class="eyebrow">Signal not found</p>
+        <p class="error-code" aria-hidden="true">
+          404<span style="color: var(--accent-2)">.</span>
+        </p>
+        <h1>Uncharted territory.</h1>
+        <p class="lede">
+          There is no page at these coordinates. The sky is still here.
+        </p>
+        <div class="actions">
+          <a class="btn primary" href="/"
+            >Return home <span aria-hidden="true">↗</span></a
+          ><a class="btn" href="/sky/">Explore the sky</a>
+        </div>
+      </div>
+      <figure class="error-sky">
+        <div class="map">
+          <svg
+            class="sky-art-fallback"
+            viewBox="0 0 440 340"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <rect width="440" height="340" fill="#1a1b26" />
+            <g fill="none" stroke="#565f89">
+              <circle cx="220" cy="170" r="122" />
+              <circle cx="220" cy="170" r="75" />
+              <path d="M40 170H400M220 25V315" />
+            </g>
+            <g fill="#c0caf5">
+              <circle cx="92" cy="79" r="2" />
+              <circle cx="162" cy="108" r="3" />
+              <circle cx="262" cy="54" r="2" />
+              <circle cx="338" cy="146" r="3" />
+              <circle cx="298" cy="246" r="2" />
+              <circle cx="131" cy="236" r="2" />
+              <circle cx="201" cy="273" r="2" />
+              <circle cx="369" cy="294" r="1.5" />
+              <circle cx="62" cy="265" r="1.5" />
+            </g>
+            <circle cx="220" cy="170" r="5" fill="#e0af68" />
+            <path
+              d="M210 150H200V160M230 150H240V160M200 180V190H210M240 180V190H230"
+              fill="none"
+              stroke="#7aa2f7"
+            />
+          </svg>
+          <canvas
+            class="sky-art"
+            hidden
+            data-ra="61"
+            data-dec="4.0667"
+            data-fov="40"
+            data-aspect="1.3"
+            data-mode="band lines names"
+            role="img"
+            aria-label="A view of Taurus and the winter sky from the Hipparcos catalog"
+          ></canvas>
+        </div>
+        <figcaption>A shared sky. Plenty left to discover.</figcaption>
+      </figure>
+    </main>
+    <footer class="site-foot">
+      <div class="wrap">
+        <p>Open tools. A shared sky.</p>
+        <div class="links">
+          <a href="/sky/">Sky explorer →</a><a href="/#projects">Projects →</a
+          ><a href="https://github.com/OrbitalCommons">GitHub →</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
