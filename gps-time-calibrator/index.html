@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GPS Time Calibrator · OrbitalCommons</title>
+<meta name="description" content="Sub-microsecond camera timestamp calibration from GPS pulse-per-second, on an ESP32 plus ICE40 FPGA.">
+<meta property="og:title" content="GPS Time Calibrator · OrbitalCommons">
+<meta property="og:description" content="Sub-microsecond camera timestamp calibration from GPS pulse-per-second, on an ESP32 plus ICE40 FPGA.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb"><a href="../">&larr; OrbitalCommons</a></p>
+  <h1>GPS Time Calibrator</h1>
+  <p class="tag">A precision timing system that pins camera timestamps to GPS, so frames taken on
+  different machines in different places can be compared to each other.</p>
+  <div class="meta"><span>Verilog</span><span>C / ESP-IDF</span><span>Hardware</span></div>
+
+  <h2>The problem</h2>
+  <p>An imaging system is only as good as its clock. If you want to correlate a frame against an
+  ephemeris, triangulate an event across two stations, or measure how long something took, the
+  camera's idea of &ldquo;now&rdquo; has to be right to better than a millisecond. Operating system
+  clocks are not, and network time over a consumer link drifts by more than the thing you are
+  trying to measure.</p>
+  <p>GPS already broadcasts a disciplined one-pulse-per-second signal accurate to tens of
+  nanoseconds. The work is getting that accuracy from the antenna to the frame.</p>
+
+  <h2>How it works</h2>
+  <p>The device is built on the
+  <a href="https://github.com/Blinkinlabs/iced_espresso">IcedEspresso</a> board: an ESP32-S2 beside
+  a Lattice ICE40UP5K FPGA. Each half does what it is actually good at.</p>
+  <ul>
+    <li><strong>The FPGA does the timing.</strong> An interval counter measures clock cycles
+      between PPS edges at 48&nbsp;MHz. A rolling frequency averager turns that into a stable
+      estimate of the local oscillator's true rate, and a health monitor requires a run of
+      consecutive good pulses before it will report lock.</li>
+    <li><strong>The microcontroller does everything else.</strong> It parses the GPS serial stream,
+      manages WiFi, and serves the result as a Stratum&nbsp;1 NTP server with sub-microsecond
+      precision.</li>
+    <li><strong>They talk over SPI.</strong> A register interface with value latching, so a read
+      never catches a counter mid-update across the clock domain boundary.</li>
+  </ul>
+  <p>Each Verilog block, counter, health monitor and averager, has its own testbench. The timing
+  path is the product, so it gets tested like one.</p>
+
+  <h2>Platform</h2>
+  <p>The build is managed by <a href="https://github.com/meawoppl/affogato">Affogato</a>, which
+  wraps Yosys, nextpnr, icestorm and ESP-IDF in one container and one command. The bitstream is
+  embedded in the ESP32 firmware at compile time and soft-loaded over SPI at boot, so there is no
+  separate FPGA programmer in the loop. There is a longer write-up of that platform in
+  <a href="https://meawoppl.github.io/posts/2026-03-21-esp32-fpga-development/">Putting an FPGA Inside a
+  Microcontroller Workflow</a>.</p>
+
+  <h2>Status</h2>
+  <p>Working hardware and firmware. The source is not open at the moment, unlike the rest of the
+  projects here. If a GPS-disciplined timebase would be useful to you,
+  <a href="https://github.com/OrbitalCommons">get in touch</a>.</p>
+
+  <footer><a href="https://github.com/OrbitalCommons">github.com/OrbitalCommons</a></footer>
+</div>
+</body>
+</html>
