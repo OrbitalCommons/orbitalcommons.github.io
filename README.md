@@ -39,7 +39,9 @@ The project pages share `projects/project.css` and progressive enhancements in
 `projects/project.js`. The FITS workbench lazy-loads a checked-in WebAssembly
 module; the plotting gallery uses checked-in outputs from rizzma. The zodiacal
 workbench runs a real blind match on synthetic source positions, with its engine
-and index fetched only when requested. See
+and index fetched only when requested. The scicamera page has an explicitly
+synthetic exposure illustration, independent of the Python library; it exports
+linear FITS pixels that browser tests round-trip through the real Rust reader. See
 [demos/README.md](demos/README.md) to reproduce them.
 
 ## Development checks

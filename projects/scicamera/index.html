@@ -38,6 +38,8 @@
     <link rel="stylesheet" href="../../style.css" />
     <link rel="stylesheet" href="../project.css" />
     <script src="../project.js" defer></script>
+  <link rel="stylesheet" href="exposure.css" />
+    <script src="exposure.js" defer></script>
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
@@ -606,6 +608,31 @@
               determines what arrives, and metadata helps describe how it was
               acquired.
             </p>
+            <div class="sensor-lab" id="exposure-lab" hidden>
+              <p class="eyebrow">Synthetic sensor · interactive illustration</p>
+              <h3>Give the light a little longer.</h3>
+              <p>Increase the exposure to reveal faint stars. Push it further and the brightest cores saturate, losing information.</p>
+              <div class="sensor-layout">
+                <figure>
+                  <canvas width="256" height="192" role="img" aria-label="Simulated star image"></canvas>
+                  <figcaption>256 × 192 pixels · monochrome · fixed square-root display stretch</figcaption>
+                </figure>
+                <div class="sensor-controls">
+                  <label for="sensor-time">Exposure <output id="sensor-time-value" for="sensor-time">1.00 s</output></label>
+                  <input id="sensor-time" type="range" min="0" max="100" value="50" aria-valuetext="1.00 s" />
+                  <label class="sensor-noise"><input id="sensor-noise" type="checkbox" checked /> Shot + read noise</label>
+                  <p id="sensor-status" class="sensor-status" role="status" aria-live="polite"></p>
+                  <button id="sensor-download" class="btn" type="button">Download simulated FITS</button>
+                  <p class="demo-note">Next: open the downloaded frame in the <a href="../fitsio-pure/#explore">FITS reader</a> to inspect its pixels and exposure metadata.</p>
+                </div>
+              </div>
+              <details>
+                <summary>What this model includes</summary>
+                <p>This browser illustration is independent of scicamera. Its 65 artificial stars use Gaussian profiles. Illustrative settings: 8 electrons/pixel/second background, 4-electron RMS read noise, 1 electron/ADU gain, a 100-ADU bias and clipping at 4095 ADU. These are not specifications for any camera.</p>
+                <p>Shot noise uses Poisson sampling (a Gaussian approximation above 30 electrons); read noise is Gaussian. The seed is fixed for repeatability. Turning noise off shows the expected signal. There is no atmosphere, tracking error, colour filter, hot-pixel model or calibration.</p>
+                <p>The preview uses a fixed square-root stretch; the FITS file stores the linear 16-bit integer array with exposure metadata. See STScI’s <a href="https://hst-docs.stsci.edu/wfc3dhb/chapter-5-wfc3-uvis-sources-of-error/5-1-gain-and-read-noise">introduction to gain and read noise</a> for the underlying concepts.</p>
+              </details>
+            </div>
             <ol class="process-list">
               <li>
                 <strong>Choose a stream</strong>
