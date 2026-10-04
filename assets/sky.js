@@ -194,7 +194,7 @@
           "SOLVED  " + (real.r.ms < 10 ? real.r.ms.toFixed(1) : Math.round(real.r.ms)) + " ms",
           "RA  " + S.fmtRa(real.r.ra),
           "DEC " + S.fmtDec(real.r.dec),
-          "ERR " + (real.err < 1 ? (real.err * 60).toFixed(0) + "″" : real.err.toFixed(1) + "′") + "  ·  " + real.r.matched + " matched",
+          "ERR " + (real.err * 60 < 1 ? "<1″" : real.err < 1 ? (real.err * 60).toFixed(0) + "″" : real.err.toFixed(1) + "′") + "  ·  " + real.r.matched + " matched",
           "zodiacal wasm · synthetic frame"
         ];
       } else if (real) {
