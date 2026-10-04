@@ -18,12 +18,6 @@
   var W = 0, H = 0, dpr = 1, planets = [], trails = {};
   var $ = function (id) { return document.getElementById(id); };
 
-  // The header can wrap to several lines with large text; overlays sit below its real height.
-  var nav = document.querySelector(".site-nav");
-  if (nav && window.ResizeObserver) new ResizeObserver(function () {
-    document.body.style.setProperty("--nav-h", nav.getBoundingClientRect().height + "px");
-  }).observe(nav);
-
   // URL hash: #ra=84.0&dec=0.0&fov=90&d=0
   // `d` is days from the viewer's today (the live address bar); `date=YYYY-MM-DD` pins an absolute
   // day for shared links and wins when both are present.

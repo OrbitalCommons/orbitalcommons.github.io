@@ -38,12 +38,12 @@
     aria-label="Star map of the Hipparcos catalogue with the planets for the chosen date. Drag or use arrow keys to pan, scroll or plus and minus to zoom."></canvas>
   <noscript><p class="nojs">The sky explorer draws with JavaScript. The rest of the site works without it.</p></noscript>
 
+  <div class="explorer-panels">
   <div class="readout" aria-live="polite">
     <p id="x-center">&nbsp;</p>
     <p id="x-hover" class="muted">&nbsp;</p>
   </div>
 
-  <div class="explorer-panels">
   <aside id="x-result" class="result panel" role="status" aria-live="polite" hidden></aside>
 
   <section id="controls" class="dock panel" aria-label="Sky controls">
@@ -91,6 +91,7 @@
 
 </main>
 
+<script src="../assets/nav.js"></script>
 <script src="../assets/stars.js"></script>
 <script src="../assets/sky-core.js"></script>
 <script src="../projects/zodiacal/solver.js"></script>
