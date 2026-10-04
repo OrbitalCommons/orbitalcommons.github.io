@@ -45,16 +45,21 @@ only for development checks; GitHub Pages does not install or build anything.
 
 ```sh
 npm ci
-npx playwright install chromium
+npx playwright install chromium firefox webkit
 npm test
 ```
 
 `npm run test:links` checks local links, fragment identifiers, image alternative
 text, and basic document metadata with Python's standard library.
-`npm run test:browser` opens every page at desktop and mobile sizes and checks
+`npm run test:browser` opens every page in desktop/mobile Chromium, desktop
+Firefox, and mobile WebKit and checks
 for script errors, failed local requests, and horizontal overflow. It also exercises
 the project demos and audits their default and populated states with axe-core. Set
-`CHROME_PATH` to use a locally installed Chrome instead of Playwright's browser.
+`CHROME_PATH` to use a locally installed Chrome instead of Playwright's Chromium.
+To run only Chromium checks, use
+`npm run test:browser -- --project=desktop --project=mobile`. If a Linux host
+is missing browser libraries, `npx playwright install-deps` lists or installs
+the required system packages.
 GitHub Actions runs both on pull requests and pushes to `main`, and uploads
 browser traces and screenshots when a check fails. A separate Rust job compiles
 the exact examples displayed on the pages and tests the FITS adapter.
