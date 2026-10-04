@@ -65,7 +65,11 @@
     const bytes = new Uint8Array(buffer); bytes.fill(32, 0, 2880);
     bytes.set(new TextEncoder().encode(cards.join('')));
     const view = new DataView(buffer);
-    for (let i = 0; i < pixels.length; i++) view.setInt16(2880 + i * 2, pixels[i], false);
+    // FITS viewers conventionally place the first row at the bottom; canvas starts at the top.
+    for (let i = 0; i < pixels.length; i++) {
+      const source = (height - 1 - Math.floor(i / width)) * width + i % width;
+      view.setInt16(2880 + i * 2, pixels[source], false);
+    }
     const url = URL.createObjectURL(new Blob([buffer], { type: 'application/fits' }));
     const a = document.createElement('a'); a.href = url; a.download = `synthetic-${exposure.toFixed(2)}s.fits`;
     document.body.append(a); a.click(); a.remove();

@@ -20,6 +20,19 @@ test('simulated exposure exports pixels and metadata readable by real fitsio-pur
   const data = await fs.readFile(file);
   expect(data.length % 2880).toBe(0);
   expect(data.toString('ascii', 0, 80)).toMatch(/^SIMPLE  = +T/);
+  // Every downloaded sample must reconstruct the visible frame in FITS row order.
+  const mismatches = await page.locator('#exposure-lab canvas').evaluate((canvas, base64) => {
+    const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+    const view = new DataView(bytes.buffer), image = canvas.getContext('2d').getImageData(0, 0, 256, 192).data;
+    let count = 0;
+    for (let y = 0; y < 192; y++) for (let x = 0; x < 256; x++) {
+      const value = view.getInt16(2880 + ((191 - y) * 256 + x) * 2, false);
+      const expected = Math.round(255 * Math.sqrt(Math.max(0, value - 100) / 3995));
+      if (image[(y * 256 + x) * 4] !== expected) count++;
+    }
+    return count;
+  }, data.toString('base64'));
+  expect(mismatches).toBe(0);
   // This round-trip executes the shipped Rust/WASM parser, not a JS mock.
   await page.goto('/projects/fitsio-pure/');
   await page.locator('#fits-file').setInputFiles({ name: download.suggestedFilename(), mimeType: 'application/fits', buffer: data });
