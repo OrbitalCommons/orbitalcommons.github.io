@@ -228,6 +228,29 @@
                   Constellation guides</label
                 >
               </div>
+              <div class="catalog-inspector" id="catalog-inspector" hidden>
+                <p class="demo-note">Click a plotted star, choose a name, or step through the filtered catalog.</p>
+                <div class="catalog-picker">
+                  <label for="catalog-name">Named star
+                    <select id="catalog-name"><option value="">Choose a star</option></select>
+                  </label>
+                  <div class="catalog-step" role="group" aria-label="Step through visible stars by brightness">
+                    <button id="catalog-prev" class="demo-button" type="button" disabled>← Previous</button>
+                    <button id="catalog-next" class="demo-button" type="button">Next →</button>
+                  </div>
+                </div>
+                <div id="catalog-detail" hidden>
+                  <h3 id="catalog-star-name"></h3>
+                  <dl class="catalog-values">
+                    <div><dt>RA · ICRS</dt><dd id="catalog-ra"></dd></div>
+                    <div><dt>Dec · ICRS</dt><dd id="catalog-dec"></dd></div>
+                    <div><dt>V magnitude</dt><dd id="catalog-mag"></dd></div>
+                    <div><dt>B−V index*</dt><dd id="catalog-bv"></dd></div>
+                  </dl>
+                  <p class="demo-note">Catalog epoch J1991.25; positions rounded to 0.05°. No proper-motion update. *B−V uses 0.60 where unavailable.</p>
+                </div>
+                <p id="catalog-selection-status" class="visually-hidden" role="status"></p>
+              </div>
               <p id="catalog-status" class="demo-status" role="status">
                 Enable JavaScript to explore the catalog.
               </p>
@@ -237,6 +260,7 @@
               Hipparcos subset. Positions are catalog coordinates, not a
               prediction of tonight’s local sky. The Rust example below runs
               independently of this visualization.
+              <a href="https://github.com/OrbitalCommons/orbitalcommons.github.io/blob/main/assets/README.md">Data sources and encoding notes</a>.
             </p>
           </section>
           <section id="install" aria-labelledby="install-title">
