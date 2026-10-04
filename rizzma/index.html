@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rizzma · OrbitalCommons</title>
+<meta name="description" content="matplotlib-style plotting in Rust, with first-class WebAssembly. One figure, rendered to PNG, SVG or canvas.">
+<meta property="og:title" content="rizzma · OrbitalCommons">
+<meta property="og:description" content="matplotlib-style plotting in Rust, with first-class WebAssembly. One figure, rendered to PNG, SVG or canvas.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="wrap">
+  <p class="crumb"><a href="../">&larr; OrbitalCommons</a></p>
+  <h1 class="mono">rizzma</h1>
+  <p class="tag">A Rust reimplementation of the good parts of matplotlib and pyplot, with
+  first-class WebAssembly support.</p>
+  <div class="meta"><span>Rust</span><span>1,885 downloads</span><span>1.13.3</span></div>
+  <p class="links"><a href="https://github.com/OrbitalCommons/rizzma">source</a> ·
+  <a href="https://crates.io/crates/rizzma">crates.io</a> ·
+  <a href="https://docs.rs/rizzma">docs</a> ·
+  <a href="https://orbitalcommons.github.io/rizzma/demo/">live demos</a> ·
+  <a href="https://orbitalcommons.github.io/rizzma/">gallery</a></p>
+
+  <h2>Figures that stay alive</h2>
+  <p>The object model mirrors matplotlib, with Figure, Axes and Artists behind a thin
+  pyplot-style stateful facade. A single <code>Renderer</code> trait drives several targets: a
+  <code>tiny-skia</code> raster backend for PNG, an SVG emitter, and a browser
+  <code>&lt;canvas&gt;</code> backend. The same figure, rendered anywhere.</p>
+  <p>On the <a href="https://docs.rs/rizzma">API docs</a> the demo grid at the top of the page is
+  not a set of screenshots. Each cell is a real canvas driven by this crate compiled to
+  WebAssembly, animated from Rust every frame: wheel to zoom at the cursor, drag to pan,
+  double-click to reset.</p>
+
+  <h2>Scope</h2>
+  <ul>
+    <li>One figure per Tier-1 plot type in the gallery, auto-rendered on every push to main.</li>
+    <li>Raster, vector and canvas output from one description of a figure.</li>
+    <li>Interactive panning, zooming and streaming strip charts in the browser.</li>
+  </ul>
+
+  <h2>Install</h2>
+  <pre><code>cargo add rizzma</code></pre>
+  <footer><a href="https://github.com/OrbitalCommons">github.com/OrbitalCommons</a></footer>
+</div>
+</body>
+</html>

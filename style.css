@@ -1,0 +1,32 @@
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin:0; background:#0f1117; color:#d7dbe6;
+  font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+.wrap { max-width:900px; margin:0 auto; padding:3rem 1.25rem 5rem; }
+h1 { font-size:2.5rem; margin:0 0 .4rem; letter-spacing:-.02em; }
+h1.mono { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; color:#8fb4ff; font-size:2.1rem; }
+.tag { font-size:1.12rem; color:#9aa3b8; margin:0 0 2rem; max-width:64ch; }
+h2 { font-size:1.05rem; text-transform:uppercase; letter-spacing:.09em; color:#7f8aa3;
+  margin:2.75rem 0 .9rem; font-weight:600; }
+.grid { display:grid; gap:1rem; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); }
+.card { background:#161925; border:1px solid #242938; border-radius:8px; padding:1.1rem 1.2rem; }
+.card h3 { margin:0 0 .45rem; font-size:1.05rem; color:#8fb4ff;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+.card h3 a { color:#8fb4ff; }
+.card p { margin:0 0 .8rem; font-size:.92rem; color:#b8c0d0; }
+.meta { display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:.6rem; }
+.meta span { font-size:.72rem; padding:.12rem .5rem; border-radius:3px; background:#1e2334; color:#8d97ad; }
+.links { font-size:.85rem; }
+a { color:#8fb4ff; text-decoration:none; }
+a:hover { text-decoration:underline; }
+ul { max-width:70ch; padding-left:1.2rem; }
+li { margin-bottom:.45rem; }
+pre { background:#161925; border:1px solid #242938; border-radius:6px; padding:.9rem 1rem;
+  overflow-x:auto; font-size:.86rem; }
+code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+p code, li code, td code { background:#1a1e2c; padding:.1rem .35rem; border-radius:3px; font-size:.88em; }
+table { border-collapse:collapse; width:100%; font-size:.9rem; margin:.5rem 0 1rem; }
+th, td { text-align:left; padding:.45rem .6rem; border-bottom:1px solid #242938; }
+th { color:#7f8aa3; font-weight:600; font-size:.8rem; text-transform:uppercase; letter-spacing:.05em; }
+.crumb { font-size:.9rem; margin-bottom:1.5rem; }
+footer { margin-top:4rem; padding-top:1.5rem; border-top:1px solid #242938; color:#6f7890; font-size:.9rem; }
