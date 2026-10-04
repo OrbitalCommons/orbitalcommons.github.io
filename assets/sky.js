@@ -1,5 +1,5 @@
 // Real-sky hero: Hipparcos stars and Stellarium constellation lines under a stereographic camera,
-// with a looping blind plate-solve visualisation. Vanilla JS, no dependencies.
+// with a looping illustration of how a blind plate solver matches star patterns. Vanilla JS, no dependencies.
 (function () {
   "use strict";
   var canvas = document.getElementById("sky");
@@ -360,7 +360,7 @@
     if (e > 4.4) {
       var rd = toRaDec(v), fov = 2 * half / scale / D2R;
       var lines = [
-        found.length >= 4 ? "SOLVED" : "NO MATCH",
+        found.length >= 4 ? "QUAD MATCHED" : "TOO FEW STARS",
         "RA  " + fmtRa(rd[0]),
         "DEC " + fmtDec(rd[1]),
         "FOV " + fov.toFixed(1) + "°  ·  " + found.length + " src"
