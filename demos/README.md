@@ -42,12 +42,28 @@ cargo run --locked --release --manifest-path demos/plots/Cargo.toml \
   -- projects/rizzma/plots
 ```
 
+## zodiacal browser solver
+
+The homepage, sky explorer, and zodiacal project workbench share a lazy worker
+running a browser compatibility port of **zodiacal 0.4.1**, followed by
+site-specific least-squares refinement on the matched stars. The index and
+WebAssembly are checked in; no server performs the solve. The field generator
+is synthetic, and no known coordinates are sent to the matcher.
+
+See [zodiacal-solver/README.md](zodiacal-solver/README.md) for the SDK contract,
+index provenance, port changes, memory limits, and reproducible build commands.
+The project workbench uses fixed field presets and repeatable noise to make
+camera-roll comparisons reproducible. Its match rings refer to the exact
+sorted source list passed to the SDK. Displayed engine time excludes initial
+download and worker setup.
+
 ## Other illustrations
 
 The starfield catalog explorer uses the bundled Hipparcos data in
 `assets/stars.js`; see that file and the assets source notes for provenance. The
-zodiacal geometry and datastore scenarios are explanatory JavaScript
-illustrations. They do not claim to execute either Rust library.
+four-star zodiacal geometry slider and datastore scenarios are explanatory
+JavaScript illustrations. They remain distinct from the real zodiacal workbench
+and do not claim to execute the libraries.
 
 ## Checking the published code examples
 
