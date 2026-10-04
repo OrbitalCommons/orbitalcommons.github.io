@@ -1,4 +1,4 @@
-.sensor-lab { margin: 1.5rem 0 2rem; padding: clamp(1rem, 3vw, 1.7rem); border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
+.sensor-lab { margin: 1.5rem 0 2rem; padding: clamp(16px, 3vw, 27.2px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); }
 .sensor-layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 1.5rem; align-items: center; }
 .sensor-lab figure { margin: 0; min-width: 0; }
 .sensor-lab canvas { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; background: #000; image-rendering: pixelated; }
@@ -13,3 +13,7 @@
 .sensor-lab details { margin-top: 1.4rem; }
 .sensor-lab summary { cursor: pointer; padding: .4rem 0; color: var(--ink); }
 @media (max-width: 640px) { .sensor-layout { grid-template-columns: 1fr; } }
+
+/* Match the other inset demo labels without a decorative flex item narrowing the text. */
+.sensor-lab .eyebrow { display: block; line-height: 1.6; }
+.sensor-lab .eyebrow::before { display: none; }
