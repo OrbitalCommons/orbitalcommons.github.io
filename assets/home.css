@@ -34,7 +34,7 @@ body { background:
   .hero { justify-content: flex-start; }
   .hero-fade { background: linear-gradient(180deg, rgba(5, 7, 13, .88) 0%, rgba(5, 7, 13, .6) 55%, rgba(5, 7, 13, 0) 72%),
     linear-gradient(0deg, var(--bg) 0%, rgba(5, 7, 13, 0) 15%); }
-  .hero-inner { padding-top: 6rem; padding-bottom: 14rem; }
+  .hero-inner { padding-top: 6rem; padding-bottom: 15rem; }
   .hint { display: none; }
 }
 

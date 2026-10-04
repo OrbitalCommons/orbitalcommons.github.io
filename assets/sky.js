@@ -48,8 +48,32 @@
     return "rgba(" + (v >> 16) + "," + (v >> 8 & 255) + "," + (v & 255) + "," + a + ")";
   }
 
+  // Milky Way: soft blobs along the galactic equator, brightest toward the galactic centre.
+  var GC = radec(266.405, -28.936), GN = radec(192.859, 27.128);
+  var GB = [GN[1] * GC[2] - GN[2] * GC[1], GN[2] * GC[0] - GN[0] * GC[2], GN[0] * GC[1] - GN[1] * GC[0]];
+  var band = [];
+  for (var l = 0; l < 360; l += 5) {
+    var cl = Math.cos(l * D2R), sl = Math.sin(l * D2R), wob = 0.06 * Math.sin(l * D2R * 3);
+    band.push([cl * GC[0] + sl * GB[0] + wob * GN[0], cl * GC[1] + sl * GB[1] + wob * GN[1], cl * GC[2] + sl * GB[2] + wob * GN[2],
+      0.35 + 0.65 * Math.pow((1 + cl) / 2, 2.2)]);
+  }
+  var blob = document.createElement("canvas");
+  blob.width = blob.height = 128;
+  (function () {
+    var g = blob.getContext("2d"), grd = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+    grd.addColorStop(0, "rgba(150,170,255,0.5)");
+    grd.addColorStop(0.5, "rgba(120,130,230,0.18)");
+    grd.addColorStop(1, "rgba(100,110,220,0)");
+    g.fillStyle = grd;
+    g.fillRect(0, 0, 128, 128);
+  })();
+  function radec(ra, dec) {
+    ra *= D2R; dec *= D2R;
+    return [Math.cos(dec) * Math.cos(ra), Math.cos(dec) * Math.sin(ra), Math.sin(dec)];
+  }
+
   // Camera state: centre (ra0, dec0) in degrees, horizontal field of view.
-  var cam = { ra: 70, dec: 4, vra: 0, vdec: 0 };
+  var cam = { ra: 98, dec: -4, vra: 0, vdec: 0 };
   var W = 0, H = 0, dpr = 1, scale = 1, cx = 0, cy = 0;
   var basis = { e: [0, 0, 0], nn: [0, 0, 0], f: [0, 0, 0] };
 
@@ -108,9 +132,10 @@
   var solve = null, CYCLE = 9.5;
   function newSolve(t) {
     var mobile = W < 760;
-    var sx = mobile ? W * (0.3 + Math.random() * 0.4) : W * (0.62 + Math.random() * 0.2);
-    var sy = mobile ? H * 0.8 : H * (0.3 + Math.random() * 0.35);
-    solve = { t0: t, v: unproject(sx, sy), size: mobile ? 130 : 190, stars: null };
+    var size = mobile ? 116 : 190;
+    var sx = mobile ? W - size / 2 - 22 - Math.random() * 20 : W * (0.62 + Math.random() * 0.2);
+    var sy = mobile ? H - size / 2 - 64 : H * (0.3 + Math.random() * 0.35);
+    solve = { t0: t, v: unproject(sx, sy), size: size, stars: null };
   }
 
   function solveStars(px, py, half) {
@@ -134,9 +159,18 @@
       } else VIS[i] = 0;
     }
 
+    var bs = scale * 0.62;
+    for (var b0 = 0; b0 < band.length; b0++) {
+      var B = band[b0];
+      if (!project(B[0], B[1], B[2], pt)) continue;
+      ctx.globalAlpha = 0.16 * B[3];
+      ctx.drawImage(blob, pt[0] - bs, pt[1] - bs * 0.7, bs * 2, bs * 1.4);
+    }
+    ctx.globalAlpha = 1;
+
     // Constellation figures.
     ctx.lineWidth = 1;
-    ctx.strokeStyle = "rgba(124,196,255,0.17)";
+    ctx.strokeStyle = "rgba(124,196,255,0.2)";
     ctx.beginPath();
     for (var s = 0; s < lineSets.length; s++) {
       var L = lineSets[s];
@@ -157,10 +191,10 @@
       if (!VIS[k]) continue;
       var m = MAG[k];
       var tw = m < 3.5 && !reduced ? 0.82 + 0.18 * Math.sin(t * (1.3 + (k % 7) * 0.31) + PH[k]) : 1;
-      var alpha = Math.max(0.16, Math.min(1, 1.2 - m * 0.17)) * tw;
-      var r = Math.max(0.55, 2.9 - m * 0.45);
-      if (m < 2.6) {
-        var gs = r * 7.5;
+      var alpha = Math.max(0.24, Math.min(1, 1.4 - m * 0.16)) * tw;
+      var r = Math.max(0.65, 3.3 - m * 0.48);
+      if (m < 3.2) {
+        var gs = r * (m < 1 ? 9 : 7);
         ctx.globalAlpha = alpha;
         ctx.drawImage(sprites[COL[k]], SX[k] - gs / 2, SY[k] - gs / 2, gs, gs);
       }
@@ -174,11 +208,17 @@
 
     // Labels for named bright stars.
     ctx.font = "500 10.5px " + getComputedStyle(document.body).getPropertyValue("--mono");
-    ctx.fillStyle = "rgba(180,189,210,0.55)";
+    ctx.fillStyle = "#b4bdd2";
+    var labelFrom = W < 760 ? 0 : W * 0.42;
     for (var key in names) {
       var idx = +key;
-      if (VIS[idx] && SX[idx] > 10 && SX[idx] < W - 90) ctx.fillText(names[key], SX[idx] + 9, SY[idx] + 3.5);
+      if (!VIS[idx] || SX[idx] < labelFrom || SX[idx] > W - 90) continue;
+      var la = W < 760 ? (SY[idx] > H * 0.55 ? 0.55 : 0) : Math.min(1, (SX[idx] - labelFrom) / (W * 0.12)) * 0.55;
+      if (la <= 0) continue;
+      ctx.globalAlpha = la;
+      ctx.fillText(names[key], SX[idx] + 9, SY[idx] + 3.5);
     }
+    ctx.globalAlpha = 1;
 
     if (!reduced) drawSolve(t);
   }
@@ -219,11 +259,11 @@
     }
     // Quad match among the four brightest detections.
     if (found.length >= 4 && e > 3.2) {
-      var q = Math.min(1, (e - 3.2) / 0.9), order = [0, 1, 2, 3, 0, 2, 1, 3];
+      var q = Math.min(1, (e - 3.2) / 1.1), order = [0, 1, 1, 3, 3, 2, 2, 0, 0, 3, 1, 2];
       ctx.strokeStyle = "rgba(255,196,119," + (0.9 * A) + ")";
       ctx.lineWidth = 1.2;
       ctx.beginPath();
-      var segs = Math.floor(q * 4 + 0.999);
+      var segs = Math.ceil(q * 6);
       for (var s = 0; s < segs; s++) {
         var a = found[order[2 * s]], b = found[order[2 * s + 1]];
         ctx.moveTo(SX[a], SY[a]);
@@ -233,7 +273,7 @@
     }
     // Solution readout.
     if (e > 4.4) {
-      var rd = toRaDec(v), fov = 2 * half / scale / D2R * 2;
+      var rd = toRaDec(v), fov = 2 * half / scale / D2R;
       var lines = [
         found.length >= 4 ? "SOLVED" : "NO MATCH",
         "RA  " + fmtRa(rd[0]),

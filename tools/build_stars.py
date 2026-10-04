@@ -7,7 +7,7 @@ hip_main.dat comes from CDS (I/239); constellationship.fab ships with skyfield's
 import json
 import sys
 
-MAG_LIMIT = 5.6
+MAG_LIMIT = 6.3
 
 NAMES = {
     32349: "Sirius", 30438: "Canopus", 69673: "Arcturus", 91262: "Vega", 24608: "Capella",
