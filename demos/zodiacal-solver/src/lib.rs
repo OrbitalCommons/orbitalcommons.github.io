@@ -142,6 +142,7 @@ pub fn solve_sources(json: &str, width: f64, height: f64) -> Result<String, JsVa
                 &solution.verify_result.matched_pairs,
                 &sources,
                 index,
+                config.verify.match_radius_pix * 0.5,
             ) else {
                 break;
             };
@@ -186,6 +187,11 @@ fn refine(
     let w = wcs.image_size[0];
     let h = wcs.image_size[1];
     let reference = radec_to_xyz(wcs.crval[0], wcs.crval[1]);
+    // At an exact celestial pole RA/roll and the tangent basis are degenerate.
+    // The explorer stays within ±89°; fail gracefully for this singular input.
+    if reference[2].abs() == 1.0 {
+        return None;
+    }
     let mut a = DMatrix::<f64>::zeros(2 * pairs.len(), 8);
     let mut rhs = DVector::<f64>::zeros(2 * pairs.len());
     for (i, &(fi, si)) in pairs.iter().enumerate() {
@@ -219,6 +225,9 @@ fn refine(
     let center = combine(q[2], q[5], 1.0);
     let norm = center.iter().map(|x| x * x).sum::<f64>().sqrt();
     let center = center.map(|x| x / norm);
+    if center[2].abs() == 1.0 {
+        return None;
+    }
     let (ra, dec) = xyz_to_radec(center);
     let new_east = [-ra.sin(), ra.cos(), 0.0];
     let new_north = [-dec.sin() * ra.cos(), -dec.sin() * ra.sin(), dec.cos()];
@@ -257,6 +266,7 @@ fn robust_refine(
     pairs: &[(usize, usize)],
     sources: &[DetectedSource],
     index: &Index,
+    inlier_radius: f64,
 ) -> Option<zodiacal::geom::tan::TanWcs> {
     if pairs.len() < 4 {
         return None;
@@ -283,19 +293,22 @@ fn robust_refine(
         let Some(candidate) = refine(wcs, &sample, sources, index) else {
             continue;
         };
-        let mut inliers = Vec::new();
-        let mut error = 0.0;
+        let mut unique = std::collections::BTreeMap::new();
         for &(fi, si) in pairs {
             let s = &index.stars[si];
             if let Some((x, y)) = candidate.radec_to_pixel(s.ra, s.dec) {
                 let p = &sources[fi];
                 let d = (x - p.x).powi(2) + (y - p.y).powi(2);
-                if d < 4.0 {
-                    inliers.push((fi, si));
-                    error += d;
+                if d < inlier_radius * inlier_radius {
+                    let best = unique.entry(si).or_insert((fi, d));
+                    if d < best.1 {
+                        *best = (fi, d);
+                    }
                 }
             }
         }
+        let error: f64 = unique.values().map(|(_, distance)| distance).sum();
+        let inliers: Vec<_> = unique.into_iter().map(|(si, (fi, _))| (fi, si)).collect();
         if inliers.len() > best.len() || (inliers.len() == best.len() && error < best_error) {
             best = inliers;
             best_error = error;
