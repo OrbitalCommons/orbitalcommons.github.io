@@ -35,7 +35,7 @@
 
 <main id="main">
   <section class="hero" aria-labelledby="hero-title">
-    <canvas id="sky" aria-label="Interactive star map rendered from the Hipparcos catalogue. Drag to look around, click to run a plate solve." role="img"></canvas>
+    <canvas id="sky" tabindex="0" aria-label="Interactive star map rendered from the Hipparcos catalogue. Drag or use arrow keys to look around, click to run a plate solve." role="img"></canvas>
     <div class="hero-fade" aria-hidden="true"></div>
     <div class="wrap hero-inner">
       <p class="eyebrow">Open-source space software</p>
@@ -52,7 +52,7 @@
       </div>
     </div>
     <div class="wrap hero-foot">
-      <p id="sky-hud" class="hud" aria-hidden="true">Hipparcos catalogue</p>
+      <div class="hud-l"><button id="sky-zenith" class="hud-btn" type="button" aria-pressed="false">&#x2316; overhead now</button><p id="sky-hud" class="hud" aria-hidden="true">Hipparcos catalogue</p></div>
       <p class="hud hint" aria-hidden="true">drag to look around · click to plate-solve</p>
     </div>
   </section>

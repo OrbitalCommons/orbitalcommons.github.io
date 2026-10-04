@@ -23,7 +23,7 @@ body { background:
 .hero-inner > * { max-width: 640px; pointer-events: auto; }
 .hero h1 { margin-bottom: 1.4rem; text-wrap: balance; }
 .hero .lede { margin-bottom: 2.2rem; color: #c3cbe0; }
-.hero-foot { position: absolute; left: 0; right: 0; bottom: 1.4rem; display: flex; justify-content: space-between;
+.hero-foot { position: absolute; left: 0; right: 0; bottom: 1.4rem; display: flex; justify-content: space-between; align-items: center;
   pointer-events: none; }
 .hud { font: 500 .7rem/1 var(--mono); letter-spacing: .08em; color: var(--ink-3); margin: 0; white-space: pre; }
 .hint::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--ok);
@@ -165,3 +165,10 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -3; pointer-even
     radial-gradient(circle at 331px 271px, rgba(200, 215, 255, .4) 0 0.6px, transparent 1.1px),
     radial-gradient(circle at 211px 331px, rgba(255, 255, 255, .3) 0 0.6px, transparent 1.1px);
   background-size: 360px 360px; }
+
+.hud-l { display: flex; align-items: center; gap: 1rem; pointer-events: auto; }
+.hud-btn { font: 600 .7rem/1 var(--mono); letter-spacing: .06em; color: var(--ink-2); cursor: pointer;
+  background: rgba(5, 7, 13, .6); border: 1px solid var(--line-strong); border-radius: 999px; padding: .45rem .8rem;
+  transition: color .2s, border-color .2s; }
+.hud-btn:hover, .hud-btn[aria-pressed="true"] { color: var(--ink); border-color: var(--accent); }
+#sky:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }

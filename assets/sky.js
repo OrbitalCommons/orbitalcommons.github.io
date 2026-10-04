@@ -218,7 +218,7 @@
     var labelFrom = W < 760 ? 0 : W * 0.42;
     for (var key in names) {
       var idx = +key;
-      if (!VIS[idx] || SX[idx] < labelFrom || SX[idx] > W - 90) continue;
+      if (!VIS[idx] || SX[idx] < labelFrom || SX[idx] > W - 90 || SY[idx] < 72) continue;
       var la = W < 760 ? (SY[idx] > H * 0.55 ? 0.55 : 0) : Math.min(1, (SX[idx] - labelFrom) / (W * 0.12)) * 0.55;
       if (la <= 0) continue;
       ctx.globalAlpha = la;
@@ -305,7 +305,7 @@
 
   function updateHud() {
     if (!hud) return;
-    hud.textContent = "RA " + fmtRa(((cam.ra % 360) + 360) % 360).slice(0, 7) + "  DEC " + fmtDec(cam.dec) +
+    hud.textContent = (overhead ? "\u2248 ZENITH  " : "") + "RA " + fmtRa(((cam.ra % 360) + 360) % 360).slice(0, 7) + "  DEC " + fmtDec(cam.dec) +
       (W < 560 ? "" : "  ·  " + n.toLocaleString() + " Hipparcos stars");
   }
 
@@ -335,13 +335,54 @@
   });
   canvas.addEventListener("pointercancel", endDrag);
 
+  // Fly to the local zenith: right ascension equals local sidereal time, declination equals latitude.
+  // Longitude is estimated from the timezone offset so no location permission is needed.
+  var goal = null, overhead = false;
+  function zenith() {
+    var now = Date.now(), jd = now / 86400000 + 2440587.5;
+    var gmst = (280.46061837 + 360.98564736629 * (jd - 2451545)) % 360;
+    var lon = -new Date().getTimezoneOffset() / 60 * 15;
+    var lat = lon > -30 && lon < 60 ? 48 : lon >= 60 ? 30 : 38;
+    return [((gmst + lon) % 360 + 360) % 360, lat];
+  }
+  function flyTo(ra, dec) {
+    var ra0 = ((cam.ra % 360) + 360) % 360, dra = ((ra - ra0 + 540) % 360) - 180;
+    cam.vra = cam.vdec = 0;
+    solve = null;
+    if (reduced) { cam.ra = ra; cam.dec = dec; frame(performance.now()); return; }
+    goal = { t0: performance.now() / 1000, ra0: ra0, dra: dra, dec0: cam.dec, dec: dec };
+    cam.ra = ra0;
+    start();
+  }
+  var zbtn = document.getElementById("sky-zenith");
+  if (zbtn) zbtn.addEventListener("click", function () {
+    overhead = !overhead;
+    zbtn.setAttribute("aria-pressed", overhead);
+    zbtn.textContent = overhead ? "\u21ba tour the sky" : "\u2316 overhead now";
+    if (overhead) { var z = zenith(); flyTo(z[0], z[1]); } else flyTo(98, -4);
+  });
+
+  // Arrow keys pan when the map has focus.
+  canvas.addEventListener("keydown", function (ev) {
+    var k = { ArrowLeft: [1, 0], ArrowRight: [-1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[ev.key];
+    if (!k) return;
+    ev.preventDefault();
+    cam.vra = k[0] * 1.5; cam.vdec = k[1] * 1.5;
+    if (reduced) { cam.ra += cam.vra; cam.dec = Math.max(-80, Math.min(80, cam.dec + cam.vdec)); frame(performance.now()); }
+  });
+
   var running = false, visible = true, last = 0, hudT = 0;
   function frame(now) {
     var t = now / 1000, dt = Math.min(0.05, t - (last || t));
     last = t;
-    if (!dragging && !reduced) {
+    if (goal) {
+      var p = Math.min(1, (t - goal.t0) / 2.2), ease = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+      cam.ra = goal.ra0 + goal.dra * ease;
+      cam.dec = goal.dec0 + (goal.dec - goal.dec0) * ease;
+      if (p >= 1) goal = null;
+    } else if (!dragging && !reduced) {
       cam.vra *= 0.94; cam.vdec *= 0.94;
-      cam.ra += cam.vra + dt * 1.1;
+      cam.ra += cam.vra + dt * (overhead ? 0.0042 : 1.1);
       cam.dec = Math.max(-80, Math.min(80, cam.dec + cam.vdec));
     }
     draw(t);
