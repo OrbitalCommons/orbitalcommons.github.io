@@ -126,6 +126,7 @@
 }
 .code-label {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   min-height: 42px;
@@ -142,6 +143,8 @@
   padding: 1.1rem;
 }
 .copy-button {
+  max-width: 100%;
+  overflow-wrap: anywhere;
   background: rgba(255, 255, 255, .04);
   color: var(--ink-2);
   border: 1px solid var(--line);
@@ -404,11 +407,19 @@
   overflow: hidden;
   margin: 0;
 }
+.plot-display picture {
+  display: block;
+}
 .plot-display img {
   width: 100%;
   height: auto;
   aspect-ratio: 7 / 4;
   object-fit: contain;
+}
+@media (max-width: 640px) {
+  .plot-display img {
+    aspect-ratio: 16 / 15;
+  }
 }
 .plot-display figcaption {
   padding: 0.7rem 1rem;

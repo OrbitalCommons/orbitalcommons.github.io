@@ -170,6 +170,17 @@ test("plot selection updates the figure and downloadable outputs", async ({
     page.getByRole("button", { name: "Line", exact: true }),
   ).toHaveAttribute("aria-pressed", "false");
   await expect(page.locator("#plot-image")).toHaveJSProperty("complete", true);
+  await page.setViewportSize({ width: 320, height: 720 });
+  await expect(page.locator("#plot-image")).toHaveJSProperty("currentSrc", new URL("/projects/rizzma/plots/sources-mobile.svg", page.url()).href);
+  await page.getByRole("button", { name: "Image", exact: true }).click();
+  await expect(page.locator("#plot-image")).toHaveJSProperty("currentSrc", new URL("/projects/rizzma/plots/sensor-mobile.svg", page.url()).href);
+  await expect.poll(() => page.locator("#plot-image").evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+  const compact = await page.locator("#plot-image").boundingBox();
+  expect(compact.width / compact.height).toBeCloseTo(320 / 300, 2);
+  await expect(page.locator("#plot-svg")).toHaveAttribute("href", "plots/sensor.svg");
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await expect(page.locator("#plot-image")).toHaveJSProperty("currentSrc", new URL("/projects/rizzma/plots/sensor.svg", page.url()).href);
+
 });
 
 test("project content remains navigable without JavaScript", async ({
@@ -285,7 +296,9 @@ test("code copy selects the snippet when clipboard permission is denied", async 
       },
     }),
   );
+  await page.setViewportSize({ width: 320, height: 720 });
   await page.goto("/projects/rizzma/");
+  await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
   await page
     .getByRole("button", { name: "Copy Terminal code", exact: true })
     .click();
@@ -293,5 +306,6 @@ test("code copy selects the snippet when clipboard permission is denied", async 
   expect(await page.evaluate(() => window.getSelection().toString())).toBe(
     "cargo add rizzma",
   );
+  expect(await page.locator(".code-label").first().evaluate(node => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
   expect(errors).toEqual([]);
 });

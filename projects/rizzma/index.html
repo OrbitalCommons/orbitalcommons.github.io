@@ -185,6 +185,8 @@
                 </button>
               </div>
               <figure class="plot-display">
+                <picture>
+                  <source id="plot-compact" media="(max-width: 640px)" srcset="plots/signal-mobile.svg" width="320" height="300">
                 <img
                   id="plot-image"
                   src="plots/signal.svg"
@@ -193,6 +195,7 @@
                   height="400"
                   loading="lazy"
                 />
+                </picture>
                 <figcaption id="plot-caption">
                   A fading signal · 400 synthetic samples · SVG output
                 </figcaption>

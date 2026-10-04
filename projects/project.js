@@ -134,7 +134,7 @@
       ],
       sources: [
         "A field of points · 180 synthetic positions · SVG output",
-        "A cyan scatter plot showing 180 points arranged in a sunflower spiral.",
+        "A blue scatter plot showing 180 points arranged in a sunflower spiral.",
       ],
       sensor: [
         "A synthetic sensor frame · 64 × 64 samples · SVG output",
@@ -148,6 +148,7 @@
           item.setAttribute("aria-pressed", String(item === button)),
         );
         const img = one("#plot-image");
+        one("#plot-compact").srcset = `plots/${kind}-mobile.svg`;
         img.src = `plots/${kind}.svg`;
         img.alt = plots[kind][1];
         one("#plot-caption").textContent = plots[kind][0];

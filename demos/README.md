@@ -35,7 +35,11 @@ silently remove the browser memory bound.
 
 The three gallery views are actual output from **rizzma 1.13.3**, with synthetic
 input data and a shared dark palette. SVGs and PNGs are checked in so opening the
-page never requires compiling Rust or fetching a plotting library.
+page never requires compiling Rust or fetching a plotting library. The generator
+produces 700 × 400 desktop SVG/PNG files and compact 320 × 300 `*-mobile.svg`
+variants with larger labels and fewer ticks. A native `<picture>` source selects
+the compact figure at viewport widths up to 640px, including without JavaScript;
+download links always point to the full desktop outputs.
 
 ```sh
 cargo run --locked --release --manifest-path demos/plots/Cargo.toml \
