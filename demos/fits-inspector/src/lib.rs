@@ -55,6 +55,23 @@ fn inspect(data: &[u8]) -> Result<Inspection, String> {
     if !data.starts_with(b"SIMPLE  =") {
         return Err("Choose an uncompressed FITS file beginning with a SIMPLE header.".into());
     }
+    // Bound primary-header allocation before asking the general parser for HDUs.
+    // The generated Wasm module also caps linear memory at 128 MiB, covering
+    // malformed extension headers as well as the primary HDU.
+    let header_len = fitsio_pure::header::header_byte_len(data)
+        .map_err(|e| format!("Could not read the FITS header: {e}"))?;
+    if header_len > 256 * 1024 {
+        return Err("This demo supports primary headers up to 256 KiB.".into());
+    }
+    let header = fitsio_pure::header::parse_header_blocks(&data[..header_len])
+        .map_err(|e| format!("Could not read the FITS header: {e}"))?;
+    let axes = header
+        .iter()
+        .find(|c| c.keyword_str() == "NAXIS")
+        .and_then(|c| c.value.as_ref());
+    if !matches!(axes, Some(Value::Integer(n)) if (0..=999).contains(n)) {
+        return Err("The primary NAXIS value must be an integer from 0 to 999.".into());
+    }
     let fits = parse_fits(data).map_err(|e| format!("Could not read this FITS file: {e}"))?;
     let hdu = fits.hdus.first().ok_or("The file contains no HDUs.")?;
     let (kind, dimensions, bitpix) = match &hdu.info {
@@ -248,5 +265,16 @@ mod tests {
         assert!(inspect(&fixture(&[], &[1, 2, 3, 4])[..2900]).is_ok());
         assert!(inspect(&fixture(&[], &[1, 2, 3, 4])[..2882]).is_err());
         assert!(inspect(&vec![0; MAX_BYTES + 1]).is_err());
+    }
+
+    #[test]
+    fn rejects_unbounded_axis_counts_before_allocating() {
+        for value in [-1, 1_000, i64::MAX] {
+            let mut file = fixture(&[], &[1, 2, 3, 4]);
+            let card = format!("NAXIS   = {value:>20}");
+            file[160..240].fill(b' ');
+            file[160..160 + card.len()].copy_from_slice(card.as_bytes());
+            assert!(inspect(&file).err().unwrap().contains("NAXIS"));
+        }
     }
 }

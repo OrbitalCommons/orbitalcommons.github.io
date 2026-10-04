@@ -101,3 +101,13 @@ test('project content remains navigable without JavaScript', async ({ browser })
   await expect(page.locator('#fits-sample')).toBeHidden();
   await context.close();
 });
+
+test('FITS workbench rejects an unbounded primary-axis count and recovers', async ({ page }) => {
+  await page.goto('/projects/fitsio-pure/');
+  const bytes = Buffer.from(fs.readFileSync('projects/fitsio-pure/sample.fits'));
+  bytes.write('NAXIS   =  9223372036854775807'.padEnd(80, ' '), 160, 80, 'ascii');
+  await page.locator('#fits-file').setInputFiles({ name: 'invalid-axes.fits', mimeType: 'application/fits', buffer: bytes });
+  await expect(page.locator('#fits-status')).toContainText('NAXIS value must be an integer');
+  await page.getByRole('button', { name: 'Open sample star field' }).click();
+  await expect(page.locator('#fits-status')).toContainText('parsed locally');
+});
