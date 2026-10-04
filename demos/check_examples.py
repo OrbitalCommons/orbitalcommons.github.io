@@ -3,6 +3,7 @@
 Use --extract-only to populate sources before running cargo commands manually.
 Generated sources are ignored; the website HTML is the source of truth.
 """
+import ast
 from html.parser import HTMLParser
 from pathlib import Path
 import subprocess
@@ -51,6 +52,16 @@ for name in ["starfield", "fitsio-pure", "rizzma", "starfield-datastore"]:
         raise RuntimeError(f"Missing Rust example on {name}")
     (out / (name + ".rs")).write_text(code + "\n")
     print(f"Extracted {name}")
+
+# The camera example requires libcamera hardware; check its syntax without
+# pretending that a browser or CI runner can exercise the capture path.
+parser = Example()
+parser.feed((ROOT / "projects/scicamera/index.html").read_text())
+code = "".join(parser.code)
+if not code.strip():
+    raise RuntimeError("Missing Python example on scicamera")
+ast.parse(code, filename="scicamera-example.py")
+print("Checked scicamera Python syntax (hardware execution not performed)")
 
 if "--extract-only" not in sys.argv:
     subprocess.run(["cargo", "check", "--locked", "--bins", "--manifest-path", str(MANIFEST)], check=True)

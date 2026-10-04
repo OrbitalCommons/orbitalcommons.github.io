@@ -167,10 +167,11 @@ test("plot selection updates the figure and downloadable outputs", async ({
 
 test("project content remains navigable without JavaScript", async ({
   browser,
+  baseURL,
 }) => {
-  const context = await browser.newContext({ javaScriptEnabled: false });
+  const context = await browser.newContext({ javaScriptEnabled: false, baseURL });
   const page = await context.newPage();
-  await page.goto("http://127.0.0.1:4173/projects/fitsio-pure/");
+  await page.goto("/projects/fitsio-pure/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "fitsio-pure",
   );
@@ -215,6 +216,7 @@ for (const project of ["starfield", "zodiacal"]) {
   test(`${project} header renders real sky art with a no-script fallback`, async ({
     page,
     browser,
+    baseURL,
   }) => {
     const loads = [];
     page.on("request", (request) => {
@@ -228,9 +230,9 @@ for (const project of ["starfield", "zodiacal"]) {
         "catalog stars",
       );
     expect(loads).toHaveLength(1);
-    const context = await browser.newContext({ javaScriptEnabled: false });
+    const context = await browser.newContext({ javaScriptEnabled: false, baseURL });
     const fallback = await context.newPage();
-    await fallback.goto(`http://127.0.0.1:4173/projects/${project}/`);
+    await fallback.goto(`/projects/${project}/`);
     await expect(fallback.locator(".sky-art-fallback")).toBeVisible();
     await expect(fallback.locator("canvas.sky-art")).toBeHidden();
     await context.close();
