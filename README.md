@@ -55,8 +55,9 @@ npx playwright install chromium firefox webkit
 npm test
 ```
 
-`npm run test:links` checks local links, fragment identifiers, image alternative
-text, and basic document metadata with Python's standard library.
+`npm run test:links` checks local links (including responsive image sources),
+fragment identifiers, image alternative text, and basic document metadata with
+Python's standard library.
 `npm run test:browser` opens every page in desktop/mobile Chromium, desktop
 Firefox, and mobile WebKit and checks
 for script errors, failed local requests, unexpected external requests on initial
