@@ -200,3 +200,12 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -3; pointer-even
 .proof .try { margin-top: 1.6rem; padding: 1rem 1.1rem; border: 1px solid var(--line-strong); border-radius: 12px;
   background: rgba(139, 227, 176, .05); font-size: .92rem; }
 .proof .try strong { color: var(--ok); }
+
+/* Sky explorer band */
+.sky-band-grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 3.5rem; align-items: center; }
+.sky-band-art { margin: 0; border: 1px solid var(--line-strong); border-radius: var(--radius); overflow: hidden; background: #05070d;
+  box-shadow: 0 30px 70px -35px rgba(91, 110, 225, .45); }
+.sky-band-art .sky-art-fallback { display: block; width: 100%; height: auto; }
+.sky-band-art canvas { display: block; }
+.sky-band-art figcaption { padding: .7rem 1rem; border-top: 1px solid var(--line); font: 500 .74rem var(--mono); color: var(--ink-3); }
+@media (max-width: 860px) { .sky-band-grid { grid-template-columns: 1fr; gap: 2rem; } }
