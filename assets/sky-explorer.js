@@ -157,7 +157,15 @@
     var r = solveState.result;
     // The solved frame uses the recovered plate scale, so it shows scale errors as well as pointing.
     if (r) strokeField(fieldCorners(r.ra, r.dec, 2 * Math.atan(r.scaleArcsecPerPx / 3600 * D2R * FRAME_W / 2) / D2R, r.rotationDeg),
-      "rgba(139,227,176,0.95)");
+      S.QUAD.match);
+    // The winning quad, in the solver's own A/B/C/D order and the Manim colours.
+    if (r && r.match && r.match.stars) {
+      var pts = r.match.stars.map(function (s) {
+        var u = S.radec(s.ra, s.dec), out = [0, 0];
+        return view.project(u[0], u[1], u[2], out) ? out : [NaN, NaN];
+      });
+      S.drawQuad(ctx, pts, 1, 1, "700 11px " + MONO);
+    }
   }
   function gauss() { return Math.sqrt(-2 * Math.log(1 - Math.random())) * Math.cos(6.283 * Math.random()); }
   function angularArcsec(ra1, dec1, ra2, dec2) {

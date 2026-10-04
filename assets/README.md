@@ -61,7 +61,7 @@ Uranus 9″ and Neptune 29″.
 
 ## Other files
 
-`og.jpg` is a 1200×630 capture of `tools/og.html`; `noise.png` is a 96×96 random dither tile;
+`og.jpg` is a 1200×630 capture of `tools/og.html`; `noise.png` is a 48×48 random dither tile;
 `mark.svg`, `favicon.svg` and `apple-touch-icon.png` are the logo.
 
 ## Identity

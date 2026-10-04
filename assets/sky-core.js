@@ -321,6 +321,113 @@
     return anchors;
   }
 
+  // Quad roles and colours from the zodiacal Manim animation (CosmicFrontierLabs/cfl-manimations,
+  // zodiacal_solver.py), so the same star plays the same role in the same colour everywhere.
+  var QUAD = {
+    A: "#FC6255", B: "#83C167", C: "#58C4DD", D: "#FF862F",
+    AB: "#FFFF00", AX: "#58C4DD", circle: "#888888", label: "#BBBBBB", match: "#83C167"
+  };
+
+  // Geometric hash of four points (Lang et al. 2010, as in zodiacal): A and B are the most
+  // distant pair; the similarity taking A to (0, 0) and B to (1, 1) carries C and D to the code
+  // (cx, cy, dx, dy). As in zodiacal's enforce_invariants, A and B swap if cx + dx > 1 (mapping
+  // each value v to 1 - v), then C and D are ordered so cx <= dx. `valid` requires C and D inside
+  // the circle on AB as diameter. Points are [x, y]; returns the A, B, C, D order as indices.
+  function quadCode(pts) {
+    var a = 0, b = 1, best = -1;
+    for (var i = 0; i < 4; i++) {
+      for (var j = i + 1; j < 4; j++) {
+        var d = Math.pow(pts[i][0] - pts[j][0], 2) + Math.pow(pts[i][1] - pts[j][1], 2);
+        if (d > best) { best = d; a = i; b = j; }
+      }
+    }
+    var rest = [0, 1, 2, 3].filter(function (k) { return k !== a && k !== b; });
+    // z -> (z - A) / (B - A) * (1 + i), in complex arithmetic.
+    var bx = pts[b][0] - pts[a][0], by = pts[b][1] - pts[a][1], den = bx * bx + by * by;
+    if (!(den > 0) || !isFinite(den)) return { order: [0, 1, 2, 3], code: [0, 0, 0, 0], valid: false };
+    function map(p) {
+      var zx = p[0] - pts[a][0], zy = p[1] - pts[a][1];
+      var qx = (zx * bx + zy * by) / den, qy = (zy * bx - zx * by) / den;
+      return [qx - qy, qx + qy];
+    }
+    var c = map(pts[rest[0]]), d2 = map(pts[rest[1]]);
+    if (c[0] + d2[0] > 1) {
+      var t = a; a = b; b = t;
+      c = c.map(function (v) { return 1 - v; });
+      d2 = d2.map(function (v) { return 1 - v; });
+    }
+    if (c[0] > d2[0]) { var tmp = c; c = d2; d2 = tmp; rest.reverse(); }
+    var inside = function (p) { return Math.pow(p[0] - 0.5, 2) + Math.pow(p[1] - 0.5, 2) < 0.5; };
+    var code = [c[0], c[1], d2[0], d2[1]];
+    return { order: [a, b, rest[0], rest[1]], code: code, valid: code.every(isFinite) && inside(c) && inside(d2) };
+  }
+
+  // Draw a quad given screen points in A, B, C, D order, as the Manim animation does: the dashed
+  // grey circle on AB, the yellow AB line, cyan AC and AD lines, then the four role-coloured stars.
+  // `progress` runs 0 to 1 through those steps; `font` labels the stars A to D.
+  function drawQuad(ctx, pts, progress, alpha, font) {
+    if (pts.some(function (p) { return !isFinite(p[0]) || !isFinite(p[1]); })) return;
+    var q = progress, a = pts[0], b = pts[1];
+    var mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2, r = Math.hypot(b[0] - a[0], b[1] - a[1]) / 2;
+    ctx.save();
+    ctx.globalAlpha = 0.8 * alpha * Math.min(1, q * 3);
+    ctx.strokeStyle = QUAD.circle;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.arc(mx, my, r, 0, 6.283);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    var ab = Math.min(1, Math.max(0, (q - 0.2) / 0.3));
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = QUAD.AB;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(a[0], a[1]);
+    ctx.lineTo(a[0] + (b[0] - a[0]) * ab, a[1] + (b[1] - a[1]) * ab);
+    ctx.stroke();
+    var ax = Math.min(1, Math.max(0, (q - 0.5) / 0.3));
+    ctx.strokeStyle = QUAD.AX;
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    for (var k = 2; k < 4; k++) {
+      ctx.moveTo(a[0], a[1]);
+      ctx.lineTo(a[0] + (pts[k][0] - a[0]) * ax, a[1] + (pts[k][1] - a[1]) * ax);
+    }
+    ctx.stroke();
+    var roles = ["A", "B", "C", "D"];
+    ctx.font = font;
+    for (var s = 0; s < 4; s++) {
+      var show = Math.min(1, Math.max(0, (q - 0.15 * s) / 0.2));
+      if (show <= 0) continue;
+      ctx.globalAlpha = alpha * show;
+      ctx.fillStyle = QUAD[roles[s]];
+      ctx.beginPath();
+      ctx.arc(pts[s][0], pts[s][1], 3.6, 0, 6.283);
+      ctx.fill();
+      ctx.fillText(roles[s], pts[s][0] + 6, pts[s][1] - 6);
+    }
+    ctx.restore();
+  }
+
+  // Draw "(cx, cy, dx, dy)" in the current font, cx and cy in C's colour and dx and dy in D's, as in
+  // the Manim index table. Returns the drawn width.
+  function drawCode(ctx, code, x, y, alpha) {
+    var parts = code.map(function (v) { return (v < 0 ? "−" : "+") + Math.abs(v).toFixed(2); });
+    var bits = ["(", parts[0], ", ", parts[1], ", ", parts[2], ", ", parts[3], ")"];
+    var colors = [QUAD.label, QUAD.C, QUAD.label, QUAD.C, QUAD.label, QUAD.D, QUAD.label, QUAD.D, QUAD.label];
+    var cursor = x;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    for (var k = 0; k < bits.length; k++) {
+      ctx.fillStyle = colors[k];
+      ctx.fillText(bits[k], cursor, y);
+      cursor += ctx.measureText(bits[k]).width;
+    }
+    ctx.restore();
+    return cursor - x;
+  }
+
   // Greedy label placement: returns false when the box overlaps one already placed. Callers place
   // labels brightest first, so crowded groups such as Orion's Belt keep their brightest name.
   function Labels() { this.boxes = []; }
@@ -358,6 +465,7 @@
 
   window.OCSky = {
     D2R: D2R, catalog: catalog, View: View, planets: planets, tanField: tanField, constellations: constellations, Labels: Labels,
+    QUAD: QUAD, quadCode: quadCode, drawQuad: drawQuad, drawCode: drawCode,
     radec: radec, toRaDec: toRaDec, fmtRa: fmtRa, fmtDec: fmtDec
   };
 })();
