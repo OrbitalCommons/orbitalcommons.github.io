@@ -188,6 +188,7 @@
 }
 .demo-topline {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
@@ -205,7 +206,9 @@
   border: 1px solid rgba(139, 227, 176, 0.25);
   border-radius: 99px;
   padding: 0.35rem 0.6rem;
-  white-space: nowrap;
+  white-space: normal;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 .demo-panel canvas,
 .demo-panel > svg {
@@ -221,6 +224,8 @@
   margin: 1.2rem 0;
 }
 .demo-controls label {
+  min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
   gap: 0.7rem;

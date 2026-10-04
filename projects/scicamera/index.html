@@ -611,6 +611,7 @@
             <div class="sensor-lab" id="exposure-lab" hidden>
               <p class="eyebrow">Synthetic sensor · interactive illustration</p>
               <h3>Give the light a little longer.</h3>
+              <p class="demo-note">A synthetic illustration of exposure, independent of scicamera. No camera is accessed.</p>
               <p>Increase the exposure to reveal faint stars. Push it further and the brightest cores saturate, losing information.</p>
               <div class="sensor-layout">
                 <figure>
@@ -628,8 +629,8 @@
               </div>
               <details>
                 <summary>What this model includes</summary>
-                <p>This browser illustration is independent of scicamera. Its 65 artificial stars use Gaussian profiles. Illustrative settings: 8 electrons/pixel/second background, 4-electron RMS read noise, 1 electron/ADU gain, a 100-ADU bias and clipping at 4095 ADU. These are not specifications for any camera.</p>
-                <p>Shot noise uses Poisson sampling (a Gaussian approximation above 30 electrons); read noise is Gaussian. The seed is fixed for repeatability. Turning noise off shows the expected signal. There is no atmosphere, tracking error, colour filter, hot-pixel model or calibration.</p>
+                <p>This browser illustration is independent of scicamera. Its 65 artificial stars use Gaussian profiles. Illustrative settings: 8 electrons/pixel/second background, 4-electron RMS read noise, 1 electron/ADU gain, a 100-ADU bias and 12-bit clipping at 4095 ADU. These are not specifications for any camera.</p>
+                <p>Shot noise uses Poisson sampling (a Gaussian approximation at or above 30 electrons); read noise is Gaussian. The seed is fixed for repeatability. Turning noise off shows the expected signal, rounded and clipped. There is no atmosphere, tracking error, colour filter, hot-pixel model or calibration.</p>
                 <p>The preview uses a fixed square-root stretch; the FITS file stores the linear 16-bit integer array with exposure metadata. See STScI’s <a href="https://hst-docs.stsci.edu/wfc3dhb/chapter-5-wfc3-uvis-sources-of-error/5-1-gain-and-read-noise">introduction to gain and read noise</a> for the underlying concepts.</p>
               </details>
             </div>

@@ -1,9 +1,9 @@
 /* The synthetic detector workbench is separate from the explanatory quad demo. */
 .plate-workbench canvas { display: block; aspect-ratio: 4 / 3; }
 .plate-caption { font: .75rem/1.6 var(--mono); color: var(--ink-2); margin: .8rem 0; }
-.plate-controls { border: 0; padding: 0; margin: 1.2rem 0; display: flex;
+.plate-controls { min-width: 0; border: 0; padding: 0; margin: 1.2rem 0; display: flex;
   flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; }
-.plate-controls label { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem;
+.plate-controls label { min-width: 0; max-width: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: .65rem;
   font-size: .82rem; color: var(--ink-2); }
 .plate-controls select { background: var(--bg-2); border: 1px solid var(--line-strong);
   border-radius: 8px; color: var(--ink); padding: .6rem; font: inherit; max-width: 100%; }
