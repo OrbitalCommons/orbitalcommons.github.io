@@ -50,11 +50,16 @@
 
   // Plate-solve illustration: a field locks on, detects sources, matches a quad, reports the centre.
   var solve = null, CYCLE = 9.5;
+  // Top of the hero's control row in canvas coordinates; on phones the field sits just above it.
+  function footTop() {
+    var foot = document.querySelector(".hero-foot");
+    return foot ? foot.getBoundingClientRect().top - canvas.getBoundingClientRect().top : H - 64;
+  }
   function newSolve(t, at) {
     var mobile = W < 760;
     var size = mobile ? 116 : 190;
     var sx = at ? at[0] : mobile ? W - size / 2 - 22 - Math.random() * 20 : W * (0.62 + Math.random() * 0.2);
-    var sy = at ? at[1] : mobile ? H - size / 2 - 64 : H * (0.3 + Math.random() * 0.35);
+    var sy = at ? at[1] : mobile ? footTop() - size / 2 - 14 : H * (0.3 + Math.random() * 0.35);
     solve = { t0: t, v: view.unproject(sx, sy), size: size, stars: null, real: null };
   }
 
