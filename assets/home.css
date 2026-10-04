@@ -154,3 +154,14 @@ h3.sub { margin: 3.5rem 0 1rem; font: 600 .74rem/1 var(--mono); letter-spacing: 
 .bar:hover i, .bar:focus i { filter: brightness(1.25); }
 .chart .bars { margin-bottom: 2.2rem; }
 @media (max-width: 860px) { .proof-grid { grid-template-columns: 1fr; } .bars { height: 220px; } }
+
+/* Faint fixed star dust behind everything below the hero */
+body::before { content: ""; position: fixed; inset: 0; z-index: -3; pointer-events: none; opacity: .7;
+  background-image:
+    radial-gradient(circle at 23px 41px, rgba(255, 255, 255, .5) 0 0.6px, transparent 1.1px),
+    radial-gradient(circle at 157px 113px, rgba(200, 215, 255, .45) 0 0.6px, transparent 1.1px),
+    radial-gradient(circle at 281px 67px, rgba(255, 240, 220, .5) 0 0.9px, transparent 1.65px),
+    radial-gradient(circle at 97px 233px, rgba(255, 255, 255, .35) 0 0.6px, transparent 1.1px),
+    radial-gradient(circle at 331px 271px, rgba(200, 215, 255, .4) 0 0.6px, transparent 1.1px),
+    radial-gradient(circle at 211px 331px, rgba(255, 255, 255, .3) 0 0.6px, transparent 1.1px);
+  background-size: 360px 360px; }
