@@ -13,23 +13,23 @@ cubes. Header output is limited to 100 cards.
 
 The page rejects files larger than 16 MiB before reading their bytes. Parsing
 runs in a dedicated worker with a 15-second timeout; the worker is destroyed
-after every request. No user file is uploaded or persisted. The WebAssembly is
+after every request. The checked-in module caps linear memory at 128 MiB and
+the adapter bounds the primary header before parsing HDUs. No user file is
+uploaded or persisted. The WebAssembly is
 only loaded when the visitor opens a sample or file.
 
 ```sh
 rustup target add wasm32-unknown-unknown
 cargo install wasm-bindgen-cli --version 0.2.128 --locked
 cargo test --locked --manifest-path demos/fits-inspector/Cargo.toml
-cargo build --locked --release --target wasm32-unknown-unknown \
-  --manifest-path demos/fits-inspector/Cargo.toml
-wasm-bindgen --target web --no-typescript --out-name fits_inspector \
-  --out-dir projects/fitsio-pure/wasm \
-  demos/fits-inspector/target/wasm32-unknown-unknown/release/orbitalcommons_fits_inspector.wasm
+./demos/build_fits.sh
 python3 demos/make_sample.py
 ```
 
 Commit the source, Cargo.lock, generated JavaScript/WebAssembly, and sample when
 updating the adapter. Keep the wasm-bindgen CLI version equal to Cargo.toml.
+The memory-limit test inspects the shipped binary, so regeneration cannot
+silently remove the browser memory bound.
 
 ## rizzma figures
 
