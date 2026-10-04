@@ -30,11 +30,13 @@
     });
   }
   var hashTimer = 0;
+  function hashFor() {
+    return "#ra=" + norm(state.ra).toFixed(2) + "&dec=" + state.dec.toFixed(2) + "&fov=" + state.fov.toFixed(0) + "&d=" + state.days;
+  }
   function writeHash() {
     clearTimeout(hashTimer);
     hashTimer = setTimeout(function () {
-      var h = "#ra=" + norm(state.ra).toFixed(2) + "&dec=" + state.dec.toFixed(2) + "&fov=" + state.fov.toFixed(0) + "&d=" + state.days;
-      if (history.replaceState) history.replaceState(null, "", h);
+      if (history.replaceState) history.replaceState(null, "", hashFor());
     }, 250);
   }
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
@@ -355,6 +357,25 @@
   }
   $("x-in").addEventListener("click", function () { zoomBy(1 / 1.3); });
   $("x-out").addEventListener("click", function () { zoomBy(1.3); });
+
+  // Copy a link to exactly this view and date; if the clipboard is unavailable, show the link instead.
+  var shareBtn = $("x-share");
+  shareBtn.addEventListener("click", function () {
+    var url = location.origin + location.pathname + hashFor();
+    if (history.replaceState) history.replaceState(null, "", hashFor());
+    $("x-q").removeAttribute("aria-invalid");
+    function done(text) {
+      shareBtn.textContent = text;
+      setTimeout(function () { shareBtn.textContent = "Copy link"; }, 1800);
+    }
+    function fallback() { $("x-status").textContent = "Link to this view: " + url; }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(url).then(function () {
+        done("Copied");
+        $("x-status").textContent = "Link to this view copied.";
+      }, fallback);
+    } else fallback();
+  });
 
   // Search: named stars and planets.
   var dl = $("x-names");
