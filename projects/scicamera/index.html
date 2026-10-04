@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>scicamera · OrbitalCommons</title>
+    <meta
+      name="description"
+      content="Scientific camera capture in Python, built on libcamera. Configure still-image capture and bring pixel arrays, buffers, and metadata into your imaging workflow."
+    />
+    <link
+      rel="canonical"
+      href="https://orbitalcommons.github.io/projects/scicamera/"
+    />
+    <meta property="og:title" content="scicamera · OrbitalCommons" />
+    <meta
+      property="og:description"
+      content="Scientific camera capture in Python, built on libcamera. Configure still-image capture and bring pixel arrays, buffers, and metadata into your imaging workflow."
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://orbitalcommons.github.io/projects/scicamera/"
+    />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../../style.css" />
+    <link rel="stylesheet" href="../project.css" />
+    <script src="../project.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="../../"
+          ><img
+            class="mark"
+            src="../../assets/mark.svg"
+            alt=""
+            width="26"
+            height="26"
+          /><span>Orbital<b>Commons</b></span></a
+        >
+        <nav aria-label="Main navigation">
+          <a href="../../#stack" class="opt">Stack</a
+          ><a href="../../#projects">Projects</a
+          ><a href="https://github.com/OrbitalCommons">GitHub</a>
+        </nav>
+      </div>
+    </header>
+    <main id="main" class="wrap project-main">
+      <p class="crumb">
+        <a href="../../">OrbitalCommons</a> /
+        <a href="../../#projects">projects</a> / scicamera
+      </p>
+      <div class="project-head">
+        <div>
+          <p class="eyebrow">Capture / Make every frame count.</p>
+          <h1 class="mono">scicamera</h1>
+          <p class="lede">
+            Scientific camera capture in Python, built on libcamera. Configure
+            still-image capture and bring pixel arrays, buffers, and metadata
+            into your imaging workflow.
+          </p>
+          <div class="meta">
+            <span>Python 3.9+</span><span>BSD-2-Clause</span
+            ><span>Linux + libcamera</span>
+          </div>
+          <div class="actions">
+            <a class="btn primary" href="#install"
+              >Start building <span aria-hidden="true">↗</span></a
+            ><a
+              class="btn"
+              href="https://github.com/OrbitalCommons/scicamera#installation"
+              >Platform setup</a
+            >
+          </div>
+        </div>
+        <figure class="project-art">
+          <svg viewBox="0 0 380 270" aria-hidden="true" focusable="false">
+            <rect width="380" height="270" rx="16" fill="#1a1b26" />
+            <rect
+              x="88"
+              y="46"
+              width="188"
+              height="148"
+              rx="9"
+              fill="none"
+              stroke="#565f89"
+            />
+            <rect
+              x="104"
+              y="62"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7aa2f7"
+              opacity="0.4"
+            />
+            <rect
+              x="124"
+              y="62"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#9ece6a"
+              opacity="0.4"
+            />
+            <rect
+              x="144"
+              y="62"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7dcfff"
+              opacity="0.4"
+            />
+            <rect
+              x="164"
+              y="62"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7aa2f7"
+              opacity="0.4"
+            />
+            <rect
+              x="184"
+              y="62"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#9ece6a"
+              opacity="0.4"
+            />
+            <rect
+              x="204"
+              y="62"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7dcfff"
+              opacity="0.4"
+            />
+            <rect
+              x="224"
+              y="62"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7aa2f7"
+              opacity="0.4"
+            />
+            <rect
+              x="244"
+              y="62"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#9ece6a"
+              opacity="0.4"
+            />
+            <rect
+              x="104"
+              y="82"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#9ece6a"
+              opacity="0.4"
+            />
+            <rect
+              x="124"
+              y="82"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7dcfff"
+              opacity="0.4"
+            />
+            <rect
+              x="144"
+              y="82"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7aa2f7"
+              opacity="0.85"
+            />
+            <rect
+              x="164"
+              y="82"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#9ece6a"
+              opacity="0.85"
+            />
+            <rect
+              x="184"
+              y="82"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7dcfff"
+              opacity="0.85"
+            />
+            <rect
+              x="204"
+              y="82"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7aa2f7"
+              opacity="0.85"
+            />
+            <rect
+              x="224"
+              y="82"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#9ece6a"
+              opacity="0.4"
+            />
+            <rect
+              x="244"
+              y="82"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7dcfff"
+              opacity="0.4"
+            />
+            <rect
+              x="104"
+              y="102"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7dcfff"
+              opacity="0.4"
+            />
+            <rect
+              x="124"
+              y="102"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7aa2f7"
+              opacity="0.4"
+            />
+            <rect
+              x="144"
+              y="102"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#9ece6a"
+              opacity="0.85"
+            />
+            <rect
+              x="164"
+              y="102"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7dcfff"
+              opacity="0.85"
+            />
+            <rect
+              x="184"
+              y="102"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7aa2f7"
+              opacity="0.85"
+            />
+            <rect
+              x="204"
+              y="102"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#9ece6a"
+              opacity="0.85"
+            />
+            <rect
+              x="224"
+              y="102"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7dcfff"
+              opacity="0.4"
+            />
+            <rect
+              x="244"
+              y="102"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7aa2f7"
+              opacity="0.4"
+            />
+            <rect
+              x="104"
+              y="122"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7aa2f7"
+              opacity="0.4"
+            />
+            <rect
+              x="124"
+              y="122"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#9ece6a"
+              opacity="0.4"
+            />
+            <rect
+              x="144"
+              y="122"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7dcfff"
+              opacity="0.85"
+            />
+            <rect
+              x="164"
+              y="122"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7aa2f7"
+              opacity="0.85"
+            />
+            <rect
+              x="184"
+              y="122"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#9ece6a"
+              opacity="0.85"
+            />
+            <rect
+              x="204"
+              y="122"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7dcfff"
+              opacity="0.85"
+            />
+            <rect
+              x="224"
+              y="122"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7aa2f7"
+              opacity="0.4"
+            />
+            <rect
+              x="244"
+              y="122"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#9ece6a"
+              opacity="0.4"
+            />
+            <rect
+              x="104"
+              y="142"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#9ece6a"
+              opacity="0.4"
+            />
+            <rect
+              x="124"
+              y="142"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7dcfff"
+              opacity="0.4"
+            />
+            <rect
+              x="144"
+              y="142"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7aa2f7"
+              opacity="0.85"
+            />
+            <rect
+              x="164"
+              y="142"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#9ece6a"
+              opacity="0.85"
+            />
+            <rect
+              x="184"
+              y="142"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7dcfff"
+              opacity="0.85"
+            />
+            <rect
+              x="204"
+              y="142"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7aa2f7"
+              opacity="0.85"
+            />
+            <rect
+              x="224"
+              y="142"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#9ece6a"
+              opacity="0.4"
+            />
+            <rect
+              x="244"
+              y="142"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7dcfff"
+              opacity="0.4"
+            />
+            <rect
+              x="104"
+              y="162"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7dcfff"
+              opacity="0.4"
+            />
+            <rect
+              x="124"
+              y="162"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7aa2f7"
+              opacity="0.4"
+            />
+            <rect
+              x="144"
+              y="162"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#9ece6a"
+              opacity="0.4"
+            />
+            <rect
+              x="164"
+              y="162"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7dcfff"
+              opacity="0.4"
+            />
+            <rect
+              x="184"
+              y="162"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7aa2f7"
+              opacity="0.4"
+            />
+            <rect
+              x="204"
+              y="162"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#9ece6a"
+              opacity="0.4"
+            />
+            <rect
+              x="224"
+              y="162"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7dcfff"
+              opacity="0.4"
+            />
+            <rect
+              x="244"
+              y="162"
+              width="14"
+              height="14"
+              rx="2"
+              fill="#7aa2f7"
+              opacity="0.4"
+            />
+            <g stroke="#565f89">
+              <path d="M112 31V46M112 194V209" />
+              <path d="M140 31V46M140 194V209" />
+              <path d="M168 31V46M168 194V209" />
+              <path d="M196 31V46M196 194V209" />
+              <path d="M224 31V46M224 194V209" />
+              <path d="M252 31V46M252 194V209" />
+            </g>
+            <path d="M41 121H71M293 121H339" stroke="#e0af68" />
+            <path d="M333 115L339 121L333 127" fill="none" stroke="#e0af68" />
+            <text
+              x="89"
+              y="240"
+              fill="#c0caf5"
+              font-family="monospace"
+              font-size="10"
+            >
+              PHOTONS → PIXELS → ARRAYS
+            </text>
+          </svg>
+          <figcaption>SCICAMERA / SENSOR ILLUSTRATION</figcaption>
+        </figure>
+      </div>
+      <div class="project-body">
+        <nav class="project-index" aria-label="On this page">
+          <p>On this page</p>
+          <a href="#overview">Overview</a><a href="#explore">Explore</a
+          ><a href="#install">Get started</a><a href="#example">Example</a
+          ><a href="#features">Capabilities</a>
+        </nav>
+        <div class="project-content">
+          <section id="overview" aria-labelledby="overview-title">
+            <h2 id="overview-title">Make every frame count.</h2>
+            <p>
+              Scientific imaging often calls for control over exposure, sensor
+              modes, and the path from sensor to array.
+              <strong>scicamera</strong> began as a fork of picamera2 and
+              focuses on high-quality, timing-sensitive still images with
+              minimal processing.
+            </p>
+            <div class="project-features">
+              <div class="project-feature">
+                <span class="feature-n">01</span>
+                <h3>Configure the capture</h3>
+                <p>
+                  Choose stream size and format, then set controls exposed by
+                  your camera.
+                </p>
+              </div>
+              <div class="project-feature">
+                <span class="feature-n">02</span>
+                <h3>Work with image data</h3>
+                <p>
+                  Capture arrays, image objects, buffers, and metadata for
+                  downstream analysis.
+                </p>
+              </div>
+              <div class="project-feature">
+                <span class="feature-n">03</span>
+                <h3>Build on libcamera</h3>
+                <p>
+                  Use a Python interface over the Linux camera stack, with a
+                  still-image focus.
+                </p>
+              </div>
+            </div>
+          </section>
+          <section id="explore" aria-labelledby="explore-title">
+            <h2 id="explore-title">From sensor to array.</h2>
+            <p>
+              A capture is more than a picture. The stream configuration
+              determines what arrives, and metadata helps describe how it was
+              acquired.
+            </p>
+            <ol class="process-list">
+              <li>
+                <strong>Choose a stream</strong>
+                <p>
+                  Build a still-capture configuration for the camera and the
+                  image format you need.
+                </p>
+              </li>
+              <li>
+                <strong>Set available controls</strong>
+                <p>
+                  Configure settings such as exposure time and analogue gain
+                  when the hardware exposes them.
+                </p>
+              </li>
+              <li>
+                <strong>Capture a frame</strong>
+                <p>
+                  Start the camera and obtain image data through an asynchronous
+                  capture result.
+                </p>
+              </li>
+              <li>
+                <strong>Keep the context</strong>
+                <p>
+                  Use capture metadata alongside your arrays or buffers in the
+                  next stage of your application.
+                </p>
+              </li>
+            </ol>
+            <p class="demo-note">
+              scicamera runs on a Linux host with supported camera hardware and
+              libcamera bindings. This page describes the capture workflow; it
+              does not access your browser’s camera.
+            </p>
+          </section>
+          <section id="install" aria-labelledby="install-title">
+            <h2 id="install-title">Prepare your camera host.</h2>
+            <p>
+              The project documents 64-bit Raspberry Pi OS (Bullseye or later)
+              and x86 Ubuntu. The Python package depends on
+              <strong>libcamera and its Python bindings</strong>, which must be
+              installed separately for your platform.
+            </p>
+            <p>
+              Follow the
+              <a
+                href="https://github.com/OrbitalCommons/scicamera#installing-libcamera--python-bindings"
+                >project’s libcamera setup instructions</a
+              >, then install scicamera into a Python environment that can see
+              those bindings.
+            </p>
+            <div class="code-block">
+              <div class="code-label"><span>Terminal</span></div>
+              <pre
+                tabindex="0"
+                aria-label="Terminal"
+              ><code>python -m pip install scicamera</code></pre>
+            </div>
+            <p>
+              Before opening a camera, confirm that Python can import both
+              packages:
+            </p>
+            <div class="code-block">
+              <div class="code-label"><span>Terminal</span></div>
+              <pre
+                tabindex="0"
+                aria-label="Terminal"
+              ><code>python -c &quot;import libcamera; import scicamera; print(scicamera.__version__)&quot;</code></pre>
+            </div>
+          </section>
+          <section id="example" aria-labelledby="example-title">
+            <h2 id="example-title">Capture your first array.</h2>
+            <div class="code-block">
+              <div class="code-label">
+                <span>Python · supported camera hardware required</span>
+              </div>
+              <pre
+                tabindex="0"
+                aria-label="Python · supported camera hardware required"
+              ><code>from scicamera import Camera, CameraConfig
+
+with Camera() as camera:
+    config = CameraConfig.for_still(camera)
+    camera.configure(config)
+    camera.start()
+
+    camera.discard_frames(2).result()
+    pixels = camera.capture_array().result()
+    print(pixels.shape, pixels.dtype)
+
+    camera.stop()</code></pre>
+            </div>
+            <p>
+              The context manager handles the camera lifetime, while capture
+              methods return results you can wait for. Available resolutions,
+              formats, and controls depend on the camera and its libcamera
+              driver.
+            </p>
+            <p>
+              <a
+                href="https://github.com/OrbitalCommons/scicamera/blob/main/tests/test_capture_array.py"
+                >See array-capture examples in the project tests →</a
+              >
+            </p>
+          </section>
+          <section id="features" aria-labelledby="features-title">
+            <h2 id="features-title">Build for the camera you have.</h2>
+            <div
+              class="table-scroll"
+              tabindex="0"
+              role="region"
+              aria-label="Camera capabilities"
+            >
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Area</th>
+                    <th scope="col">Interface</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Configuration</td>
+                    <td>
+                      <code>CameraConfig</code> and
+                      <code>StreamConfig</code> describe capture streams.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Capture</td>
+                    <td>Request NumPy arrays, images, buffers, or metadata.</td>
+                  </tr>
+                  <tr>
+                    <td>Controls</td>
+                    <td>
+                      Inspect the camera’s available controls before setting
+                      exposure or gain.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Testing</td>
+                    <td>
+                      A <code>FakeCamera</code> implementation supports the
+                      project’s test workflows.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              For low-bandwidth real-time video streaming, the project points to
+              <a href="https://github.com/raspberrypi/picamera2">picamera2</a>.
+              scicamera’s focus is still-image acquisition for scientific
+              applications.
+            </p>
+          </section>
+          <p class="code-note">
+            API example reviewed against
+            <a href="https://pypi.org/project/scicamera/0.4.2/"
+              >scicamera 0.4.2</a
+            >. Run it on a configured camera host.
+            <a href="https://github.com/OrbitalCommons/scicamera"
+              >Source &amp; contributions →</a
+            >
+          </p>
+          <a class="related-project" href="../fitsio-pure/"
+            ><div>
+              <small>Keep exploring</small><strong>fitsio-pure</strong>
+              <p>Use an open file format for astronomical image data.</p>
+            </div>
+            <span class="related-arrow" aria-hidden="true">↗</span></a
+          >
+        </div>
+      </div>
+    </main>
+    <footer class="site-foot">
+      <div class="wrap">
+        <div>
+          <a class="brand" href="../../"
+            ><img
+              class="mark"
+              src="../../assets/mark.svg"
+              alt=""
+              width="26"
+              height="26"
+            /><span>Orbital<b>Commons</b></span></a
+          >
+          <p class="muted">
+            Open-source software for seeing, navigating<br />and exploring
+            space.
+          </p>
+        </div>
+        <div class="cols">
+          <div>
+            <p class="foot-h">Keep exploring</p>
+            <a href="../starfield/">starfield</a
+            ><a href="../zodiacal/">zodiacal</a
+            ><a href="../fitsio-pure/">fitsio-pure</a
+            ><a href="../rizzma/">rizzma</a
+            ><a href="../starfield-datastore/">starfield-datastore</a>
+          </div>
+          <div>
+            <p class="foot-h">Elsewhere</p>
+            <a href="https://github.com/OrbitalCommons">GitHub</a
+            ><a href="https://github.com/OrbitalCommons/scicamera"
+              >Project source</a
+            ><a href="https://pypi.org/project/scicamera/">PyPI</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
