@@ -40,7 +40,7 @@ body { background:
   .hint { display: none; }
 }
 @media (max-width: 480px) {
-  .hero-inner { padding-bottom: 12rem; }
+  .hero-inner { padding-bottom: 15rem; }
   .hero .actions .btn { flex: 1 1 100%; justify-content: center; }
 }
 
