@@ -67,3 +67,16 @@
 .result dt { color: var(--ink-3); }
 .result dd { margin: 0; color: var(--ink); font-variant-numeric: tabular-nums; }
 @media (max-width: 640px) { .result { top: 96px; right: 1rem; left: 1rem; width: auto; } }
+
+/* On compact screens, results and controls share a scroll area instead of
+   covering each other. Keep the sky readout visible above it. */
+.explorer-panels { display: contents; }
+@media (max-width: 640px), (max-height: 600px) {
+  .explorer-panels { display: block; position: absolute; z-index: 2;
+    left: 1rem; right: 1rem; bottom: .75rem; max-height: calc(100% - 140px);
+    overflow-y: auto; overscroll-behavior: contain; border-radius: var(--radius);
+    scrollbar-width: thin; }
+  .explorer-panels .dock, .explorer-panels .result { position: relative;
+    inset: auto; transform: none; width: 100%; }
+  .explorer-panels .result { margin-bottom: .6rem; }
+}

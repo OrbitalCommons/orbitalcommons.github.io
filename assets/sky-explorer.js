@@ -142,7 +142,11 @@
     return Math.acos(clamp(a[0] * b[0] + a[1] * b[1] + a[2] * b[2], -1, 1)) / D2R * 3600;
   }
   var solveBtn = $("x-solve"), resultEl = $("x-result");
-  function showResult(html) { resultEl.hidden = false; resultEl.innerHTML = html; }
+  function showResult(html) {
+    resultEl.hidden = false;
+    resultEl.innerHTML = html;
+    resultEl.parentElement.scrollTop = 0;
+  }
   function runSolve() {
     var fov = clamp(state.fov * 0.45, 15, 40), truth = { ra: norm(state.ra), dec: state.dec, fov: fov, result: null };
     var noisy = $("x-noise").checked;
@@ -169,7 +173,7 @@
       if (solveState !== truth) return;
       if (!r) {
         showResult("<p class=\"r-title warn\">No solution</p><p class=\"muted\">" + sources.length +
-          " sources were not enough to match a quad in this index. Try a richer or wider field.</p>");
+          " sources produced no verified match in this compact index. Try a richer or wider field.</p>");
         return;
       }
       truth.result = r;
@@ -187,7 +191,8 @@
         "Dashed: the frame we made. Green: where the solver put it.</p>");
     }, function (err) {
       solveBtn.disabled = false;
-      showResult("<p class=\"r-title warn\">Solver unavailable</p><p class=\"muted\">" + String(err && err.message || err) + "</p>");
+      showResult("<p class=\"r-title warn\">Solver unavailable</p><p class=\"muted\"></p>");
+      resultEl.lastElementChild.textContent = String(err && err.message || err);
     });
   }
   if (window.OCZodiacal) {

@@ -35,6 +35,8 @@ test('sky explorer finds named stars without animation when reduced motion is re
   await search.fill('not a catalog object');
   await page.getByRole('button', { name: 'Go', exact: true }).click();
   await expect(search).toHaveAttribute('aria-invalid', 'true');
+  await expect(page.locator('#x-status')).toHaveAttribute('role', 'status');
+  await expect(page.locator('#x-status')).toContainText('No match.');
   await search.fill('Mars');
   await page.getByRole('button', { name: 'Go', exact: true }).click();
   await expect(search).toHaveAttribute('aria-invalid', 'false');
@@ -75,4 +77,16 @@ test('sky explorer keeps controls reachable on a small screen', async ({ page })
     await expect(page.locator(control)).toBeInViewport();
   }
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+});
+
+
+test('sky explorer rejects nonfinite shared coordinates and keeps zoom controls usable', async ({ page }) => {
+  await page.goto('/sky/#ra=Infinity&dec=NaN&fov=-Infinity&d=Infinity');
+  await expect(page.locator('#x-center')).not.toContainText(/NaN|Infinity/);
+  await expect(page.locator('#x-days')).toHaveValue('0');
+  await page.getByRole('button', { name: 'Zoom in', exact: true }).click();
+  await expect.poll(() => +hashState(page.url()).fov).toBe(69);
+  await page.getByRole('button', { name: 'Zoom out', exact: true }).click();
+  await expect.poll(() => +hashState(page.url()).fov).toBe(90);
+  for (const value of Object.values(hashState(page.url()))) expect(Number.isFinite(+value)).toBe(true);
 });
