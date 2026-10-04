@@ -13,7 +13,7 @@ output = [
     "Third-party notices for the zodiacal browser demonstrator.\n"
     "The adapter is Apache-2.0; see demos/zodiacal-solver/LICENSE.\n"
     "Hipparcos star data: ESA (1997), derived from assets/stars.js.\n"
-    "Compatibility modifications are documented in demos/zodiacal-solver/vendor/zodiacal/BROWSER-PORT.md.\n"
+    "The solver uses the unmodified published zodiacal crate.\n"
 ]
 for package in sorted(metadata["packages"], key=lambda p: p["name"]):
     if package["id"] not in ids:
@@ -26,4 +26,6 @@ for package in sorted(metadata["packages"], key=lambda p: p["name"]):
     for file in sorted(files):
         if file.exists():
             output.append("\n" + file.name + "\n" + file.read_text(errors="replace"))
-(root / "projects/zodiacal/wasm/NOTICE.txt").write_text("\n".join(output))
+# Preserve license text while normalizing trailing whitespace in generated notices.
+notice = "\n".join(line.rstrip() for line in "\n".join(output).splitlines()) + "\n"
+(root / "projects/zodiacal/wasm/NOTICE.txt").write_text(notice)

@@ -603,9 +603,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "899def5c37c4fd7b2664648c28120ecec138e4d395b459e5ca34f9cce2dd77fd"
 dependencies = [
  "cfg-if",
+ "js-sys",
  "libc",
  "r-efi 5.3.0",
  "wasip2",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -1921,24 +1923,25 @@ checksum = "6ce2be8dc25455e1f91df71bfa12ad37d7af1092ae736f3a6cd0e37bc7810596"
 
 [[package]]
 name = "starfield"
-version = "0.18.1"
+version = "0.18.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "708d73c1019c59687617c150271afe4497fe407258cc60ec95140343c7739cff"
+checksum = "332899cf4d9303fb8610f642736154f9d02867dfb15aa9011b6f96a22cad6efb"
 dependencies = [
  "starfield-core",
 ]
 
 [[package]]
 name = "starfield-core"
-version = "0.18.1"
+version = "0.18.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a592ead89695e33183e9d62deecf7d6d47af3fc1232ae339ddca56324cfdd080"
+checksum = "f85ba6a5c2276e3232290124160933382a342b1d12a5ea83127c309055b55b64"
 dependencies = [
  "base64 0.22.1",
  "byteorder",
  "chrono",
  "clap",
  "flate2",
+ "getrandom 0.3.4",
  "image",
  "indicatif",
  "lazy_static",

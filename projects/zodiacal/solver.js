@@ -1,4 +1,4 @@
-// Lazy, local-only browser port of zodiacal. No assets are fetched until load().
+// Lazy, local-only browser adapter for upstream zodiacal. No assets are fetched until load().
 (function () {
   "use strict";
   if (window.OCZodiacal) return;

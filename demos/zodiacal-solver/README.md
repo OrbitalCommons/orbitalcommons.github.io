@@ -1,13 +1,13 @@
 # Browser plate-solving demonstrator
 
-This adapter runs the quad matcher, TAN fitter, and Bayesian verification from
-zodiacal 0.4.1 in WebAssembly. Its local compatibility port is documented in
-[vendor/zodiacal/BROWSER-PORT.md](vendor/zodiacal/BROWSER-PORT.md). The published
-crate does not currently compile for wasm32 unchanged.
+This adapter runs the unmodified published zodiacal 0.5.1 crate in WebAssembly.
+It uses starfield's portable core with default features disabled; there is no
+vendored solver, target-specific coordinate substitute, or Cargo patch override.
 
-The adapter adds deterministic RANSAC and a projective least-squares refinement
-of the accepted match's correspondences, followed by full zodiacal verification.
-This is site-specific refinement, not a claim about the upstream solver's fit.
+The upstream `zodiacal::refit` module performs deterministic RANSAC and a projective
+least-squares refit of the accepted match's correspondences, followed by full
+zodiacal verification. The adapter loads the compact demo index, validates inputs,
+and translates results for the browser; it contains no separate fitting algorithm.
 No true pointing, catalog IDs, or sky region is supplied with the measured sources.
 
 ## Runtime contract
@@ -56,9 +56,26 @@ node --test tests/zodiacal-wasm.test.cjs
 CHROME_PATH=/path/to/chrome npx playwright test tests/zodiacal-browser.spec.cjs
 ```
 
-The source index is rebuilt deterministically. Cargo.lock pins the port's
+The source index is rebuilt deterministically. Cargo.lock pins the adapter's
 transitive dependencies. The tests exercise the actual shipped browser WASM,
 including 480 clean all-sky fields, 120 seeded noisy/rotated fields, invalid input
 recovery, lazy asset loading, and failed-download recovery. Some sparse fields
 legitimately yield no match; tests require accurate accepted results and a high
 success rate, rather than pretending every view must solve.
+
+## Upgrade comparison
+
+Before rebuilding, copy the shipped `projects/zodiacal/wasm/zodiacal_browser.js`
+and `zodiacal_browser_bg.wasm` into a directory outside the repository. Compare
+all 480 clean and 120 noisy/rotated cases against that reference build with:
+
+```sh
+ZODIACAL_REFERENCE_DIR=/path/to/reference node --test tests/zodiacal-wasm.test.cjs
+```
+
+This requires identical results, including accepted matches, WCS and failures.
+Set `ZODIACAL_WASM_DIR` to check an experimental build without replacing the shipped
+files; it must contain the same two filenames as the reference directory.
+The 0.5.1 migration replaces a post-release upstream snapshot previously labeled
+0.4.1, not the older crates.io 0.4.1 package. The [previous site release](https://github.com/OrbitalCommons/orbitalcommons.github.io/tree/9efb20450c7acbefd106d8bb0c12dd0513f6043a/demos/zodiacal-solver)
+retains that snapshot and its compatibility changes; it is no longer a dependency.
