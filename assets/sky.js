@@ -195,19 +195,22 @@
           "RA  " + S.fmtRa(real.r.ra),
           "DEC " + S.fmtDec(real.r.dec),
           "ERR " + (real.err < 1 ? (real.err * 60).toFixed(0) + "″" : real.err.toFixed(1) + "′") + "  ·  " + real.r.matched + " matched",
-          "zodiacal · WebAssembly"
+          "zodiacal wasm · synthetic frame"
         ];
       } else if (real) {
         good = false;
         lines = [real.status === "pending" ? "SOLVING…" : real.status === "none" ? "NO SOLUTION" : "SOLVER UNAVAILABLE",
-          real.n + " src  ·  " + real.fov.toFixed(0) + "° field", "zodiacal · WebAssembly"];
+          real.n + " src  ·  " + real.fov.toFixed(0) + "° field", "zodiacal wasm · synthetic frame"];
       }
-      var tx = px + h + 14, ty = py - h + 4;
-      if (tx + 170 > W) tx = px - h - 184;
-      var typed = Math.min(1, (e - 4.4) / 0.9);
       ctx.font = "600 11px " + MONO;
+      var bw = 0;
+      for (var m = 0; m < lines.length; m++) bw = Math.max(bw, ctx.measureText(lines[m]).width);
+      bw += 16;
+      var tx = px + h + 14, ty = py - h + 4;
+      if (tx + bw > W) tx = px - h - bw - 6;
+      var typed = Math.min(1, (e - 4.4) / 0.9);
       ctx.fillStyle = "rgba(5,7,13," + (0.72 * Math.min(1, typed * 3)) + ")";
-      ctx.fillRect(tx - 8, ty - 4, 178, lines.length * 16 + 10);
+      ctx.fillRect(tx - 8, ty - 4, bw, lines.length * 16 + 10);
       for (var l = 0; l < lines.length; l++) {
         var str = lines[l], shown = Math.floor(str.length * Math.min(1, typed * (1 + 0.2 * lines.length) - l * 0.2));
         if (shown <= 0) continue;
