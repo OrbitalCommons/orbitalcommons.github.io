@@ -59,7 +59,9 @@ npm test
 text, and basic document metadata with Python's standard library.
 `npm run test:browser` opens every page in desktop/mobile Chromium, desktop
 Firefox, and mobile WebKit and checks
-for script errors, failed local requests, and horizontal overflow. It also exercises
+for script errors, failed local requests, unexpected external requests on initial
+load, and horizontal overflow. It also verifies the homepage’s 100 kB compressed
+initial-payload budget, exercises
 the project demos and audits their default and populated states with axe-core. Set
 `CHROME_PATH` to use a locally installed Chrome instead of Playwright's Chromium.
 To run only Chromium checks, use

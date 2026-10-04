@@ -13,8 +13,14 @@ function pagePaths(dir = '.', prefix = '/') {
 }
 
 for (const url of pagePaths()) {
-  test(`${url} loads without browser errors or horizontal overflow`, async ({ page, baseURL }) => {
+  test(`${url} loads without external requests, browser errors, or overflow`, async ({ page, baseURL }) => {
     const errors = [];
+    page.on('request', request => {
+      const url = new URL(request.url());
+      if (['http:', 'https:'].includes(url.protocol) && url.origin !== new URL(baseURL).origin) {
+        errors.push(`External runtime request: ${url.href}`);
+      }
+    });
     page.on('pageerror', error => errors.push(error.message));
     page.on('response', response => {
       if (new URL(response.url()).origin === new URL(baseURL).origin && response.status() >= 400) {
@@ -29,3 +35,23 @@ for (const url of pagePaths()) {
     expect(errors).toEqual([]);
   });
 }
+
+test('homepage stays under its advertised 100 kB compressed initial payload', async ({ page, baseURL }) => {
+  const { gzipSync } = require('node:zlib');
+  const bodies = new Map();
+  const onResponse = response => {
+    if (response.status() !== 200 || new URL(response.url()).origin !== new URL(baseURL).origin) return;
+    const type = response.headers()['content-type'] || '';
+    bodies.set(response.url(), response.body().then(body => ({
+      url: response.url(),
+      bytes: /text\/|javascript|json|svg/.test(type) ? gzipSync(body).length : body.length,
+    })));
+  };
+  page.on('response', onResponse);
+  await page.goto('/');
+  await expect(page.locator('#sky-solve')).toBeVisible();
+  page.off('response', onResponse);
+  const assets = await Promise.all(bodies.values());
+  const bytes = assets.reduce((sum, asset) => sum + asset.bytes, 0);
+  expect(bytes, JSON.stringify(assets, null, 2)).toBeLessThan(100000);
+});
