@@ -17,13 +17,14 @@
     return [ra, Math.asin(Math.max(-1, Math.min(1, v[2]))) / D2R];
   }
   function pad(v) { return v < 10 ? "0" + v : "" + v; }
+  // Round to whole seconds of time and whole arcminutes, carrying into the larger units.
   function fmtRa(ra) {
-    var h = ra / 15, hh = Math.floor(h), m = (h - hh) * 60, mm = Math.floor(m), ss = Math.floor((m - mm) * 60);
-    return pad(hh) + "h " + pad(mm) + "m " + pad(ss) + "s";
+    var t = Math.round(((ra % 360) + 360) % 360 / 15 * 3600) % 86400;
+    return pad(Math.floor(t / 3600)) + "h " + pad(Math.floor(t / 60) % 60) + "m " + pad(t % 60) + "s";
   }
   function fmtDec(dec) {
-    var s = dec < 0 ? "−" : "+", a = Math.abs(dec), d = Math.floor(a), m = Math.floor((a - d) * 60);
-    return s + pad(d) + "° " + pad(m) + "′";
+    var t = Math.round(Math.abs(dec) * 60), s = dec < 0 && t > 0 ? "−" : "+";
+    return s + pad(Math.floor(t / 60)) + "° " + pad(t % 60) + "′";
   }
   function hexA(h, a) {
     var v = parseInt(h.slice(1), 16);
