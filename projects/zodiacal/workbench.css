@@ -1,0 +1,22 @@
+/* The synthetic detector workbench is separate from the explanatory quad demo. */
+.plate-workbench canvas { display: block; aspect-ratio: 4 / 3; }
+.plate-caption { font: .75rem/1.6 var(--mono); color: var(--ink-2); margin: .8rem 0; }
+.plate-controls { border: 0; padding: 0; margin: 1.2rem 0; display: flex;
+  flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; }
+.plate-controls label { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem;
+  font-size: .82rem; color: var(--ink-2); }
+.plate-controls select { background: var(--bg-2); border: 1px solid var(--line-strong);
+  border-radius: 8px; color: var(--ink); padding: .6rem; font: inherit; max-width: 100%; }
+.plate-controls input[type=range] { width: 120px; accent-color: var(--accent); }
+.plate-controls output { color: var(--accent); font: .8rem var(--mono); min-width: 4ch; }
+.plate-controls input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--accent); }
+.plate-noise { min-height: 28px; }
+.plate-results { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; margin: 1rem 0; }
+.plate-results > div { background: rgba(124,196,255,.04); border: 1px solid var(--line); border-radius: 8px; padding: .85rem; }
+.plate-results dt { font: .68rem/1.5 var(--mono); color: var(--ink-2); text-transform: uppercase; letter-spacing: .06em; }
+.plate-results dd { margin: .25rem 0 0; font: .88rem/1.5 var(--mono); color: var(--ink); overflow-wrap: anywhere; }
+.plate-method p { font-size: .85rem; }
+@media (max-width: 480px) {
+  .plate-workbench .demo-topline { align-items: flex-start; flex-direction: column; gap: .5rem; }
+  .plate-results { grid-template-columns: 1fr; }
+}

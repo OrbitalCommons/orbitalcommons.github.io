@@ -25,7 +25,9 @@ Load `projects/zodiacal/solver.js` before calling `window.OCZodiacal`:
   `rotationDeg` measures image-up toward celestial west from north; rotating the
   measured pixels clockwise rotates the inferred camera axes oppositely.
   `sourcesUsed` and `inputSources` expose truncation; `wcs` includes the fitted
-  TAN parameters. `null` means no verified, refined match was found.
+  TAN parameters. `pairs` contains `[sourceIndex, catalogIndex]` matches; source
+  indices refer to the filtered, brightness-sorted, capped list used by the SDK.
+  `null` means no verified, refined match was found.
 
 The worker is terminated on timeout; a later call can initialize a new worker.
 The shipped WASM has a hard 128 MiB memory ceiling. No data is uploaded.
