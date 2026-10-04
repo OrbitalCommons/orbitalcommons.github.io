@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const AxeBuilder = require('@axe-core/playwright').default;
 
-const routes = ['/', '/404.html', '/projects/starfield/', '/projects/fitsio-pure/', '/projects/rizzma/', '/projects/zodiacal/', '/projects/starfield-datastore/'];
+const routes = ['/', '/404.html', '/projects/scicamera/', '/projects/starfield/', '/projects/fitsio-pure/', '/projects/rizzma/', '/projects/zodiacal/', '/projects/starfield-datastore/'];
 for (const route of routes) {
   test(`${route} has no detectable WCAG A/AA violations`, async ({ page }) => {
     await page.goto(route);
