@@ -1,5 +1,8 @@
 const { defineConfig, devices } = require('@playwright/test');
 
+// Set PORT to run several worktrees' suites side by side.
+const port = process.env.PORT || 4173;
+
 module.exports = defineConfig({
   testDir: './tests',
   testMatch: '**/*.spec.cjs',
@@ -9,7 +12,7 @@ module.exports = defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'list',
   use: {
-    baseURL: 'http://127.0.0.1:4173',
+    baseURL: `http://127.0.0.1:${port}`,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     launchOptions: process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {},
@@ -21,8 +24,8 @@ module.exports = defineConfig({
     { name: 'webkit-mobile', use: { ...devices['iPhone 13'], defaultBrowserType: 'webkit', launchOptions: {} } },
   ],
   webServer: {
-    command: 'python3 -m http.server 4173 --bind 127.0.0.1',
-    url: 'http://127.0.0.1:4173',
+    command: `python3 -m http.server ${port} --bind 127.0.0.1`,
+    url: `http://127.0.0.1:${port}`,
     reuseExistingServer: !process.env.CI,
   },
 });

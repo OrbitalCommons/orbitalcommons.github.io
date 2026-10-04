@@ -1,0 +1,46 @@
+/* Sky explorer page. */
+
+.explorer { overflow: hidden; height: 100vh; height: 100svh; }
+.explorer main { position: fixed; inset: 0; }
+.explorer .site-nav { position: fixed; left: 0; right: 0; }
+#sky-x { position: absolute; inset: 0; width: 100%; height: 100%; cursor: grab; touch-action: none; }
+#sky-x:active { cursor: grabbing; }
+#sky-x:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
+
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.nojs { position: absolute; top: 45%; left: 0; right: 0; text-align: center; }
+
+.readout { position: absolute; top: 76px; left: 1.5rem; right: 1.5rem; pointer-events: none;
+  font: 500 .74rem/1.6 var(--mono); letter-spacing: .04em; color: var(--ink-2); }
+.readout p { margin: 0 0 .25rem; width: fit-content; max-width: 100%; padding: .15rem .55rem; border-radius: 6px;
+  background: rgba(5, 7, 13, .65); }
+
+.dock { position: absolute; left: 50%; bottom: 1.2rem; transform: translateX(-50%); width: min(980px, calc(100% - 2rem));
+  display: flex; flex-wrap: wrap; align-items: center; gap: .8rem 1.4rem; padding: .8rem 1rem;
+  background: rgba(10, 14, 25, .82); }
+.dock input, .dock output { font: 500 .82rem var(--mono); color: var(--ink); }
+.search { display: flex; gap: .4rem; flex: 1 1 220px; }
+.search input { flex: 1; min-width: 0; background: rgba(255, 255, 255, .04); border: 1px solid var(--line-strong);
+  border-radius: 999px; padding: .45rem .9rem; }
+.search input[aria-invalid="true"] { border-color: #f7768e; }
+.time { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; flex: 2 1 260px; }
+.time input[type=range] { flex: 1 1 120px; min-width: 80px; accent-color: var(--accent-2); }
+.time output { min-width: 6.5em; text-align: center; color: var(--accent-2); }
+.layers { display: flex; flex-wrap: wrap; gap: .3rem 1rem; border: 0; margin: 0; padding: 0; font-size: .82rem; color: var(--ink-2); }
+.layers label { display: inline-flex; align-items: center; gap: .35rem; cursor: pointer; }
+.layers input { accent-color: var(--accent); }
+.btn.small { padding: .42rem .85rem; font-size: .8rem; }
+.btn.icon { width: 2.2rem; justify-content: center; padding: .42rem 0; }
+
+.dock .credit { flex: 1 1 100%; margin: 0; font-size: .7rem; line-height: 1.5; }
+
+@media (max-width: 640px) {
+  .dock { bottom: .75rem; gap: .6rem; padding: .7rem; }
+  .layers { font-size: .76rem; gap: .2rem .7rem; }
+  .dock .credit { font-size: .64rem; }
+  .readout { top: 68px; left: 1rem; font-size: .68rem; }
+}
+
+/* Dither the dark gradients so they do not band. */
+.explorer main::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: url(noise.png); opacity: .5; }
+.dock, .readout { z-index: 2; }
