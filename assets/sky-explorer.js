@@ -72,6 +72,17 @@
     if (layers.lines) view.drawLines(ctx, 0.24);
     view.drawStars(ctx, 0, false);
 
+    if (layers.names && layers.lines && state.fov <= 120) {
+      ctx.font = "600 10px " + MONO;
+      ctx.fillStyle = "rgba(124,196,255,0.5)";
+      ctx.textAlign = "center";
+      S.constellations().forEach(function (c) {
+        if (view.project(c.x, c.y, c.z, pt) && pt[0] > 40 && pt[0] < W - 40 && pt[1] > 70 && pt[1] < H - 20) {
+          ctx.fillText(c.name.toUpperCase(), pt[0], pt[1]);
+        }
+      });
+      ctx.textAlign = "start";
+    }
     if (layers.names) {
       ctx.font = "500 11px " + MONO;
       ctx.fillStyle = "rgba(180,189,210,0.75)";

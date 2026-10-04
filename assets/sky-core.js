@@ -288,6 +288,36 @@
     ctx.globalAlpha = 1;
   };
 
+  // Constellation label anchors: the normalised mean of each figure's stars. Serpens is split in
+  // two on the sky, so its mean lands inside Ophiuchus and it is left unlabelled.
+  var CNAMES = {
+    And: "Andromeda", Ant: "Antlia", Aps: "Apus", Aql: "Aquila", Aqr: "Aquarius", Ara: "Ara", Ari: "Aries", Aur: "Auriga",
+    Boo: "Boötes", CMa: "Canis Major", CMi: "Canis Minor", CVn: "Canes Venatici", Cae: "Caelum", Cam: "Camelopardalis",
+    Cap: "Capricornus", Car: "Carina", Cas: "Cassiopeia", Cen: "Centaurus", Cep: "Cepheus", Cet: "Cetus", Cha: "Chamaeleon",
+    Cir: "Circinus", Cnc: "Cancer", Col: "Columba", Com: "Coma Berenices", CrA: "Corona Australis", CrB: "Corona Borealis",
+    Crt: "Crater", Cru: "Crux", Crv: "Corvus", Cyg: "Cygnus", Del: "Delphinus", Dor: "Dorado", Dra: "Draco", Equ: "Equuleus",
+    Eri: "Eridanus", For: "Fornax", Gem: "Gemini", Gru: "Grus", Her: "Hercules", Hor: "Horologium", Hya: "Hydra", Hyi: "Hydrus",
+    Ind: "Indus", LMi: "Leo Minor", Lac: "Lacerta", Leo: "Leo", Lep: "Lepus", Lib: "Libra", Lup: "Lupus", Lyn: "Lynx",
+    Lyr: "Lyra", Men: "Mensa", Mic: "Microscopium", Mon: "Monoceros", Mus: "Musca", Nor: "Norma", Oct: "Octans",
+    Oph: "Ophiuchus", Ori: "Orion", Pav: "Pavo", Peg: "Pegasus", Per: "Perseus", Phe: "Phoenix", Pic: "Pictor",
+    PsA: "Piscis Austrinus", Psc: "Pisces", Pup: "Puppis", Pyx: "Pyxis", Ret: "Reticulum", Scl: "Sculptor", Sco: "Scorpius",
+    Sct: "Scutum", Sex: "Sextans", Sge: "Sagitta", Sgr: "Sagittarius", Tau: "Taurus", Tel: "Telescopium",
+    TrA: "Triangulum Australe", Tri: "Triangulum", Tuc: "Tucana", UMa: "Ursa Major", UMi: "Ursa Minor", Vel: "Vela",
+    Vir: "Virgo", Vol: "Volans", Vul: "Vulpecula"
+  };
+  var anchors = null;
+  function constellations() {
+    if (anchors) return anchors;
+    var c = catalog(), lines = window.OC_SKY.lines;
+    anchors = Object.keys(lines).filter(function (k) { return CNAMES[k]; }).map(function (k) {
+      var L = lines[k], x = 0, y = 0, z = 0;
+      for (var i = 0; i < L.length; i++) { x += c.X[L[i]]; y += c.Y[L[i]]; z += c.Z[L[i]]; }
+      var m = Math.sqrt(x * x + y * y + z * z) || 1;
+      return { abbr: k, name: CNAMES[k], x: x / m, y: y / m, z: z / m };
+    });
+    return anchors;
+  }
+
   // A synthetic detector frame: catalogue stars under a gnomonic (TAN) projection centred on
   // (ra, dec), north up and east left, x right and y down in pixels, flux from V magnitude.
   // Brightest first; index is the star's position in the catalogue.
@@ -305,7 +335,7 @@
   }
 
   window.OCSky = {
-    D2R: D2R, catalog: catalog, View: View, planets: planets, tanField: tanField,
+    D2R: D2R, catalog: catalog, View: View, planets: planets, tanField: tanField, constellations: constellations,
     radec: radec, toRaDec: toRaDec, fmtRa: fmtRa, fmtDec: fmtDec
   };
 })();
