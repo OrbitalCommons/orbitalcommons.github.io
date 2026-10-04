@@ -153,18 +153,19 @@
     view.drawBand(ctx, frameNo++ & 1);
     view.drawLines(ctx);
     view.drawStars(ctx, t, !reduced);
+    var labels = new S.Labels();
     view.drawPlanets(ctx, planets, "600 10.5px " + MONO, function (x, y) {
       return y < 60 || inText(x, y) ? 0 : 0.9;
-    });
+    }, labels);
 
-    // Labels for named bright stars, kept clear of the headline copy.
+    // Labels for named bright stars, brightest first, kept clear of the headline and each other.
     ctx.font = "500 10.5px " + MONO;
     ctx.fillStyle = "#b4bdd2";
     ctx.globalAlpha = 0.55;
     for (var key in names) {
       var idx = +key;
       if (!VIS[idx] || SX[idx] > W - 90 || SY[idx] < 72 || inText(SX[idx], SY[idx])) continue;
-      ctx.fillText(names[key], SX[idx] + 9, SY[idx] + 3.5);
+      labels.text(ctx, names[key], SX[idx] + 9, SY[idx] + 3.5, 10.5);
     }
     ctx.globalAlpha = 1;
 
