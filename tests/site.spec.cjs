@@ -13,11 +13,11 @@ function pagePaths(dir = '.', prefix = '/') {
 }
 
 for (const url of pagePaths()) {
-  test(`${url} loads without browser errors or horizontal overflow`, async ({ page }) => {
+  test(`${url} loads without browser errors or horizontal overflow`, async ({ page, baseURL }) => {
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     page.on('response', response => {
-      if (response.url().startsWith('http://127.0.0.1:4173') && response.status() >= 400) {
+      if (new URL(response.url()).origin === new URL(baseURL).origin && response.status() >= 400) {
         errors.push(`${response.status()} ${response.url()}`);
       }
     });

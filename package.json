@@ -3,7 +3,7 @@
   "private": true,
   "description": "Development checks for a build-free GitHub Pages site",
   "scripts": {
-    "test": "python3 tests/check_site.py && node --test tests/*.test.cjs && playwright test",
+    "test": "python3 tests/check_site.py && python3 -m unittest discover -s tests -p 'test_*.py' && node --test tests/*.test.cjs && playwright test",
     "test:links": "python3 tests/check_site.py",
     "test:browser": "playwright test",
     "serve": "python3 -m http.server 4173 --bind 127.0.0.1"
