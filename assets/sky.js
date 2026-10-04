@@ -533,7 +533,7 @@
   // Arrow keys pan when the map has focus.
   function solveDefault() {
     var mobile = W < 760;
-    solveAt(W * 0.6, mobile ? footTop() - 72 : H * 0.45);
+    solveAt(mobile ? W - 70 : W * 0.6, mobile ? footTop() - 72 : H * 0.45);
   }
   var sbtn = document.getElementById("sky-solve");
   if (sbtn) sbtn.addEventListener("click", solveDefault);

@@ -115,9 +115,11 @@ pub fn solve_sources(json: &str, width: f64, height: f64) -> Result<String, JsVa
     INDEX.with(|value| {
         let borrowed = value.borrow();
         let index = borrowed.as_ref().ok_or_else(|| error("Index not loaded"))?;
-        let mut config = SolverConfig::default();
-        config.max_field_stars = 24;
-        config.code_tolerance = 0.0004;
+        let config = SolverConfig {
+            max_field_stars: 24,
+            code_tolerance: 0.0004,
+            ..SolverConfig::default()
+        };
         // No region or pointing hint. The host enforces a hard deadline by
         // terminating the worker; no cooperative solver timeout is set here.
         let (solution, stats) = solve(&sources, &[index], (width, height), &config);

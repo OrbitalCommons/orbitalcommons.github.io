@@ -75,26 +75,9 @@
       }
     });
     if (result && result.match) {
-      var points = result.match.pixels;
-      var colors = ['#FC6255', '#83C167', '#58C4DD', '#FF862F'];
-      var a = points[0], b = points[1];
       ctx.save();
-      ctx.strokeStyle = '#888888'; ctx.lineWidth = 1.5; ctx.setLineDash([7, 6]);
-      ctx.beginPath(); ctx.arc((a.x + b.x) / 2, (a.y + b.y) / 2, Math.hypot(a.x - b.x, a.y - b.y) / 2, 0, 2 * Math.PI); ctx.stroke();
-      ctx.setLineDash([]);
-      [1, 2, 3].forEach(function (i) {
-        var p = points[i], d = Math.hypot(p.x - a.x, p.y - a.y);
-        if (d <= 20) return;
-        var dx = (p.x - a.x) / d, dy = (p.y - a.y) / d;
-        ctx.strokeStyle = i === 1 ? '#FFFF00' : '#58C4DD'; ctx.lineWidth = i === 1 ? 3 : 2;
-        ctx.beginPath(); ctx.moveTo(a.x + 10 * dx, a.y + 10 * dy); ctx.lineTo(p.x - 10 * dx, p.y - 10 * dy); ctx.stroke();
-      });
-      points.forEach(function (p, i) {
-        ctx.strokeStyle = colors[i]; ctx.fillStyle = colors[i]; ctx.lineWidth = 2.5;
-        ctx.beginPath(); ctx.arc(p.x, p.y, 9, 0, 2 * Math.PI); ctx.stroke();
-        ctx.font = 'bold 20px ui-monospace, monospace';
-        ctx.fillText('ABCD'[i], Math.min(W - 26, p.x + 15), Math.max(65, Math.min(H - 55, p.y - 12)));
-      });
+      ctx.scale(1.5, 1.5);
+      S.drawQuad(ctx, result.match.pixels.map(function (p) { return [p.x / 1.5, p.y / 1.5]; }), 1, 1, '700 14px ui-monospace, monospace');
       ctx.restore();
     }
     ctx.fillStyle = 'rgba(8,13,24,.9)'; ctx.fillRect(0, 0, W, 46); ctx.fillRect(0, H - 42, W, 42);
