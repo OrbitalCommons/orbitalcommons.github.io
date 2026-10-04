@@ -5,7 +5,7 @@
   var canvas = document.getElementById("sky");
   if (!canvas || !window.OC_SKY || !window.OCSky || !canvas.getContext) return;
 
-  var S = window.OCSky, D2R = S.D2R;
+  var S = window.OCSky, D2R = S.D2R, QUAD = S.QUAD;
   var ctx = canvas.getContext("2d");
   var hud = document.getElementById("sky-hud");
   // `reduced` means no autonomous motion: set by the reduced-motion preference or the pause button.
@@ -49,7 +49,7 @@
   }
 
   // Plate-solve illustration: a field locks on, detects sources, matches a quad, reports the centre.
-  var solve = null, CYCLE = 9.5;
+  var solve = null, CYCLE = 10.5;
   // Top of the hero's control row in canvas coordinates; on phones the field sits just above it.
   function footTop() {
     var foot = document.querySelector(".hero-foot");
@@ -58,7 +58,7 @@
   function newSolve(t, at) {
     var mobile = W < 760;
     var size = mobile ? 116 : 190;
-    var sx = at ? at[0] : mobile ? W - size / 2 - 22 - Math.random() * 20 : W * (0.62 + Math.random() * 0.2);
+    var sx = at ? at[0] : mobile ? W - size / 2 - 22 - Math.random() * 20 : W * (0.56 + Math.random() * 0.1);
     var sy = at ? at[1] : mobile ? footTop() - size / 2 - 14 : H * (0.3 + Math.random() * 0.35);
     solve = { t0: t, v: view.unproject(sx, sy), size: size, stars: null, real: null };
   }
@@ -80,7 +80,8 @@
     return solverReady;
   }
   function realSolve(sv) {
-    var truth = S.toRaDec(sv.v), fov = Math.max(15, Math.min(40, sv.size / view.scale / D2R));
+    // Phones show the sky at a smaller scale, so they solve the smallest frame to keep the quad on screen.
+    var truth = S.toRaDec(sv.v), fov = W < 760 ? 15 : Math.max(15, Math.min(40, sv.size / view.scale / D2R));
     var sources = S.tanField(truth[0], truth[1], fov, FRAME, FRAME, 6.3).map(function (p) { return { x: p.x, y: p.y, flux: p.flux }; });
     sv.real = { status: "pending", fov: fov, n: sources.length };
     setBusy(true);
@@ -90,7 +91,8 @@
     }).then(function (r) {
       setBusy(false);
       if (solve !== sv) { announce("The view changed before the solve finished, so its result was set aside."); return; }
-      if (performance.now() / 1000 - sv.t0 > CYCLE - 1) sv.t0 = performance.now() / 1000 - 4.6;
+      // Resume from the panel so the real match plays in: rows, match box, then the result.
+      if (performance.now() / 1000 - sv.t0 > T_PANEL) sv.t0 = performance.now() / 1000 - T_PANEL - 0.3;
       if (!r) {
         sv.real.status = "none";
         announce("No solution for this field.");
@@ -100,17 +102,26 @@
           err: Math.acos(Math.max(-1, Math.min(1, a[0] * b[0] + a[1] * b[1] + a[2] * b[2]))) / D2R * 60 };
         announce("Solved in " + Math.round(r.ms) + " milliseconds: right ascension " + S.fmtRa(r.ra) + ", declination " +
           S.fmtDec(r.dec) + ", " + r.matched + " stars matched, " +
-          (sv.real.err * 60 < 0.1 ? "under 0.1" : (sv.real.err * 60).toFixed(1)) + " arcseconds from the true centre of the synthetic frame.");
+          (sv.real.err * 60 < 0.1 ? "under 0.1" : (sv.real.err * 60).toFixed(1)) + " arcseconds from the true centre of the synthetic frame." +
+          matchSummary(r.match));
       }
       if (!running) frame(performance.now());
     }, function () {
       setBusy(false);
       if (solve !== sv) { announce("The view changed before the solve finished, so its result was set aside."); return; }
-      if (performance.now() / 1000 - sv.t0 > CYCLE - 1) sv.t0 = performance.now() / 1000 - 4.6;
+      if (performance.now() / 1000 - sv.t0 > T_PANEL) sv.t0 = performance.now() / 1000 - T_DONE;
       sv.real.status = "fail";
       announce("The solver could not load.");
       if (!running) frame(performance.now());
     });
+  }
+  // The overlay's content in words: the winning index entry and its code.
+  function matchSummary(match) {
+    if (!match || !match.code) return "";
+    var row = (match.rows || []).filter(function (r) { return r.matched; })[0];
+    var code = match.code.map(function (v) { return v.toFixed(2); }).join(", ");
+    return " Matched index entry" + (row ? " " + row.id : "") + " with code " + code +
+      "; the index rows shown are a sample around it, not the search order.";
   }
   var statusEl = document.getElementById("sky-status");
   function announce(text) { if (statusEl) statusEl.textContent = text; }
@@ -178,6 +189,54 @@
     drawHover();
   }
 
+  // The quad and index overlay follow the zodiacal Manim animation: A/B/C/D in fixed colours, the
+  // AB line and its diameter circle, then a "query code" and index rows scrolling in until the
+  // matching entry is boxed. Times are seconds into the cycle.
+  var T_QUAD = 2.6, T_PANEL = 3.7, T_ROWS = 4.1, ROW_DT = 0.28, T_DONE = 7.1, END = 9;
+
+  // Pick the brightest detections that form a valid quad, as the solver prefers bright stars.
+  function pickQuad(found) {
+    var pool = found.slice(0, 8), best = null;
+    for (var a = 0; a < pool.length && !best; a++)
+      for (var b = a + 1; b < pool.length && !best; b++)
+        for (var c = b + 1; c < pool.length && !best; c++)
+          for (var d = c + 1; d < pool.length && !best; d++) {
+            var ids = [pool[a], pool[b], pool[c], pool[d]];
+            var q = S.quadCode(ids.map(function (i) { return [SX[i], SY[i]]; }));
+            if (q.valid) best = { stars: q.order.map(function (k) { return ids[k]; }), code: q.code };
+          }
+    return best;
+  }
+  // Illustration rows: codes of other real quads of catalogue stars (each a star and its three
+  // nearest visible neighbours), ending with the field's own quad as the match.
+  function illustrationRows(quad) {
+    var rows = [], seen = {};
+    for (var i = 0; i < FAINT_LIMIT && rows.length < 8; i += 3) {
+      if (!VIS[i] || seen[i]) continue;
+      var near = [];
+      for (var j = 0; j < FAINT_LIMIT; j++) {
+        if (j === i || !VIS[j]) continue;
+        var d = Math.pow(SX[j] - SX[i], 2) + Math.pow(SY[j] - SY[i], 2);
+        near.push([d, j]);
+      }
+      near.sort(function (p, q) { return p[0] - q[0]; });
+      var ids = [i].concat(near.slice(0, 3).map(function (p) { return p[1]; }));
+      if (ids.length < 4) continue;
+      var q = S.quadCode(ids.map(function (k) { return [SX[k], SY[k]]; }));
+      if (!q.valid) continue;
+      seen[i] = true;
+      rows.push({ id: 1000 + i * 37 % 89000, code: q.code, matched: false });
+    }
+    rows.push({ id: 1000 + quad.stars[0] * 37 % 89000, code: quad.code, matched: true });
+    return rows;
+  }
+  var FAINT_LIMIT = 400;
+  // The solver's sample is centred on the winning entry; stream the others in their order and the
+  // winner last, so the scrolling list ends on the match.
+  function winnerLast(rows) {
+    return rows.filter(function (r) { return !r.matched; }).concat(rows.filter(function (r) { return r.matched; }));
+  }
+
   function drawSolve(t) {
     // With reduced motion there is no loop: only a solve the visitor asked for, shown in its final state.
     if (reduced) {
@@ -186,8 +245,8 @@
       if (t - intro < 3.4 && !solve) return;
       if (!solve || (t - solve.t0 > CYCLE && !pendingUserSolve())) newSolve(t);
     }
-    // A pending visitor solve holds at its final frame until the answer arrives.
-    var e = reduced ? 6 : pendingUserSolve() ? Math.min(t - solve.t0, CYCLE - 1) : t - solve.t0, v = solve.v;
+    // A pending visitor solve holds before the match until the answer arrives.
+    var e = reduced ? END : pendingUserSolve() ? Math.min(t - solve.t0, T_PANEL + 0.35) : t - solve.t0, v = solve.v;
     if (!view.project(v[0], v[1], v[2], pt2)) { solve = null; return; }
     var px = pt2[0], py = pt2[1], half = solve.size / 2;
     if (e > 1.1 && !solve.stars) solve.stars = solveStars(px, py, half);
@@ -209,70 +268,173 @@
     ctx.stroke();
 
     var found = solve.stars || [];
-    // Source detection.
+    // Source detection, in neutral grey; the quad's roles bring the colour.
     for (var i = 0; i < found.length; i++) {
-      var appear = 1.2 + i * 0.12;
+      var appear = 1.2 + i * 0.1;
       if (e < appear) break;
       var p = Math.min(1, (e - appear) / 0.35), si = found[i];
-      ctx.strokeStyle = "rgba(139,227,176," + (0.85 * A) + ")";
+      ctx.globalAlpha = 0.7 * A;
+      ctx.strokeStyle = QUAD.label;
       ctx.beginPath();
       ctx.arc(SX[si], SY[si], 4 + 10 * (1 - p) + 2, 0, 6.283);
       ctx.stroke();
     }
-    // Quad match among the four brightest detections.
-    if (found.length >= 4 && e > 3.2) {
-      var q = Math.min(1, (e - 3.2) / 1.1), order = [0, 1, 1, 3, 3, 2, 2, 0, 0, 3, 1, 2];
-      ctx.strokeStyle = "rgba(255,196,119," + (0.9 * A) + ")";
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      var segs = Math.ceil(q * 6);
-      for (var s = 0; s < segs; s++) {
-        var a = found[order[2 * s]], b = found[order[2 * s + 1]];
-        ctx.moveTo(SX[a], SY[a]);
-        ctx.lineTo(SX[b], SY[b]);
-      }
-      ctx.stroke();
+
+    // The quad: the real winning quad once a visitor solve returns its match, else the brightest
+    // valid quad among the detections.
+    var real = solve.real, match = real && real.status === "done" && real.r.match;
+    if (!solve.real && !solve.quad && found.length >= 4 && e > T_QUAD - 0.2) {
+      var picked = pickQuad(found);
+      solve.quad = picked ? { pts: function () { return picked.stars.map(function (k) { return [SX[k], SY[k]]; }); },
+        code: picked.code, rows: illustrationRows(picked), real: false } : null;
     }
-    // Readout for the field centre.
-    if (e > 4.4) {
-      var rd = S.toRaDec(v), fov = 4 * Math.atan(half / (2 * view.scale)) / D2R, real = solve.real, good = found.length >= 4;
-      var lines = [
-        good ? "QUAD MATCHED" : "TOO FEW STARS",
-        "RA  " + S.fmtRa(rd[0]),
-        "DEC " + S.fmtDec(rd[1]),
-        "FOV " + fov.toFixed(1) + "°  ·  " + found.length + " src"
-      ];
-      if (real && real.status === "done") {
-        good = true;
-        lines = [
-          "SOLVED  " + (real.r.ms < 10 ? real.r.ms.toFixed(1) : Math.round(real.r.ms)) + " ms",
-          "RA  " + S.fmtRa(real.r.ra),
-          "DEC " + S.fmtDec(real.r.dec),
-          "ERR " + (real.err * 60 < 1 ? "<1″" : real.err < 1 ? (real.err * 60).toFixed(0) + "″" : real.err.toFixed(1) + "′") + "  ·  " + real.r.matched + " matched",
-          "zodiacal wasm · synthetic frame"
-        ];
-      } else if (real) {
-        good = false;
-        lines = [real.status === "pending" ? "SOLVING…" : real.status === "none" ? "NO SOLUTION" : "SOLVER UNAVAILABLE",
-          real.n + " src  ·  " + real.fov.toFixed(0) + "° field", "zodiacal wasm · synthetic frame"];
+    if (match && !(solve.quad && solve.quad.real)) {
+      solve.quad = { pts: function () {
+          return match.stars.map(function (s) {
+            var u = S.radec(s.ra, s.dec), out = [0, 0];
+            return view.project(u[0], u[1], u[2], out) ? out : [NaN, NaN];
+          });
+        }, code: match.code, rows: winnerLast(match.rows || []), real: true };
+    }
+    var quad = solve.quad;
+    if (quad && e > T_QUAD) S.drawQuad(ctx, quad.pts(), Math.min(1, (e - T_QUAD) / 1.0), A, "700 10px " + MONO);
+
+    if (e > T_PANEL) drawPanel(quad, e, A, px, py, h, v, found.length, half);
+    ctx.globalAlpha = 1;
+  }
+
+  // Query code, index rows scrolling in (new rows enter at the top), the match boxed in green,
+  // then the solution. Placed beside the field, inside the canvas.
+  function drawPanel(quad, e, A, px, py, h, v, nsrc, half) {
+    var mobile = W < 760, real = solve.real, done = real && real.status === "done";
+    // A visitor solve shows no code or rows until the solver answers, and none if it fails.
+    var waiting = real && !done;
+    if (waiting) quad = null;
+    var lh = 15, visible = mobile ? 3 : 7, showId = !mobile;
+    ctx.font = "600 11px " + MONO;
+    var codeW = ctx.measureText("(+0.00, +0.00, +0.00, +0.00)").width;
+    var idW = showId ? ctx.measureText("#00000  ").width : 0;
+    var pw = Math.max(codeW + idW, 170) + 20;
+    var rows = quad ? quad.rows : [];
+    var resultLines = panelResult(real, quad, v, nsrc, half).slice(0, mobile ? 2 : 5);
+    var ph = lh * (3 + visible + resultLines.length) + 26;
+    // Choose a side once per field so the panel doesn't jump as the sky drifts.
+    if (!solve.side) solve.side = px + h + 16 + pw <= W - 8 ? 1 : -1;
+    var tx = solve.side > 0 ? px + h + 16 : px - h - pw - 10;
+    tx = Math.max(8, Math.min(W - pw - 8, tx));
+    var bottom = (mobile ? footTop() : H) - 8;
+    var ty = Math.max(66, Math.min(bottom - ph, py - h));
+    // Never cover the headline: if the left side would, sit below (or above) the field instead.
+    if (solve.side < 0 && textBox && tx < textBox[2] && ty < textBox[3] && ty + ph > textBox[1]) {
+      tx = Math.max(8, Math.min(W - pw - 8, Math.max(textBox[2] + 8, px - pw / 2)));
+      ty = py + h + 12 + ph <= bottom ? py + h + 12 : Math.max(66, py - h - ph - 12);
+    }
+    var fade = Math.min(1, (e - T_PANEL) / 0.4) * A;
+    ctx.globalAlpha = 0.82 * fade;
+    ctx.fillStyle = "#05070d";
+    ctx.fillRect(tx, ty, pw, ph);
+    ctx.strokeStyle = "rgba(140,170,230,0.28)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(tx + 0.5, ty + 0.5, pw - 1, ph - 1);
+
+    var x = tx + 10, y = ty + 16;
+    ctx.globalAlpha = fade;
+    ctx.fillStyle = QUAD.label;
+    ctx.font = "600 10px " + MONO;
+    ctx.fillText(real && real.status === "pending" ? "SOLVING…" : quad && quad.real ? "MATCHED INDEX CODE" : "QUERY CODE", x, y);
+    ctx.font = "600 11px " + MONO;
+    var codeY = y + lh;
+    if (quad) S.drawCode(ctx, quad.code, x, codeY, fade);
+    else if (real && real.status === "pending") {
+      ctx.fillStyle = QUAD.label;
+      ctx.fillText("zodiacal · WebAssembly", x, codeY);
+    }
+    y = codeY + lh + 4;
+    ctx.globalAlpha = fade;
+    ctx.fillStyle = QUAD.label;
+    ctx.font = "600 10px " + MONO;
+    ctx.fillText(quad && quad.real ? "INDEX SAMPLE · NOT SEARCH ORDER" : "INDEX · ILLUSTRATION", x, y);
+    y += 6;
+
+    // Rows arrive one by one; the newest sits at the top, older ones move down and fade out.
+    ctx.font = "600 11px " + MONO;
+    // Pace the rows so the whole sample, ending with the match, has arrived before the result.
+    var dt = Math.min(ROW_DT, (T_DONE - 0.6 - T_ROWS) / Math.max(1, rows.length));
+    var arrived = Math.max(0, Math.min(rows.length, Math.floor((e - T_ROWS) / dt) + 1));
+    var slide = Math.min(1, ((e - T_ROWS) % dt) / dt * 2.5);
+    if (arrived === rows.length) slide = 1;
+    var matchedY = null;
+    for (var k = 0; k < Math.min(arrived, visible + 1); k++) {
+      var row = rows[arrived - 1 - k];
+      var slot = k - 1 + slide;
+      var ry = y + lh * (slot + 1);
+      if (slot > visible - 0.5) continue;
+      var rowAlpha = fade * Math.max(0, Math.min(1, slot + 1)) * (slot > visible - 1.5 ? 0.5 : 1);
+      if (showId) {
+        ctx.globalAlpha = rowAlpha;
+        ctx.fillStyle = QUAD.A;
+        ctx.fillText("#" + String(row.id).slice(-5), x, ry);
       }
-      ctx.font = "600 11px " + MONO;
-      var bw = 0;
-      for (var m = 0; m < lines.length; m++) bw = Math.max(bw, ctx.measureText(lines[m]).width);
-      bw += 16;
-      var tx = px + h + 14, ty = py - h + 4;
-      if (tx + bw > W) tx = px - h - bw - 6;
-      var typed = Math.min(1, (e - 4.4) / 0.9);
-      ctx.fillStyle = "rgba(5,7,13," + (0.72 * Math.min(1, typed * 3)) + ")";
-      ctx.fillRect(tx - 8, ty - 4, bw, lines.length * 16 + 10);
-      for (var l = 0; l < lines.length; l++) {
-        var str = lines[l], shown = Math.floor(str.length * Math.min(1, typed * (1 + 0.2 * lines.length) - l * 0.2));
+      S.drawCode(ctx, row.code, x + idW, ry, rowAlpha);
+      if (row.matched && arrived === rows.length) matchedY = ry;
+    }
+    y += lh * (visible + 1);
+
+    // The match: a green box on its row and a dashed green line from the query code.
+    if (matchedY !== null && e > T_DONE - 0.4) {
+      var m = Math.min(1, (e - (T_DONE - 0.4)) / 0.4);
+      ctx.globalAlpha = fade * m;
+      ctx.strokeStyle = QUAD.match;
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(x - 4, matchedY - 11, idW + codeW + 8, 15);
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(tx + pw - 8, codeY - 4);
+      ctx.lineTo(tx + pw - 8, matchedY - 4);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    if (e > T_DONE || (real && real.status !== "pending" && !done)) {
+      var typed = Math.min(1, (e - T_DONE) / 0.8);
+      if (real && !done) typed = 1;
+      for (var l = 0; l < resultLines.length; l++) {
+        var line = resultLines[l], shown = Math.floor(line.text.length * Math.min(1, typed * 1.8 - l * 0.2));
         if (shown <= 0) continue;
-        ctx.fillStyle = l === 0 ? (good ? "#8be3b0" : "#ffc477") : "rgba(232,236,246,0.85)";
-        ctx.fillText(str.slice(0, shown), tx, ty + 10 + l * 16);
+        ctx.globalAlpha = fade;
+        ctx.fillStyle = line.color;
+        ctx.fillText(line.text.slice(0, shown), x, y + lh * l);
       }
     }
     ctx.globalAlpha = 1;
+  }
+
+  function panelResult(real, quad, v, nsrc, half) {
+    var white = "rgba(232,236,246,0.85)";
+    if (real && real.status === "done") {
+      var r = real.r, err = real.err * 60;
+      return [
+        { text: "SOLVED  " + (r.ms < 10 ? r.ms.toFixed(1) : Math.round(r.ms)) + " ms", color: QUAD.match },
+        { text: "RA  " + S.fmtRa(r.ra), color: white },
+        { text: "DEC " + S.fmtDec(r.dec), color: white },
+        { text: "ERR " + (err < 1 ? "<1″" : err < 60 ? err.toFixed(0) + "″" : (err / 60).toFixed(1) + "′") +
+          " · " + r.matched + " matched", color: white },
+        { text: "zodiacal wasm · synthetic frame", color: QUAD.label }
+      ];
+    }
+    if (real && real.status !== "pending") {
+      return [
+        { text: real.status === "none" ? "NO SOLUTION" : "SOLVER UNAVAILABLE", color: QUAD.D },
+        { text: real.n + " src · " + real.fov.toFixed(0) + "° field", color: white }
+      ];
+    }
+    var rd = S.toRaDec(v), fov = 4 * Math.atan(half / (2 * view.scale)) / D2R;
+    return [
+      { text: quad ? "QUAD MATCHED" : "TOO FEW STARS", color: quad ? QUAD.match : QUAD.D },
+      { text: "RA  " + S.fmtRa(rd[0]), color: white },
+      { text: "DEC " + S.fmtDec(rd[1]), color: white },
+      { text: "FOV " + fov.toFixed(1) + "° · " + nsrc + " src", color: white }
+    ];
   }
   function corner(x, y, dx, dy) { ctx.moveTo(x + dx, y); ctx.lineTo(x, y); ctx.lineTo(x, y + dy); }
 
@@ -371,7 +533,7 @@
   // Arrow keys pan when the map has focus.
   function solveDefault() {
     var mobile = W < 760;
-    solveAt(mobile ? W - 80 : W * 0.72, mobile ? H - 122 : H * 0.45);
+    solveAt(mobile ? W - 70 : W * 0.6, mobile ? footTop() - 72 : H * 0.45);
   }
   var sbtn = document.getElementById("sky-solve");
   if (sbtn) sbtn.addEventListener("click", solveDefault);
@@ -438,7 +600,7 @@
       if (goal) { cam.ra = goal.ra0 + goal.dra; cam.dec = goal.dec; goal = null; }
       cam.vra = cam.vdec = 0;
       view.scale = baseScale;
-      if (solve && !pendingUserSolve()) solve = null;
+      // Any field on screen stays, drawn in its final state, so a paused match can be inspected.
       frame(performance.now());
     } else {
       start();

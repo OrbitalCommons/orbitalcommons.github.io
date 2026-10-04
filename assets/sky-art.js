@@ -79,29 +79,25 @@
       ctx.moveTo(x - s[0] * c, y); ctx.lineTo(x, y); ctx.lineTo(x, y - s[1] * c);
     });
     ctx.stroke();
-    ctx.strokeStyle = "rgba(139,227,176,0.85)";
+    ctx.globalAlpha = 0.7;
+    ctx.strokeStyle = S.QUAD.label;
     ctx.lineWidth = 1;
     found.forEach(function (k) {
       ctx.beginPath();
       ctx.arc(SX[k], SY[k], 6, 0, 6.283);
       ctx.stroke();
     });
-    // Quad: the brightest detections that are not crowded together.
+    ctx.globalAlpha = 1;
+    // Quad: the brightest detections that are not crowded together, in the Manim A/B/C/D roles.
     var quad = [];
     for (var f = 0; f < found.length && quad.length < 4; f++) {
       var ok = quad.every(function (o) { return Math.hypot(SX[o] - SX[found[f]], SY[o] - SY[found[f]]) > half * 0.35; });
       if (ok) quad.push(found[f]);
     }
     if (quad.length === 4) {
-      var order = [0, 1, 1, 3, 3, 2, 2, 0, 0, 3, 1, 2];
-      ctx.strokeStyle = "rgba(255,196,119,0.9)";
-      ctx.lineWidth = 1.3;
-      ctx.beginPath();
-      for (var s = 0; s < order.length; s += 2) {
-        ctx.moveTo(SX[quad[order[s]]], SY[quad[order[s]]]);
-        ctx.lineTo(SX[quad[order[s + 1]]], SY[quad[order[s + 1]]]);
-      }
-      ctx.stroke();
+      var pts = quad.map(function (k) { return [SX[k], SY[k]]; });
+      var q = S.quadCode(pts);
+      S.drawQuad(ctx, q.order.map(function (k) { return pts[k]; }), 1, 1, "700 11px " + MONO);
     }
     if (readout) {
       var rd = S.toRaDec(view.unproject(cx, cy)), fov = 4 * Math.atan(half / (2 * view.scale)) / S.D2R;

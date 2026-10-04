@@ -36,11 +36,11 @@ body { background:
   .hero { justify-content: flex-start; }
   .hero-fade { background: url(noise.png), linear-gradient(180deg, rgba(5, 7, 13, .9) 0%, rgba(5, 7, 13, .7) 60%, rgba(5, 7, 13, 0) 78%),
     linear-gradient(0deg, var(--bg) 0%, rgba(5, 7, 13, 0) 15%); }
-  .hero-inner { padding-top: 6rem; padding-bottom: 15rem; }
+  .hero-inner { padding-top: 6rem; padding-bottom: 20rem; }
   .hint { display: none; }
 }
 @media (max-width: 480px) {
-  .hero-inner { padding-bottom: 15rem; }
+  .hero-inner { padding-bottom: 20rem; }
   .hero .actions .btn { flex: 1 1 100%; justify-content: center; }
 }
 

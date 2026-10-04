@@ -5,7 +5,7 @@ use zodiacal::{
     geom::sphere::{angular_distance, radec_to_xyz},
     index::{Index, IndexStar},
     kdtree::KdTree,
-    quads::{Quad, compute_canonical_code},
+    quads::{Quad, compute_canonical_code, compute_code},
     solver::{SolverConfig, solve},
 };
 thread_local! { static INDEX: RefCell<Option<Index>> = const { RefCell::new(None) }; }
@@ -115,9 +115,11 @@ pub fn solve_sources(json: &str, width: f64, height: f64) -> Result<String, JsVa
     INDEX.with(|value| {
         let borrowed = value.borrow();
         let index = borrowed.as_ref().ok_or_else(|| error("Index not loaded"))?;
-        let mut config = SolverConfig::default();
-        config.max_field_stars = 24;
-        config.code_tolerance = 0.0004;
+        let config = SolverConfig {
+            max_field_stars: 24,
+            code_tolerance: 0.0004,
+            ..SolverConfig::default()
+        };
         // No region or pointing hint. The host enforces a hard deadline by
         // terminating the worker; no cooperative solver timeout is set here.
         let (solution, stats) = solve(&sources, &[index], (width, height), &config);
@@ -136,6 +138,40 @@ pub fn solve_sources(json: &str, width: f64, height: f64) -> Result<String, JsVa
             return Ok("null".into());
         }
         let (ra, dec) = solution.wcs.field_center();
+        // Expose the actual winning correspondence for the visual replay. These
+        // neighbouring index records are not a chronological KD-tree search trace.
+        let matched_quad = &solution.quad_match;
+        let quad_id = index
+            .quads
+            .iter()
+            .position(|q| q.star_ids == matched_quad.index_indices)
+            .expect("Solver match belongs to the loaded index");
+        let quad_code = |ids: [usize; 4]| {
+            compute_code(&ids.map(|i| radec_to_xyz(index.stars[i].ra, index.stars[i].dec)))
+        };
+        let ab_arcsec = |ids: [usize; 4]| {
+            angular_distance(
+                radec_to_xyz(index.stars[ids[0]].ra, index.stars[ids[0]].dec),
+                radec_to_xyz(index.stars[ids[1]].ra, index.stars[ids[1]].dec),
+            ).to_degrees() * 3600.0
+        };
+        let rows: Vec<_> = (quad_id.saturating_sub(8)..(quad_id + 8).min(index.quads.len()))
+            .map(|id| {
+                let ids = index.quads[id].star_ids;
+                let anchor = &index.stars[ids[0]];
+                serde_json::json!({
+                    "id": id, "code": quad_code(ids), "matched": id == quad_id,
+                    "raDeg": anchor.ra.to_degrees(), "decDeg": anchor.dec.to_degrees(),
+                    "abArcsec": ab_arcsec(ids),
+                })
+            })
+            .collect();
+        let pixels = matched_quad.field_indices.map(|i| {
+            serde_json::json!({"x": sources[i].x, "y": sources[i].y})
+        });
+        let stars = matched_quad.index_indices.map(|i| {
+            serde_json::json!({"ra": index.stars[i].ra.to_degrees(), "dec": index.stars[i].dec.to_degrees()})
+        });
         Ok(serde_json::json!({
             "ra": ra.to_degrees().rem_euclid(360.0), "dec": dec.to_degrees(),
             "rotationDeg": rotation(&solution.wcs),
@@ -143,6 +179,13 @@ pub fn solve_sources(json: &str, width: f64, height: f64) -> Result<String, JsVa
             "matched": solution.verify_result.n_matched, "candidates": stats.n_verified,
             "refined": true, "wcs": solution.wcs,
             "pairs": solution.verify_result.matched_pairs,
+            "match": {
+                "fieldIndices": matched_quad.field_indices,
+                "indexIndices": matched_quad.index_indices,
+                "pixels": pixels, "stars": stars,
+                "code": quad_code(matched_quad.index_indices), "rows": rows,
+                "abArcsec": ab_arcsec(matched_quad.index_indices),
+            },
         })
         .to_string())
     })

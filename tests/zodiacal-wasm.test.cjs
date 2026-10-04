@@ -68,11 +68,45 @@ function run(sources) {
   const input = JSON.stringify(sources.map(({ x, y, flux }) => ({ x, y, flux })));
   const result = JSON.parse(solver.solve_sources(input, 1024, 768));
   if (reference) {
-    assert.deepEqual(result, JSON.parse(reference.solve_sources(input, 1024, 768)),
+    // Match metadata is additive; compare the astrometric output independently.
+    const astrometry = value => {
+      if (!value) return value;
+      const { match, ...rest } = value;
+      return rest;
+    };
+    assert.deepEqual(astrometry(result), astrometry(JSON.parse(reference.solve_sources(input, 1024, 768))),
       "solver output differs from the reference build");
   }
   return result;
 }
+test("visual replay reports the actual canonical matched quad and real index rows", () => {
+  const sources = sky.tanField(83.8, -2, 20, 1024, 768, 6.3).slice(0, 200);
+  const result = run(sources), match = result.match;
+  const ns = index.readUInt32LE(8), start = 16 + ns * 20;
+  assert.equal(match.pixels.length, 4);
+  assert.equal(new Set(match.fieldIndices).size, 4);
+  assert.equal(new Set(match.indexIndices).size, 4);
+  match.fieldIndices.forEach((id, i) => {
+    assert.ok(Math.hypot(match.pixels[i].x - sources[id].x, match.pixels[i].y - sources[id].y) < 1e-10);
+    const offset = 16 + match.indexIndices[i] * 20;
+    assert.ok(Math.abs(match.stars[i].ra - index.readDoubleLE(offset) * 180 / Math.PI) < 1e-10);
+    assert.ok(Math.abs(match.stars[i].dec - index.readDoubleLE(offset + 8) * 180 / Math.PI) < 1e-10);
+  });
+  assert.ok(match.rows.length >= 8 && match.rows.length <= 16);
+  const winners = match.rows.filter(row => row.matched);
+  assert.equal(winners.length, 1);
+  assert.deepEqual(winners[0].code, match.code);
+  assert.equal(winners[0].abArcsec, match.abArcsec);
+  for (const row of match.rows) {
+    const ids = Array.from({ length: 4 }, (_, i) => index.readUInt16LE(start + row.id * 8 + i * 2));
+    assert.ok(ids.some(id => Math.abs(index.readDoubleLE(16 + id * 20) * 180 / Math.PI - row.raDeg) < 1e-10));
+    assert.ok(row.abArcsec > 0 && row.abArcsec < 180 * 3600);
+    assert.ok(row.code.every(Number.isFinite));
+    assert.ok(row.code[0] <= row.code[2] + 1e-12);
+    assert.ok(row.code[0] + row.code[2] <= 1 + 1e-12);
+    if (row.matched) assert.deepEqual(ids.sort((a,b) => a-b), [...match.indexIndices].sort((a,b) => a-b));
+  }
+});
 test("the shipped solver recovers independent clean TAN fields across the sky", () => {
   let solved = 0,
     attempts = 0;

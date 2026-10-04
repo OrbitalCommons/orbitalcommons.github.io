@@ -18,8 +18,8 @@ const base = (process.env.SITE_URL || 'http://127.0.0.1:4173').replace(/\/$/, ''
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.goto(base + '/tools/og.html');
     await page.evaluate(async () => { await Promise.all([...document.images].map(image => image.decode())); });
-    // Capture the existing illustrative quad after its detections/readout appear.
-    await page.waitForTimeout(9600);
+    // Capture the illustrative index replay after its matched row and readout appear.
+    await page.waitForTimeout(12000);
     await page.screenshot({ path: path.join(root, 'assets/og.jpg'), type: 'jpeg', quality: 72 });
     console.log('Rendered apple-touch-icon.png and og.jpg from the shared star mark.');
   } finally {

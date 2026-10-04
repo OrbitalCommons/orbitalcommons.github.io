@@ -74,6 +74,12 @@
         ctx.strokeStyle = '#8be3b0'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(p.x, p.y, radius + 6, 0, 2 * Math.PI); ctx.stroke();
       }
     });
+    if (result && result.match) {
+      ctx.save();
+      ctx.scale(1.5, 1.5);
+      S.drawQuad(ctx, result.match.pixels.map(function (p) { return [p.x / 1.5, p.y / 1.5]; }), 1, 1, '700 14px ui-monospace, monospace');
+      ctx.restore();
+    }
     ctx.fillStyle = 'rgba(8,13,24,.9)'; ctx.fillRect(0, 0, W, 46); ctx.fillRect(0, H - 42, W, 42);
     ctx.font = '16px ui-monospace, monospace'; ctx.fillStyle = '#b4bdd2';
     ctx.fillText('SYNTHETIC DETECTIONS / 1024 × 768', 20, 29);
@@ -81,7 +87,7 @@
     ctx.fillStyle = result ? '#8be3b0' : '#7cc4ff';
     ctx.fillText(result ? matched.size + ' MATCHED DETECTIONS' : sources.length + ' DETECTIONS / POINTING UNKNOWN TO SOLVER', 20, H - 16);
     canvas.setAttribute('aria-label', 'Synthetic ' + field.options[field.selectedIndex].text + ' field, camera roll ' + truth.roll + ' degrees, ' + sources.length + ' detections. ' +
-      (result ? matched.size + ' detections have green match rings. Recovered coordinates follow below.' : 'Not yet solved.'));
+      (result ? matched.size + ' detections have green match rings. The winning quad is labelled A red, B green, C cyan, D orange, with a yellow A–B baseline. Recovered coordinates follow below.' : 'Not yet solved.'));
   }
   function metric(label, value) {
     var item = document.createElement('div'), dt = document.createElement('dt'), dd = document.createElement('dd');
