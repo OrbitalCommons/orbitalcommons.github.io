@@ -43,6 +43,8 @@
     <p id="x-hover" class="muted">&nbsp;</p>
   </div>
 
+  <aside id="x-result" class="result panel" role="status" aria-live="polite" hidden></aside>
+
   <section id="controls" class="dock panel" aria-label="Sky controls">
     <form id="x-search" class="search" role="search">
       <label for="x-q" class="visually-hidden">Find a star or planet</label>
@@ -55,6 +57,11 @@
     <div class="zoom" role="group" aria-label="Zoom">
       <button id="x-out" type="button" class="btn small icon" aria-label="Zoom out">&minus;</button>
       <button id="x-in" type="button" class="btn small icon" aria-label="Zoom in">+</button>
+    </div>
+
+    <div id="x-solve-group" class="solve" hidden>
+      <button id="x-solve" type="button" class="btn small">&#x2316; Plate-solve this view</button>
+      <label><input type="checkbox" id="x-noise"> Add noise</label>
     </div>
 
     <div class="time">
