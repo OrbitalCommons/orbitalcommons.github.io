@@ -306,7 +306,7 @@
   // Interaction: drag to look around, with inertia.
   var dragging = false, lx = 0, ly = 0, downX = 0, downY = 0, hover = null;
   canvas.addEventListener("pointerdown", function (ev) {
-    dragging = true; lx = downX = ev.clientX; ly = downY = ev.clientY;
+    dragging = true; goal = null; lx = downX = ev.clientX; ly = downY = ev.clientY;
     canvas.setPointerCapture(ev.pointerId);
   });
   canvas.addEventListener("pointermove", function (ev) {
@@ -376,6 +376,7 @@
     var k = { ArrowLeft: [1, 0], ArrowRight: [-1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[ev.key];
     if (!k) return;
     ev.preventDefault();
+    goal = null;
     cam.vra = k[0] * 1.5; cam.vdec = k[1] * 1.5;
     if (reduced) { cam.ra += cam.vra; cam.dec = Math.max(-80, Math.min(80, cam.dec + cam.vdec)); frame(performance.now()); }
   });
@@ -397,9 +398,14 @@
     draw(t);
     if (reduced || t - hudT > 0.25) { updateHud(); hudT = t; }
   }
+  // The unattended drift is slow, so it runs at about 30 fps; dragging and flights get every frame.
+  var lastDraw = 0;
   function loop(now) {
     if (!running) return;
-    frame(now);
+    if (dragging || goal || now - lastDraw > 30) {
+      lastDraw = now;
+      frame(now);
+    }
     requestAnimationFrame(loop);
   }
   function start() {
@@ -423,6 +429,9 @@
     if (reduced === was) return;
     if (reduced) {
       stop();
+      // A flight in progress lands at its destination rather than creeping on later redraws.
+      if (goal) { cam.ra = goal.ra0 + goal.dra; cam.dec = goal.dec; goal = null; }
+      cam.vra = cam.vdec = 0;
       view.scale = baseScale;
       if (solve && !pendingUserSolve()) solve = null;
       frame(performance.now());
