@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sky explorer · OrbitalCommons</title>
+<meta name="description" content="Explore 7,000 Hipparcos stars and watch the planets move across any date, rendered in your browser.">
+<meta name="theme-color" content="#05070d">
+<meta property="og:title" content="Sky explorer · OrbitalCommons">
+<meta property="og:description" content="Explore 7,000 Hipparcos stars and watch the planets move across any date, rendered in your browser.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://orbitalcommons.github.io/sky/">
+<meta property="og:image" content="https://orbitalcommons.github.io/assets/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="../assets/sky-explorer.css">
+</head>
+<body class="explorer">
+<a class="skip" href="#controls">Skip to controls</a>
+
+<header class="site-nav">
+  <div class="wrap">
+    <a class="brand" href="../"><img class="mark" src="../assets/mark.svg" alt=""><span>Orbital<b>Commons</b></span></a>
+    <nav aria-label="Primary">
+      <a href="../#stack" class="opt">Stack</a>
+      <a href="../#projects">Projects</a>
+      <a href="./" aria-current="page" class="opt">Sky</a>
+      <a href="https://github.com/OrbitalCommons">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <h1 class="visually-hidden">Sky explorer</h1>
+  <canvas id="sky-x" tabindex="0" role="img"
+    aria-label="Star map of the Hipparcos catalogue with the planets for the chosen date. Drag or use arrow keys to pan, scroll or plus and minus to zoom."></canvas>
+  <noscript><p class="nojs">The sky explorer draws with JavaScript. The rest of the site works without it.</p></noscript>
+
+  <div class="readout" aria-live="polite">
+    <p id="x-center">&nbsp;</p>
+    <p id="x-hover" class="muted">&nbsp;</p>
+  </div>
+
+  <section id="controls" class="dock panel" aria-label="Sky controls">
+    <form id="x-search" class="search" role="search">
+      <label for="x-q" class="visually-hidden">Find a star or planet</label>
+      <input id="x-q" list="x-names" placeholder="Find a star or planet" autocomplete="off">
+      <datalist id="x-names"></datalist>
+      <button type="submit" class="btn small">Go</button>
+    </form>
+
+    <div class="time">
+      <button id="x-play" type="button" class="btn small icon" aria-pressed="false" aria-label="Play time">&#9654;</button>
+      <label for="x-days" class="visually-hidden">Days from today</label>
+      <input id="x-days" type="range" min="-730" max="730" step="1" value="0">
+      <output id="x-date" for="x-days">today</output>
+      <button id="x-now" type="button" class="btn small">Today</button>
+    </div>
+
+    <fieldset class="layers">
+      <legend class="visually-hidden">Layers</legend>
+      <label><input type="checkbox" data-layer="lines" checked> Constellations</label>
+      <label><input type="checkbox" data-layer="names" checked> Names</label>
+      <label><input type="checkbox" data-layer="band" checked> Milky Way</label>
+      <label><input type="checkbox" data-layer="planets" checked> Planets</label>
+      <label><input type="checkbox" data-layer="trails" checked> Trails</label>
+    </fieldset>
+    <p class="credit muted">Hipparcos (ESA) stars to V&nbsp;6.3, Stellarium figures, planets from JPL&rsquo;s
+    Keplerian elements (good to a few arcminutes between 1800 and 2050). Trails span &plusmn;120&nbsp;days,
+    so retrograde loops show up. A small JavaScript companion to
+    <a href="../projects/starfield/">starfield</a>.</p>
+  </section>
+
+</main>
+
+<script src="../assets/stars.js"></script>
+<script src="../assets/sky-core.js"></script>
+<script src="../assets/sky-explorer.js"></script>
+</body>
+</html>

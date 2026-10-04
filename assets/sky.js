@@ -165,12 +165,7 @@
   // Inspect the nearest reasonably bright star under the mouse.
   function drawHover() {
     if (!hover || dragging) return;
-    var best = -1, bd = 22 * 22;
-    for (var i = 0; i < n && MAG[i] < 5; i++) {
-      if (!VIS[i]) continue;
-      var dx = SX[i] - hover[0], dy = SY[i] - hover[1], d = dx * dx + dy * dy;
-      if (d < bd) { bd = d; best = i; }
-    }
+    var best = view.nearest(hover[0], hover[1], 22, 5);
     if (best < 0) return;
     var x = SX[best], y = SY[best], name = names[best];
     var info = "V " + MAG[best].toFixed(1) + "  B−V " + (cat.raw[4 * best + 3] / 100).toFixed(2);
@@ -190,7 +185,9 @@
     ctx.fillText(info, tx + 8, ty + (name ? 31 : 15));
   }
 
+  var openLink = document.getElementById("sky-open");
   function updateHud() {
+    if (openLink) openLink.href = "sky/#ra=" + (((cam.ra % 360) + 360) % 360).toFixed(1) + "&dec=" + cam.dec.toFixed(1) + "&fov=" + Math.round(4 * Math.atan(W / 4 / view.scale) / D2R);
     if (!hud) return;
     hud.textContent = (overhead ? "≈ ZENITH  " : "") + "RA " + S.fmtRa(((cam.ra % 360) + 360) % 360).slice(0, 7) +
       "  DEC " + S.fmtDec(cam.dec) + (W < 560 ? "" : "  ·  " + n.toLocaleString() + " Hipparcos stars");

@@ -92,7 +92,7 @@ h1.mono { font-weight: 600; letter-spacing: -.04em; color: var(--ink); }
 /* Panels and cards */
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
   backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-.grid { display: grid; gap: 1.1rem; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.grid { display: grid; gap: 1.1rem; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); }
 .card { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
   padding: 1.4rem 1.4rem 1.2rem; transition: border-color .25s, transform .25s, box-shadow .25s; overflow: hidden; }
 .card::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s;
@@ -156,4 +156,9 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 3rem 0; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition: none !important; animation: none !important; }
   .js .reveal { opacity: 1; transform: none; }
+}
+@media (max-width: 380px) {
+  .site-nav .wrap { gap: .8rem; }
+  .brand { font-size: .92rem; gap: .45rem; }
+  .site-nav nav { gap: .9rem; font-size: .85rem; }
 }

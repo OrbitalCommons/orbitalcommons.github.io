@@ -142,6 +142,7 @@
     this.SY = new Float32Array(c.n);
     this.VIS = new Uint8Array(c.n);
     this.W = this.H = 0; this.dpr = 1; this.scale = 1; this.cx = this.cy = 0; this.nDraw = c.n;
+    this.boost = 0; // magnitudes added to every star's apparent brightness, for zoomed-in views
     this.f = [1, 0, 0]; this.e = [0, 1, 0]; this.nn = [0, 0, 1];
     this.bandC = document.createElement("canvas");
     this.bctx = this.bandC.getContext("2d");
@@ -150,8 +151,8 @@
     this.W = W; this.H = H;
     this.scale = (W / 2) / (2 * Math.tan(fovDeg * D2R / 4));
     this.cx = W / 2; this.cy = H / 2;
-    this.bandC.width = Math.max(1, Math.round(W / 8));
-    this.bandC.height = Math.max(1, Math.round(H / 8));
+    this.bandC.width = Math.max(1, Math.round(W / 4));
+    this.bandC.height = Math.max(1, Math.round(H / 4));
     var m = this.cat.MAG, n = this.cat.n, lim = magLimit || 99, k = 0;
     while (k < n && m[k] <= lim) k++;
     this.nDraw = k;
@@ -184,7 +185,7 @@
       } else this.VIS[i] = 0;
     }
   };
-  // The Milky Way is soft, so it renders into an eighth-resolution buffer; pass reuse to skip a refresh.
+  // The Milky Way is soft, so it renders into a quarter-resolution buffer; pass reuse to skip a refresh.
   View.prototype.drawBand = function (ctx, reuse) {
     if (!reuse) {
       var bw = this.bandC.width, q = bw / this.W, bs = this.scale * 0.62 * q, pt = [0, 0], b = this.bctx;
@@ -196,6 +197,7 @@
         b.drawImage(blob, pt[0] * q - bs, pt[1] * q - bs * 0.7, bs * 2, bs * 1.4);
       }
     }
+    ctx.imageSmoothingQuality = "high";
     ctx.drawImage(this.bandC, 0, 0, this.W, this.H);
   };
   View.prototype.drawLines = function (ctx, alpha) {
@@ -220,8 +222,8 @@
   View.prototype.drawStars = function (ctx, t, twinkle) {
     var c = this.cat, SX = this.SX, SY = this.SY, VIS = this.VIS, nDraw = this.nDraw;
     for (var g = 0; g < c.groups.length; g++) {
-      var G = c.groups[g], gr = Math.max(0.65, 3.3 - G.mag * 0.48) * 0.62;
-      ctx.globalAlpha = Math.max(0.24, Math.min(1, 1.4 - G.mag * 0.16));
+      var G = c.groups[g], gm = G.mag - this.boost, gr = Math.max(0.65, 3.3 - gm * 0.48) * 0.62;
+      ctx.globalAlpha = Math.max(0.24, Math.min(1, 1.4 - gm * 0.16));
       ctx.fillStyle = COLORS[G.col];
       ctx.beginPath();
       for (var gi = 0; gi < G.idx.length; gi++) {
@@ -233,7 +235,7 @@
     // Bright stars individually, faintest first so glows sit on top.
     for (var k = c.FAINT - 1; k >= 0; k--) {
       if (!VIS[k]) continue;
-      var m = c.MAG[k];
+      var m = c.MAG[k] - this.boost;
       var tw = twinkle && m < 3.5 ? 0.82 + 0.18 * Math.sin(t * (1.3 + (k % 7) * 0.31) + c.PH[k]) : 1;
       var alpha = Math.max(0.24, Math.min(1, 1.4 - m * 0.16)) * tw, r = Math.max(0.65, 3.3 - m * 0.48);
       ctx.globalAlpha = alpha;
@@ -247,6 +249,16 @@
       ctx.fill();
     }
     ctx.globalAlpha = 1;
+  };
+  // Index of the brightest-sorted visible star nearest (x, y) within radius, or -1.
+  View.prototype.nearest = function (x, y, radius, maxMag) {
+    var c = this.cat, best = -1, bd = radius * radius;
+    for (var i = 0; i < c.n && c.MAG[i] < maxMag; i++) {
+      if (!this.VIS[i]) continue;
+      var dx = this.SX[i] - x, dy = this.SY[i] - y, d = dx * dx + dy * dy;
+      if (d < bd) { bd = d; best = i; }
+    }
+    return best;
   };
   // Planets with a ring and a label; labelAlpha(x, y) returns the label opacity.
   View.prototype.drawPlanets = function (ctx, list, font, labelAlpha) {
