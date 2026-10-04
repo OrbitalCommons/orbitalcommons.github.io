@@ -46,7 +46,8 @@
 .explorer main::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: url(noise.png); opacity: .5; }
 .dock, .readout { z-index: 2; }
 .search { flex-wrap: wrap; }
-.search .status { flex: 1 1 100%; margin: 0; font-size: .78rem; color: #f7a8b8; }
+.search .status { flex: 1 1 100%; margin: 0; font-size: .78rem; color: var(--ink-2); overflow-wrap: anywhere; }
+.search input[aria-invalid="true"] ~ .status { color: #f7a8b8; }
 .search .status:empty { display: none; }
 
 /* Plate solve */
