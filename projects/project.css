@@ -627,5 +627,6 @@
 
 @media (max-width: 640px) {
   .code-block pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .table-scroll table { min-width: 100%; }
   .table-scroll td:first-child { white-space: nowrap; }
 }
