@@ -126,7 +126,8 @@ h3.sub { margin: 3.5rem 0 1rem; font: 600 .74rem/1 var(--mono); letter-spacing: 
 
 /* Footer brand */
 .site-foot .brand { margin-bottom: .8rem; }
-.site-foot .credit { margin-top: 2rem; font-size: .78rem; }
+.site-foot .credit { margin-top: 2rem; font-size: .78rem; flex-direction: column; gap: .35rem; }
+.site-foot .credit p { margin: 0; }
 
 /* Proof: zodiacal benchmark */
 .proof { background: linear-gradient(180deg, transparent, rgba(91, 110, 225, .06) 50%, transparent); }
