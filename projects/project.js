@@ -48,7 +48,7 @@
 
   const demo = one("[data-demo]");
   if (!demo) return;
-  demo.querySelectorAll(".demo-controls[hidden]").forEach((node) => {
+  if (demo.dataset.demo !== "catalog") demo.querySelectorAll(".demo-controls[hidden]").forEach((node) => {
     node.hidden = false;
   });
 
@@ -177,7 +177,35 @@
       }
       const slider = one("#magnitude");
       const guides = one("#constellations");
-      const stars = sky.stars;
+      const stars = sky.stars, names = sky.names || {};
+      const nameSelect = one("#catalog-name"), previous = one("#catalog-prev"), next = one("#catalog-next");
+      let selected = null, points = [], visibleIndices = [];
+      Object.entries(names).sort((a, b) => a[1].localeCompare(b[1])).forEach(([index, name]) => {
+        const option = document.createElement("option");
+        option.value = index; option.textContent = name; nameSelect.append(option);
+      });
+      const describeSelection = () => {
+        const detail = one("#catalog-detail"), index = visibleIndices.indexOf(selected);
+        previous.disabled = index <= 0;
+        next.disabled = !visibleIndices.length || index === visibleIndices.length - 1;
+        detail.hidden = selected === null;
+        nameSelect.value = selected !== null && names[selected] ? String(selected) : "";
+        if (selected === null) {
+          one("#catalog-selection-status").textContent = "";
+          return;
+        }
+        const name = names[selected] || "Unnamed catalog star";
+        const ra = ((stars[selected * 4] / 20) % 360).toFixed(2);
+        const dec = (stars[selected * 4 + 1] / 20).toFixed(2);
+        const mag = (stars[selected * 4 + 2] / 10).toFixed(1);
+        const bv = (stars[selected * 4 + 3] / 100).toFixed(2);
+        one("#catalog-star-name").textContent = name;
+        one("#catalog-ra").textContent = `${ra}°`;
+        one("#catalog-dec").textContent = `${dec}°`;
+        one("#catalog-mag").textContent = mag;
+        one("#catalog-bv").textContent = bv;
+        one("#catalog-selection-status").textContent = `${name}, ${index + 1} of ${visibleIndices.length} visible stars. Right ascension ${ra} degrees, declination ${dec} degrees, V magnitude ${mag}, B minus V ${bv}.`;
+      };
       const draw = () => {
         const W = Math.max(200, canvas.getBoundingClientRect().width);
         const H = Math.max(240, W / 2);
@@ -233,11 +261,14 @@
         }
         const limit = Number(slider.value);
         let count = 0;
+        points = []; visibleIndices = [];
+        if (selected !== null && stars[selected * 4 + 2] / 10 > limit) selected = null;
         for (let i = stars.length / 4 - 1; i >= 0; i--) {
           const mag = stars[i * 4 + 2] / 10;
           if (mag > limit) continue;
           count++;
           const [x, y] = point(i);
+          points.push([x, y, i]); visibleIndices.push(i);
           const bv = stars[i * 4 + 3] / 100;
           ctx.fillStyle =
             bv > 0.8 ? "#e0af68" : bv < 0.1 ? "#7dcfff" : "#dce3ff";
@@ -247,9 +278,40 @@
           ctx.fill();
         }
         ctx.globalAlpha = 1;
+        visibleIndices.reverse();
+        if (selected !== null) {
+          const [x, y] = point(selected);
+          ctx.strokeStyle = "#e8ecf6"; ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI * 2); ctx.stroke();
+        }
+        describeSelection();
         one("#magnitude-value").value = limit.toFixed(1);
         status.textContent = `${count.toLocaleString()} catalog stars at magnitude ${limit.toFixed(1)} or brighter. Equatorial coordinates; all-sky view.`;
       };
+      nameSelect.addEventListener("change", () => {
+        selected = nameSelect.value === "" ? null : Number(nameSelect.value);
+        if (selected !== null) slider.value = Math.max(Number(slider.value), stars[selected * 4 + 2] / 10);
+        draw();
+      });
+      previous.addEventListener("click", () => {
+        selected = visibleIndices[Math.max(0, visibleIndices.indexOf(selected) - 1)] ?? null;
+        draw();
+      });
+      next.addEventListener("click", () => {
+        selected = visibleIndices[Math.min(visibleIndices.length - 1, visibleIndices.indexOf(selected) + 1)] ?? null;
+        draw();
+      });
+      canvas.addEventListener("click", (event) => {
+        const rect = canvas.getBoundingClientRect(), x = event.clientX - rect.left, y = event.clientY - rect.top;
+        let best = 15 * 15, found = null;
+        for (const [px, py, index] of points) {
+          const distance = (x - px) ** 2 + (y - py) ** 2;
+          if (distance <= best) { best = distance; found = index; }
+        }
+        if (found !== null) { selected = found; draw(); }
+      });
+      one("#catalog-inspector").hidden = false;
+      demo.querySelectorAll(".demo-controls[hidden]").forEach(node => { node.hidden = false; });
       slider.addEventListener("input", draw);
       guides.addEventListener("change", draw);
       let previousWidth = 0;
