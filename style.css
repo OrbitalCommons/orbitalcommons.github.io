@@ -28,7 +28,7 @@ html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-height, 60px)
 html:focus-within { scroll-behavior: auto; }
 body {
   margin: 0; background: var(--bg); color: var(--ink-2);
-  font: 16px/1.65 var(--sans); overflow-wrap: break-word;
+  font: 1rem/1.65 var(--sans); overflow-wrap: break-word;
   -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
 }
 ::selection { background: rgba(124, 196, 255, .3); color: #fff; }
