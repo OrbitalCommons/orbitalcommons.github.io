@@ -288,8 +288,24 @@
     ctx.globalAlpha = 1;
   };
 
+  // A synthetic detector frame: catalogue stars under a gnomonic (TAN) projection centred on
+  // (ra, dec), north up and east left, x right and y down in pixels, flux from V magnitude.
+  // Brightest first; index is the star's position in the catalogue.
+  function tanField(ra, dec, fovDeg, width, height, magLimit) {
+    var c = catalog(), a = ra * D2R, d = dec * D2R, ca = Math.cos(a), sa = Math.sin(a), cd = Math.cos(d), sd = Math.sin(d);
+    var f = [cd * ca, cd * sa, sd], e = [-sa, ca, 0], nn = [-sd * ca, -sd * sa, cd];
+    var px = (width / 2) / Math.tan(fovDeg * D2R / 2), out = [];
+    for (var i = 0; i < c.n && c.MAG[i] <= (magLimit || 99); i++) {
+      var x = c.X[i], y = c.Y[i], z = c.Z[i], zc = x * f[0] + y * f[1] + z * f[2];
+      if (zc <= 0) continue;
+      var u = width / 2 - px * (x * e[0] + y * e[1]) / zc, v = height / 2 - px * (x * nn[0] + y * nn[1] + z * nn[2]) / zc;
+      if (u >= 0 && u < width && v >= 0 && v < height) out.push({ x: u, y: v, flux: Math.pow(10, -0.4 * c.MAG[i]), index: i });
+    }
+    return out;
+  }
+
   window.OCSky = {
-    D2R: D2R, catalog: catalog, View: View, planets: planets,
+    D2R: D2R, catalog: catalog, View: View, planets: planets, tanField: tanField,
     radec: radec, toRaDec: toRaDec, fmtRa: fmtRa, fmtDec: fmtDec
   };
 })();
