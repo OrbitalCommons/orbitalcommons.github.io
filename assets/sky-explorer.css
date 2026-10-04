@@ -18,8 +18,8 @@
   display: flex; flex-wrap: wrap; align-items: center; gap: .8rem 1.4rem; padding: .8rem 1rem;
   background: rgba(10, 14, 25, .82); }
 .dock input, .dock output { font: 500 .82rem var(--mono); color: var(--ink); }
-.search { display: flex; gap: .4rem; flex: 1 1 220px; }
-.search input { flex: 1; min-width: 0; background: rgba(255, 255, 255, .04); border: 1px solid var(--line-strong);
+.search { display: flex; gap: .4rem; flex: 1 1 220px; min-width: 0; }
+.search input { flex: 1 1 0; min-width: 0; background: rgba(255, 255, 255, .04); border: 1px solid var(--line-strong);
   border-radius: 999px; padding: .45rem .9rem; }
 .search input[aria-invalid="true"] { border-color: #f7768e; }
 .zoom { display: flex; gap: .35rem; }
