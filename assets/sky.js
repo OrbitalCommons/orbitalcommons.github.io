@@ -284,6 +284,8 @@
       if (tx + 170 > W) tx = px - h - 184;
       var typed = Math.min(1, (e - 4.4) / 0.9);
       ctx.font = "600 11px " + getComputedStyle(document.body).getPropertyValue("--mono");
+      ctx.fillStyle = "rgba(5,7,13," + (0.72 * Math.min(1, typed * 3)) + ")";
+      ctx.fillRect(tx - 8, ty - 4, 178, lines.length * 16 + 10);
       for (var l = 0; l < lines.length; l++) {
         var str = lines[l], shown = Math.floor(str.length * Math.min(1, typed * 1.6 - l * 0.2));
         if (shown <= 0) continue;

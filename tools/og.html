@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>OrbitalCommons social card</title>
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="../assets/home.css">
+<style>
+  body { width: 1200px; height: 630px; overflow: hidden; }
+  .hero { min-height: 630px; height: 630px; }
+  .hero-inner { padding: 0 80px; }
+  .hero h1 { font-size: 64px; max-width: 700px; }
+  .brand { font-size: 26px; margin-bottom: 36px; }
+  .brand .mark { width: 40px; height: 40px; }
+  .url { font: 500 18px var(--mono); color: var(--ink-3); margin-top: 28px; }
+</style>
+</head>
+<body>
+<section class="hero">
+  <canvas id="sky"></canvas>
+  <div class="hero-fade"></div>
+  <div class="hero-inner">
+    <div class="brand"><img class="mark" src="../assets/mark.svg" alt=""><span>Orbital<b>Commons</b></span></div>
+    <h1>The open toolkit for <span class="grad">seeing, navigating</span> and exploring space.</h1>
+    <p class="url">orbitalcommons.github.io</p>
+  </div>
+</section>
+<script src="../assets/stars.js"></script>
+<script src="../assets/sky.js"></script>
+</body>
+</html>
