@@ -409,12 +409,18 @@
   }
   function stop() { running = false; }
 
-  // Pause halts the drift, twinkle and illustration loop; dragging and solving still work.
-  var pbtn = document.getElementById("sky-pause");
-  if (pbtn && !prefersReduced) pbtn.addEventListener("click", function () {
-    reduced = !reduced;
-    pbtn.setAttribute("aria-pressed", reduced);
-    pbtn.textContent = reduced ? "▶ resume sky" : "❚❚ pause sky";
+  // Motion stops if the visitor paused or the system asks for reduced motion; both can change live.
+  // The pause button is offered only while the preference allows motion, and keeps its own state.
+  var pbtn = document.getElementById("sky-pause"), userPaused = false;
+  function applyMotion() {
+    var was = reduced;
+    reduced = prefersReduced || userPaused;
+    if (pbtn) {
+      pbtn.hidden = prefersReduced;
+      pbtn.setAttribute("aria-pressed", userPaused);
+      pbtn.textContent = userPaused ? "▶ resume sky" : "❚❚ pause sky";
+    }
+    if (reduced === was) return;
     if (reduced) {
       stop();
       view.scale = baseScale;
@@ -423,13 +429,20 @@
     } else {
       start();
     }
+  }
+  if (pbtn) pbtn.addEventListener("click", function () { userPaused = !userPaused; applyMotion(); });
+  var motionQuery = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)");
+  if (motionQuery && motionQuery.addEventListener) motionQuery.addEventListener("change", function (e) {
+    prefersReduced = e.matches;
+    applyMotion();
   });
 
   // The sky controls only make sense once this script runs.
-  ["sky-solve", "sky-zenith", "sky-open"].concat(prefersReduced ? [] : ["sky-pause"]).forEach(function (id) {
+  ["sky-solve", "sky-zenith", "sky-open"].forEach(function (id) {
     var el = document.getElementById(id);
     if (el) el.hidden = false;
   });
+  if (pbtn) pbtn.hidden = prefersReduced;
   document.querySelectorAll(".hero .hint").forEach(function (el) { el.hidden = false; });
 
   resize();
