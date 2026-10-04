@@ -1,0 +1,9 @@
+[package]
+name = "orbitalcommons-plot-examples"
+version = "0.1.0"
+edition = "2024"
+publish = false
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+rizzma = { version = "=1.13.3", default-features = false, features = ["pyplot"] }
