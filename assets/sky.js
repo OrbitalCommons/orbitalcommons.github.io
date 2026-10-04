@@ -76,10 +76,14 @@
     var truth = S.toRaDec(sv.v), fov = Math.max(15, Math.min(40, sv.size / view.scale / D2R));
     var sources = S.tanField(truth[0], truth[1], fov, FRAME, FRAME, 6.3).map(function (p) { return { x: p.x, y: p.y, flux: p.flux }; });
     sv.real = { status: "pending", fov: fov, n: sources.length };
+    setBusy(true);
     announce("Solving a synthetic " + fov.toFixed(0) + " degree frame with " + sources.length + " catalogue stars.");
     loadSolver().then(function () {
       return window.OCZodiacal.solve(sources, FRAME, FRAME, { timeoutMs: 8000 });
     }).then(function (r) {
+      setBusy(false);
+      if (solve !== sv) return;
+      if (performance.now() / 1000 - sv.t0 > CYCLE - 1) sv.t0 = performance.now() / 1000 - 4.6;
       if (!r) {
         sv.real.status = "none";
         announce("No solution for this field.");
@@ -93,6 +97,9 @@
       }
       if (!running) frame(performance.now());
     }, function () {
+      setBusy(false);
+      if (solve !== sv) return;
+      if (performance.now() / 1000 - sv.t0 > CYCLE - 1) sv.t0 = performance.now() / 1000 - 4.6;
       sv.real.status = "fail";
       announce("The solver could not load.");
       if (!running) frame(performance.now());
@@ -101,8 +108,18 @@
   var statusEl = document.getElementById("sky-status");
   function announce(text) { if (statusEl) statusEl.textContent = text; }
 
+  // One visitor solve at a time; the first one may wait on a slow download of the solver.
+  var busy = false;
+  function setBusy(b) {
+    busy = b;
+    var btn = document.getElementById("sky-solve");
+    if (btn) btn.disabled = b;
+  }
+  function pendingUserSolve() { return solve && solve.real && solve.real.status === "pending"; }
+
   // Solve the field at a screen point; with reduced motion the result is drawn statically.
   function solveAt(x, y) {
+    if (busy) return;
     cam.vra = cam.vdec = 0;
     newSolve(performance.now() / 1000 - (reduced ? 6 : 0), [x, y]);
     realSolve(solve);
@@ -159,9 +176,10 @@
       if (!solve) return;
     } else {
       if (t - intro < 3.4 && !solve) return;
-      if (!solve || t - solve.t0 > CYCLE) newSolve(t);
+      if (!solve || (t - solve.t0 > CYCLE && !pendingUserSolve())) newSolve(t);
     }
-    var e = reduced ? 6 : t - solve.t0, v = solve.v;
+    // A pending visitor solve holds at its final frame until the answer arrives.
+    var e = reduced ? 6 : pendingUserSolve() ? Math.min(t - solve.t0, CYCLE - 1) : t - solve.t0, v = solve.v;
     if (!view.project(v[0], v[1], v[2], pt2)) { solve = null; return; }
     var px = pt2[0], py = pt2[1], half = solve.size / 2;
     if (e > 1.1 && !solve.stars) solve.stars = solveStars(px, py, half);
