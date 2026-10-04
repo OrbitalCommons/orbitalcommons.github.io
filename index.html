@@ -120,6 +120,42 @@
     </div>
   </section>
 
+  <section id="proof" class="section proof" aria-labelledby="proof-title">
+    <div class="wrap proof-grid">
+      <div class="proof-copy">
+        <p class="eyebrow reveal">Measured, not promised</p>
+        <h2 id="proof-title" class="reveal">Lost in space? Found in about a second.</h2>
+        <p class="reveal">zodiacal is benchmarked on 1,000 simulated fields with known pointing
+        (9568&times;6380 px, 0.13&Prime;/px, about 20&prime;&times;13&prime;), with no hint of where
+        the camera was aimed. The best configuration solves 985 of them.</p>
+        <table class="reveal">
+          <caption class="muted">Solve rate by index configuration</caption>
+          <thead><tr><th scope="col">Index</th><th scope="col">Solved</th><th scope="col">Median</th></tr></thead>
+          <tbody>
+            <tr><td>Mag 16, 4 bands</td><td>96.2%</td><td>0.62 s</td></tr>
+            <tr><td>Mag 16 + verify catalogue</td><td>96.7%</td><td>&mdash;</td></tr>
+            <tr><td>Mag 19, 4 bands</td><td>97.2%</td><td>&mdash;</td></tr>
+            <tr class="best"><td>Mag 19, 12 bands</td><td>98.5%</td><td>1.07 s</td></tr>
+          </tbody>
+        </table>
+        <p class="muted small">Source: <a href="https://github.com/OrbitalCommons/zodiacal#results">zodiacal README</a>,
+        test corpus in <a href="https://github.com/OrbitalCommons/zodiacal-test-cases">zodiacal-test-cases</a>.</p>
+      </div>
+      <figure class="panel chart reveal" aria-labelledby="chart-title">
+        <figcaption>
+          <h3 id="chart-title">Time to solution</h3>
+          <p class="muted">Share of the 985 solved fields, best configuration</p>
+        </figcaption>
+        <div class="bars" role="list">
+          <div class="bar" role="listitem" style="--v:48" tabindex="0" aria-label="48% solved in under 1 second"><b>48%</b><i></i><span>&lt; 1 s</span></div>
+          <div class="bar" role="listitem" style="--v:83" tabindex="0" aria-label="83% solved in under 5 seconds"><b>83%</b><i></i><span>&lt; 5 s</span></div>
+          <div class="bar" role="listitem" style="--v:93" tabindex="0" aria-label="93% solved in under 10 seconds"><b>93%</b><i></i><span>&lt; 10 s</span></div>
+          <div class="bar" role="listitem" style="--v:99" tabindex="0" aria-label="99% solved in under 30 seconds"><b>99%</b><i></i><span>&lt; 30 s</span></div>
+        </div>
+      </figure>
+    </div>
+  </section>
+
   <section id="projects" class="section" aria-labelledby="projects-title">
     <div class="wrap">
       <p class="eyebrow reveal">Projects</p>

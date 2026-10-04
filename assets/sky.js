@@ -298,7 +298,7 @@
   function updateHud() {
     if (!hud) return;
     hud.textContent = "RA " + fmtRa(((cam.ra % 360) + 360) % 360).slice(0, 7) + "  DEC " + fmtDec(cam.dec) +
-      "  ·  " + n.toLocaleString() + " Hipparcos stars";
+      (W < 560 ? "" : "  ·  " + n.toLocaleString() + " Hipparcos stars");
   }
 
   // Interaction: drag to look around, with inertia.
