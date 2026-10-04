@@ -172,3 +172,5 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -3; pointer-even
   transition: color .2s, border-color .2s; }
 .hud-btn:hover, .hud-btn[aria-pressed="true"] { color: var(--ink); border-color: var(--accent); }
 #sky:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
+.site-nav nav a { padding: .3rem 0; transition: color .2s, box-shadow .2s; }
+.site-nav nav a[aria-current] { box-shadow: inset 0 -1px var(--accent); }

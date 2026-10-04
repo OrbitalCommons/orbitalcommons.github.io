@@ -34,6 +34,25 @@
     items.forEach(function (el) { io.observe(el); });
   }
 
+  var navLinks = {};
+  document.querySelectorAll('.site-nav nav a[href^="#"]').forEach(function (a) { navLinks[a.getAttribute("href").slice(1)] = a; });
+  if ("IntersectionObserver" in window) {
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        var a = navLinks[e.target.id];
+        if (!a) return;
+        if (e.isIntersecting) {
+          Object.keys(navLinks).forEach(function (k) { navLinks[k].removeAttribute("aria-current"); });
+          a.setAttribute("aria-current", "true");
+        } else a.removeAttribute("aria-current");
+      });
+    }, { rootMargin: "-45% 0px -50% 0px" });
+    Object.keys(navLinks).forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) spy.observe(el);
+    });
+  }
+
   document.querySelectorAll(".card").forEach(function (card) {
     card.addEventListener("pointermove", function (e) {
       var r = card.getBoundingClientRect();
