@@ -16,14 +16,15 @@
       .error-page {
         min-height: 80svh;
         display: grid;
-        grid-template-columns: 1.1fr 1fr;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
         gap: clamp(2rem, 5vw, 5rem);
         align-items: center;
+        padding-inline: min(1.5rem, 24px);
         padding-top: 5rem;
         padding-bottom: 5rem;
       }
       .error-code {
-        font: 600 clamp(5rem, 14vw, 10rem) / 1 var(--mono);
+        font: 600 min(clamp(5rem, 14vw, 10rem), 25vw) / 1 var(--mono);
         letter-spacing: -0.09em;
         color: var(--accent);
         margin: 0 0 1.5rem;
@@ -60,7 +61,7 @@
       }
       @media (max-width: 760px) {
         .error-page {
-          grid-template-columns: 1fr;
+          grid-template-columns: minmax(0, 1fr);
           padding-top: 3rem;
         }
         .error-sky {
