@@ -144,7 +144,11 @@
   var solveBtn = $("x-solve"), resultEl = $("x-result");
   function showResult(html) {
     resultEl.hidden = false;
-    resultEl.innerHTML = html;
+    resultEl.innerHTML = "<button type=\"button\" class=\"r-close\" aria-label=\"Close result\">&times;</button>" + html;
+    resultEl.querySelector(".r-close").addEventListener("click", function () {
+      resultEl.hidden = true;
+      solveBtn.focus();
+    });
     resultEl.parentElement.scrollTop = 0;
   }
   function runSolve() {
@@ -181,10 +185,11 @@
       var err = angularArcsec(truth.ra, truth.dec, r.ra, r.dec);
       showResult("<p class=\"r-title ok\">Solved in " + Math.round(r.ms) + "&nbsp;ms</p>" +
         "<dl><dt>Centre</dt><dd>" + S.fmtRa(r.ra) + " &nbsp;" + S.fmtDec(r.dec) + "</dd>" +
-        "<dt>Rotation</dt><dd>" + r.rotationDeg.toFixed(2) + "&deg;</dd>" +
+        "<dt>Rotation</dt><dd>" + (Math.abs(r.rotationDeg) < 0.005 ? 0 : r.rotationDeg).toFixed(2) + "&deg;</dd>" +
         "<dt>Scale</dt><dd>" + r.scaleArcsecPerPx.toFixed(2) + "&Prime;/px</dd>" +
         "<dt>Matched</dt><dd>" + r.matched + " of " + (r.sourcesUsed || sources.length) + " sources used</dd>" +
-        "<dt>Error</dt><dd>" + (err < 60 ? err.toFixed(1) + "&Prime;" : (err / 60).toFixed(1) + "&prime;") + " from the true centre</dd></dl>" +
+        "<dt>Error</dt><dd>" + (err < 0.1 ? "&lt;0.1&Prime;" : err < 60 ? err.toFixed(1) + "&Prime;" : (err / 60).toFixed(1) + "&prime;") +
+        " from the true centre</dd></dl>" +
         "<p class=\"muted\">zodiacal's quad matching running in your browser via WebAssembly" +
         (r.refined ? ", then a least-squares fit on its matched stars" : "") +
         ". The frame is synthetic, built from the catalogue, so the error measures self-consistency, not real-camera accuracy. " +
