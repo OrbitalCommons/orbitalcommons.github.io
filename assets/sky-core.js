@@ -143,6 +143,7 @@
     this.VIS = new Uint8Array(c.n);
     this.W = this.H = 0; this.dpr = 1; this.scale = 1; this.cx = this.cy = 0; this.nDraw = c.n;
     this.boost = 0; // magnitudes added to every star's apparent brightness, for zoomed-in views
+    this.bandRes = 8; // Milky Way buffer is 1/bandRes of the screen in each direction
     this.f = [1, 0, 0]; this.e = [0, 1, 0]; this.nn = [0, 0, 1];
     this.bandC = document.createElement("canvas");
     this.bctx = this.bandC.getContext("2d");
@@ -151,8 +152,8 @@
     this.W = W; this.H = H;
     this.scale = (W / 2) / (2 * Math.tan(fovDeg * D2R / 4));
     this.cx = W / 2; this.cy = H / 2;
-    this.bandC.width = Math.max(1, Math.round(W / 4));
-    this.bandC.height = Math.max(1, Math.round(H / 4));
+    this.bandC.width = Math.max(1, Math.round(W / this.bandRes));
+    this.bandC.height = Math.max(1, Math.round(H / this.bandRes));
     var m = this.cat.MAG, n = this.cat.n, lim = magLimit || 99, k = 0;
     while (k < n && m[k] <= lim) k++;
     this.nDraw = k;
@@ -185,7 +186,7 @@
       } else this.VIS[i] = 0;
     }
   };
-  // The Milky Way is soft, so it renders into a quarter-resolution buffer; pass reuse to skip a refresh.
+  // The Milky Way is soft, so it renders into a low-resolution buffer; pass reuse to skip a refresh.
   View.prototype.drawBand = function (ctx, reuse) {
     if (!reuse) {
       var bw = this.bandC.width, q = bw / this.W, bs = this.scale * 0.62 * q, pt = [0, 0], b = this.bctx;
@@ -197,7 +198,6 @@
         b.drawImage(blob, pt[0] * q - bs, pt[1] * q - bs * 0.7, bs * 2, bs * 1.4);
       }
     }
-    ctx.imageSmoothingQuality = "high";
     ctx.drawImage(this.bandC, 0, 0, this.W, this.H);
   };
   View.prototype.drawLines = function (ctx, alpha) {

@@ -10,6 +10,7 @@
   var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
   var MONO = getComputedStyle(document.body).getPropertyValue("--mono");
   var view = new S.View(), cat = view.cat, names = cat.names;
+  view.bandRes = 4;
   var DAY = 86400000, TRAIL = 120, today = Date.now();
 
   var state = { ra: 84, dec: 0, fov: 90, days: 0 };
@@ -21,7 +22,7 @@
   function readHash() {
     location.hash.slice(1).split("&").forEach(function (kv) {
       var p = kv.split("="), v = parseFloat(p[1]);
-      if (isNaN(v)) return;
+      if (!Number.isFinite(v)) return;
       if (p[0] === "ra") state.ra = ((v % 360) + 360) % 360;
       if (p[0] === "dec") state.dec = clamp(v, -89, 89);
       if (p[0] === "fov") state.fov = clamp(v, 8, 160);
@@ -208,6 +209,7 @@
   canvas.addEventListener("pointerleave", function () { hover = null; redraw(); });
   canvas.addEventListener("wheel", function (ev) {
     ev.preventDefault();
+    flight = null;
     state.fov = clamp(state.fov * Math.exp(ev.deltaY * 0.0012), 8, 160);
     changed();
   }, { passive: false });
@@ -220,8 +222,16 @@
     else if (ev.key === "+" || ev.key === "=") state.fov = clamp(state.fov / 1.15, 8, 160);
     else if (ev.key === "-") state.fov = clamp(state.fov * 1.15, 8, 160);
     else handled = false;
-    if (handled) { ev.preventDefault(); changed(); }
+    if (handled) { ev.preventDefault(); flight = null; changed(); }
   });
+
+  function zoomBy(f) {
+    flight = null;
+    state.fov = clamp(state.fov * f, 8, 160);
+    changed();
+  }
+  $("x-in").addEventListener("click", function () { zoomBy(1 / 1.3); });
+  $("x-out").addEventListener("click", function () { zoomBy(1.3); });
 
   // Search: named stars and planets.
   var dl = $("x-names");
@@ -236,6 +246,7 @@
       if (names[key].toLowerCase() === q) target = [cat.raw[4 * key] / 20, cat.raw[4 * key + 1] / 20];
     }
     $("x-q").setAttribute("aria-invalid", target ? "false" : "true");
+    $("x-status").textContent = target ? "" : "No match. Try a planet or a bright star such as Sirius, Vega or Betelgeuse.";
     if (target) flyTo(target[0], target[1], Math.min(state.fov, 50));
   });
 
