@@ -227,6 +227,7 @@
     ctx.globalAlpha = 1;
 
     if (!reduced) drawSolve(t);
+    drawHover();
   }
 
   function drawSolve(t) {
@@ -301,6 +302,35 @@
     }
     ctx.globalAlpha = 1;
   }
+  // Inspect the nearest reasonably bright star under the mouse.
+  function drawHover() {
+    if (!hover || dragging) return;
+    var best = -1, bd = 22 * 22;
+    for (var i = 0; i < n && MAG[i] < 5; i++) {
+      if (!VIS[i]) continue;
+      var dx = SX[i] - hover[0], dy = SY[i] - hover[1], d = dx * dx + dy * dy;
+      if (d < bd) { bd = d; best = i; }
+    }
+    if (best < 0) return;
+    var x = SX[best], y = SY[best], name = names[best];
+    var info = "V " + MAG[best].toFixed(1) + "  B\u2212V " + (raw[4 * best + 3] / 100).toFixed(2);
+    ctx.strokeStyle = "rgba(232,236,246,0.8)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(x, y, 9, 0, 6.283);
+    ctx.stroke();
+    ctx.font = "600 11px " + MONO;
+    var w = Math.max(ctx.measureText(info).width, name ? ctx.measureText(name).width : 0) + 16;
+    var tx = x + 16 + w > W ? x - 16 - w : x + 16, ty = y - 14;
+    ctx.fillStyle = "rgba(10,14,25,0.88)";
+    ctx.fillRect(tx, ty, w, name ? 38 : 22);
+    ctx.fillStyle = "#e8ecf6";
+    if (name) ctx.fillText(name, tx + 8, ty + 15);
+    ctx.fillStyle = "#b4bdd2";
+    ctx.fillText(info, tx + 8, ty + (name ? 31 : 15));
+  }
+  canvas.addEventListener("pointerleave", function () { hover = null; });
+
   function corner(x, y, dx, dy) { ctx.moveTo(x + dx, y); ctx.lineTo(x, y); ctx.lineTo(x, y + dy); }
 
   function updateHud() {
@@ -316,8 +346,14 @@
     dragging = true; lx = downX = ev.clientX; ly = downY = ev.clientY;
     canvas.setPointerCapture(ev.pointerId);
   });
+  var hover = null;
   canvas.addEventListener("pointermove", function (ev) {
-    if (!dragging) return;
+    if (!dragging) {
+      var r = canvas.getBoundingClientRect();
+      hover = ev.pointerType === "mouse" ? [ev.clientX - r.left, ev.clientY - r.top] : null;
+      if (reduced) frame(performance.now());
+      return;
+    }
     var k = 1 / scale / D2R * 0.55, dx = ev.clientX - lx, dy = ev.clientY - ly;
     lx = ev.clientX; ly = ev.clientY;
     cam.vra = dx * k; cam.vdec = dy * k;
