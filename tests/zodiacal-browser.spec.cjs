@@ -74,3 +74,33 @@ test("zodiacal handles sparse and invalid measurements without loading the engin
   expect(result.bad).toContain("finite");
   expect(loads).toEqual([]);
 });
+
+test("a stalled zodiacal worker is terminated and a later solve can retry", async ({
+  page,
+}) => {
+  await page.route("**/solver-worker.js", (route) =>
+    route.fulfill({
+      contentType: "application/javascript",
+      body: `self.onmessage = ({data}) => {
+      if (data.type === 'load') self.postMessage({id:data.id,result:true});
+      else { while (true) {} }
+    };`,
+    }),
+  );
+  await page.goto("/sky/");
+  await page.addScriptTag({ url: "/projects/zodiacal/solver.js" });
+  const error = await page.evaluate(() =>
+    OCZodiacal.solve(OCSky.tanField(83.8, -2, 20, 1024, 768, 6.3), 1024, 768, {
+      timeoutMs: 250,
+    }).then(
+      () => "",
+      (error) => error.message,
+    ),
+  );
+  expect(error).toContain("timed out");
+  await page.unroute("**/solver-worker.js");
+  const result = await page.evaluate(() =>
+    OCZodiacal.solve(OCSky.tanField(83.8, -2, 20, 1024, 768, 6.3), 1024, 768),
+  );
+  expect(result.matched).toBeGreaterThan(90);
+});

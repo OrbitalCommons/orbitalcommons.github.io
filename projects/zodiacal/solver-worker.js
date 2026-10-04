@@ -29,8 +29,11 @@ self.onmessage = async function (event) {
       self.postMessage({ id, result });
     } else throw new Error("The star index is not ready.");
   } catch (error) {
+    const fatal = error instanceof WebAssembly.RuntimeError;
+    if (fatal) loaded = false;
     self.postMessage({
       id,
+      fatal,
       error:
         error instanceof WebAssembly.RuntimeError
           ? "This field exceeded the browser solver limits. Try another view."

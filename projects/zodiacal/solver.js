@@ -52,8 +52,10 @@
       if (!job) return;
       clearTimeout(job.timer);
       pending.delete(data.id);
-      if (data.error) job.reject(new Error(data.error));
-      else job.resolve(data.result);
+      if (data.error) {
+        if (data.fatal) reset(data.error);
+        job.reject(new Error(data.error));
+      } else job.resolve(data.result);
     };
     worker.onerror = function () {
       reset("The solver could not start. Please retry.");
