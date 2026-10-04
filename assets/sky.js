@@ -8,7 +8,9 @@
   var S = window.OCSky, D2R = S.D2R;
   var ctx = canvas.getContext("2d");
   var hud = document.getElementById("sky-hud");
-  var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // `reduced` means no autonomous motion: set by the reduced-motion preference or the pause button.
+  var prefersReduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var reduced = prefersReduced;
   var MONO = getComputedStyle(document.body).getPropertyValue("--mono");
 
   var view = new S.View(), cat = view.cat, n = cat.n, MAG = cat.MAG, names = cat.names;
@@ -405,6 +407,29 @@
     requestAnimationFrame(loop);
   }
   function stop() { running = false; }
+
+  // Pause halts the drift, twinkle and illustration loop; dragging and solving still work.
+  var pbtn = document.getElementById("sky-pause");
+  if (pbtn && !prefersReduced) pbtn.addEventListener("click", function () {
+    reduced = !reduced;
+    pbtn.setAttribute("aria-pressed", reduced);
+    pbtn.textContent = reduced ? "▶ resume sky" : "❚❚ pause sky";
+    if (reduced) {
+      stop();
+      view.scale = baseScale;
+      if (solve && !pendingUserSolve()) solve = null;
+      frame(performance.now());
+    } else {
+      start();
+    }
+  });
+
+  // The sky controls only make sense once this script runs.
+  ["sky-solve", "sky-zenith", "sky-open"].concat(prefersReduced ? [] : ["sky-pause"]).forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.hidden = false;
+  });
+  document.querySelectorAll(".hero .hint").forEach(function (el) { el.hidden = false; });
 
   resize();
   frame(performance.now());
