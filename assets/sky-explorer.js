@@ -14,8 +14,16 @@
   var DAY = 86400000, TRAIL = 120, today = Date.now();
 
   var state = { ra: 84, dec: 0, fov: 90, days: 0 };
-  var layers = { lines: true, names: true, band: true, planets: true, trails: true };
+  var layers = { lines: true, names: true, band: true, planets: true, trails: true, ecliptic: true };
   var W = 0, H = 0, dpr = 1, planets = [], trails = {};
+  // J2000 ecliptic in the catalogue's equatorial frame, using the same obliquity
+  // as sky-core's planet positions. Cache unit vectors; only projection changes.
+  var ecliptic = [], eps = 23.43928 * D2R;
+  for (var longitude = 0; longitude <= 720; longitude++) {
+    var lambda = longitude * 0.5 * D2R;
+    ecliptic.push([Math.cos(lambda), Math.sin(lambda) * Math.cos(eps),
+      Math.sin(lambda) * Math.sin(eps)]);
+  }
   var $ = function (id) { return document.getElementById(id); };
 
   // URL hash: #ra=84.0&dec=0.0&fov=90&d=0
@@ -87,6 +95,7 @@
     ctx.fillRect(0, 0, W, H);
     if (layers.band && state.fov > 35) view.drawBand(ctx);
     if (layers.lines) view.drawLines(ctx, 0.24);
+    if (layers.ecliptic) drawEcliptic();
     view.drawStars(ctx, 0, false);
 
     // Labels in priority order (planets, then stars brightest first, then constellations), each
@@ -234,6 +243,24 @@
   if (window.OCZodiacal) {
     $("x-solve-group").hidden = false;
     solveBtn.addEventListener("click", runSolve);
+  }
+
+  function drawEcliptic() {
+    ctx.save();
+    ctx.strokeStyle = "rgba(255,196,119,0.65)";
+    ctx.lineWidth = 1.2;
+    ctx.setLineDash([6, 5]);
+    ctx.beginPath();
+    var previous = false;
+    for (var i = 0; i < ecliptic.length; i++) {
+      var v = ecliptic[i], visible = view.project(v[0], v[1], v[2], pt);
+      // Break at the back of the sphere rather than connecting across it.
+      if (visible && previous) ctx.lineTo(pt[0], pt[1]);
+      else if (visible) ctx.moveTo(pt[0], pt[1]);
+      previous = visible;
+    }
+    ctx.stroke();
+    ctx.restore();
   }
 
   function drawTrails() {

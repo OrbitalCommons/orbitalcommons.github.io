@@ -35,7 +35,7 @@
 <main id="main">
   <h1 class="visually-hidden">Sky explorer</h1>
   <canvas id="sky-x" tabindex="0" role="img"
-    aria-label="Star map of the Hipparcos catalogue with the planets for the chosen date. Drag or use arrow keys to pan, scroll or plus and minus to zoom."></canvas>
+    aria-label="Star map of the Hipparcos catalogue with the ecliptic and planets for the chosen date. Drag or use arrow keys to pan, scroll or plus and minus to zoom."></canvas>
   <noscript><p class="nojs">The sky explorer draws with JavaScript. The rest of the site works without it.</p></noscript>
 
   <div class="explorer-panels">
@@ -81,10 +81,12 @@
       <label><input type="checkbox" data-layer="band" checked> Milky Way</label>
       <label><input type="checkbox" data-layer="planets" checked> Planets</label>
       <label><input type="checkbox" data-layer="trails" checked> Trails</label>
+      <label><input type="checkbox" data-layer="ecliptic" checked> Ecliptic</label>
     </fieldset>
     <p class="credit muted">Hipparcos (ESA) stars to V&nbsp;6.3, Stellarium figures, planets from JPL&rsquo;s
     Keplerian elements (good to a few arcminutes between 1800 and 2050). Trails span &plusmn;120&nbsp;days,
-    so retrograde loops show up. A small JavaScript companion to
+    so retrograde loops show up. The dashed gold line marks the ecliptic (J2000),
+    Earth&rsquo;s orbital plane projected onto the sky. A small JavaScript companion to
     <a href="../projects/starfield/">starfield</a>.</p>
   </section>
   </div>
