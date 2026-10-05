@@ -202,20 +202,39 @@
     ctx.drawImage(this.bandC, 0, 0, this.W, this.H);
   };
   View.prototype.drawLines = function (ctx, alpha) {
-    var L, SX = this.SX, SY = this.SY, VIS = this.VIS, sets = this.cat.lineSets;
+    var c = this.cat, sets = c.lineSets, f = this.f, e = this.e, n = this.nn;
     ctx.lineWidth = 1;
     ctx.strokeStyle = "rgba(124,196,255," + (alpha || 0.2) + ")";
     ctx.beginPath();
     for (var s = 0; s < sets.length; s++) {
-      L = sets[s];
+      var L = sets[s];
       for (var j = 0; j < L.length; j += 2) {
         var a = L[j], b = L[j + 1];
-        if (!VIS[a] || !VIS[b]) continue;
-        var dx = SX[b] - SX[a], dy = SY[b] - SY[a], len = Math.sqrt(dx * dx + dy * dy);
-        if (len < 9 || len > this.W * 0.6) continue;
-        var g = 5 / len;
-        ctx.moveTo(SX[a] + dx * g, SY[a] + dy * g);
-        ctx.lineTo(SX[b] - dx * g, SY[b] - dy * g);
+        // Line visibility is independent of star sprites, their magnitude limit,
+        // and the viewport. Canvas clips segments whose endpoints are off-screen.
+        var ax = c.X[a], ay = c.Y[a], az = c.Z[a];
+        var bx = c.X[b], by = c.Y[b], bz = c.Z[b];
+        var af = ax * f[0] + ay * f[1] + az * f[2];
+        var bf = bx * f[0] + by * f[1] + bz * f[2];
+        if (af < -0.15 && bf < -0.15) continue;
+        var clipA = af < -0.15, clipB = bf < -0.15;
+        // Clip in camera space before projecting, avoiding the rear singularity.
+        if (clipA || clipB) {
+          var t = (-0.15 - af) / (bf - af);
+          var x = ax + (bx - ax) * t, y = ay + (by - ay) * t, z = az + (bz - az) * t;
+          if (clipA) { ax = x; ay = y; az = z; af = -0.15; }
+          else { bx = x; by = y; bz = z; bf = -0.15; }
+        }
+        var ka = 2 * this.scale / (1 + af), kb = 2 * this.scale / (1 + bf);
+        var x1 = this.cx - ka * (ax * e[0] + ay * e[1]);
+        var y1 = this.cy - ka * (ax * n[0] + ay * n[1] + az * n[2]);
+        var x2 = this.cx - kb * (bx * e[0] + by * e[1]);
+        var y2 = this.cy - kb * (bx * n[0] + by * n[1] + bz * n[2]);
+        var dx = x2 - x1, dy = y2 - y1, len = Math.sqrt(dx * dx + dy * dy);
+        if (len < 9) continue;
+        var ga = clipA ? 0 : 5 / len, gb = clipB ? 0 : 5 / len;
+        ctx.moveTo(x1 + dx * ga, y1 + dy * ga);
+        ctx.lineTo(x2 - dx * gb, y2 - dy * gb);
       }
     }
     ctx.stroke();
