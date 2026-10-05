@@ -3,6 +3,36 @@
   "use strict";
   var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  // Star dust behind the page: a fresh random field each visit, one screen in size so it never tiles.
+  // The CSS tile on body::before stays as the fallback without scripts.
+  var dust = document.createElement("canvas"), dustSize = 0;
+  dust.className = "dust";
+  dust.setAttribute("aria-hidden", "true");
+  var TINTS = ["255,255,255", "200,215,255", "255,240,220"];
+  function drawDust() {
+    var size = Math.max(screen.width, screen.height, innerWidth, innerHeight);
+    if (size <= dustSize) return;
+    dustSize = size;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2), ctx = dust.getContext("2d");
+    dust.width = dust.height = Math.round(size * dpr);
+    dust.style.width = dust.style.height = size + "px";
+    ctx.scale(dpr, dpr);
+    for (var i = 0, n = Math.round(size * size / 16000); i < n; i++) {
+      var x = Math.random() * size, y = Math.random() * size, b = Math.pow(Math.random(), 3);
+      var r = 0.5 + 0.6 * b, a = 0.25 + 0.4 * b, tint = TINTS[Math.random() * TINTS.length | 0];
+      ctx.fillStyle = "rgba(" + tint + "," + a / 4 + ")";
+      ctx.beginPath(); ctx.arc(x, y, r * 2, 0, 6.283); ctx.fill();
+      ctx.fillStyle = "rgba(" + tint + "," + a + ")";
+      ctx.beginPath(); ctx.arc(x, y, r, 0, 6.283); ctx.fill();
+    }
+  }
+  if (dust.getContext) {
+    drawDust();
+    document.body.insertBefore(dust, document.body.firstChild);
+    document.documentElement.classList.add("dust-on");
+    window.addEventListener("resize", drawDust);
+  }
+
   var nav = document.querySelector(".site-nav");
   function onScroll() { nav.classList.toggle("scrolled", window.scrollY > 40); }
   window.addEventListener("scroll", onScroll, { passive: true });
