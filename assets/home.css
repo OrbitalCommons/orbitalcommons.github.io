@@ -181,6 +181,9 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -3; pointer-even
     radial-gradient(circle at 331px 271px, rgba(200, 215, 255, .4) 0 0.6px, transparent 1.1px),
     radial-gradient(circle at 211px 331px, rgba(255, 255, 255, .3) 0 0.6px, transparent 1.1px);
   background-size: 360px 360px; }
+/* home.js replaces the tile with a random field the size of the screen */
+.dust { position: fixed; top: 0; left: 0; z-index: -3; pointer-events: none; opacity: .7; }
+.dust-on body::before { display: none; }
 
 .hud-l { display: flex; align-items: center; gap: 1rem; pointer-events: auto; min-width: 0; flex: 1 1 auto; }
 .hint { flex: none; }
