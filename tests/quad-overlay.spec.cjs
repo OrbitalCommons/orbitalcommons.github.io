@@ -33,7 +33,7 @@ for (const width of [undefined, 320]) test(`real hero overlay uses the winning i
   await page.locator('#sky-solve').click();
   const status = page.locator('#sky-status');
   await expect(status).toContainText('Matched index entry');
-  await expect(status).toContainText('not the search order');
+  await expect(status).toContainText('with code');
   const actual = await page.evaluate(() => window.actualQuad);
   const winner = actual.rows.find(row => row.matched);
   await expect(status).toContainText(`Matched index entry ${winner.id} `);
@@ -48,7 +48,7 @@ for (const width of [undefined, 320]) test(`real hero overlay uses the winning i
     expect(label.y).toBeLessThan(controlsTop - 4);
   }
   expect(ink.some(item => item.text === 'MATCHED INDEX CODE')).toBe(true);
-  expect(ink.some(item => item.text === 'INDEX SAMPLE · NOT SEARCH ORDER')).toBe(true);
+  expect(ink.some(item => item.text === 'STAR INDEX')).toBe(true);
   const before = await page.locator('#sky').evaluate(canvas => canvas.toDataURL());
   await page.waitForTimeout(200);
   expect(await page.locator('#sky').evaluate(canvas => canvas.toDataURL())).toBe(before);
@@ -111,4 +111,25 @@ test('a phone solve requested during the opening zoom survives a slow index load
   await expect(page.locator('#sky-status')).toContainText('Solved in');
   await expect(page.locator('#sky-status')).toContainText('Matched index entry');
   await expect(page.locator('#sky-solve')).toBeEnabled();
+});
+
+
+test('automatic hero skips sparse fields without an error panel and recovers', async ({ page }) => {
+  await page.clock.install();
+  await recordCanvas(page);
+  await page.addInitScript(() => { Math.random = () => .35; });
+  await page.goto('/');
+  await page.evaluate(() => {
+    window.originalQuadCode = OCSky.quadCode;
+    window.quadAttempts = 0;
+    OCSky.quadCode = () => { window.quadAttempts++; return { valid: false }; };
+  });
+  for (let i = 0; i < 16; i++) await page.clock.fastForward(1000);
+  expect(await page.evaluate(() => window.quadAttempts)).toBeGreaterThan(0);
+  expect(await page.evaluate(() => window.quadInk.some(item =>
+    /TOO FEW|QUAD MATCHED|ILLUSTRATION|NOT SEARCH ORDER/.test(item.text)))).toBe(false);
+  await page.evaluate(() => { OCSky.quadCode = window.originalQuadCode; });
+  for (let i = 0; i < 12; i++) await page.clock.fastForward(1000);
+  expect(await page.evaluate(() => window.quadInk.some(item => item.text === 'QUAD MATCHED'))).toBe(true);
+  expect(await page.evaluate(() => Boolean(window.OCZodiacal))).toBe(false);
 });

@@ -121,7 +121,7 @@
     var row = (match.rows || []).filter(function (r) { return r.matched; })[0];
     var code = match.code.map(function (v) { return v.toFixed(2); }).join(", ");
     return " Matched index entry" + (row ? " " + row.id : "") + " with code " + code +
-      "; the index rows shown are a sample around it, not the search order.";
+      ".";
   }
   var statusEl = document.getElementById("sky-status");
   function announce(text) { if (statusEl) statusEl.textContent = text; }
@@ -194,7 +194,7 @@
   // The quad and index overlay follow the zodiacal Manim animation: A/B/C/D in fixed colours, the
   // AB line and its diameter circle, then a "query code" and index rows scrolling in until the
   // matching entry is boxed. Times are seconds into the cycle.
-  var T_QUAD = 2.6, T_PANEL = 3.7, T_ROWS = 4.1, ROW_DT = 0.28, T_DONE = 7.1, END = 9;
+  var T_QUAD = 2.6, T_PANEL = 3.7, T_ROWS = 4.1, ROW_DT = 0.055, T_DONE = 5.5, END = 9;
 
   // Pick the brightest detections that form a valid quad, as the solver prefers bright stars.
   function pickQuad(found) {
@@ -301,6 +301,12 @@
     var quad = solve.quad;
     if (quad && e > T_QUAD) S.drawQuad(ctx, quad.pts(), Math.min(1, (e - T_QUAD) / 1.0), A, "700 10px " + MONO);
 
+    // Keep the automatic sequence moving through sparse fields without an error panel.
+    if (!real && !quad && e > T_PANEL && !reduced) {
+      ctx.globalAlpha = 1;
+      newSolve(t);
+      return;
+    }
     if (e > T_PANEL) drawPanel(quad, e, A, px, py, h, v, found.length, half);
     ctx.globalAlpha = 1;
   }
@@ -355,7 +361,7 @@
     ctx.globalAlpha = fade;
     ctx.fillStyle = QUAD.label;
     ctx.font = "600 10px " + MONO;
-    ctx.fillText(quad && quad.real ? "INDEX SAMPLE · NOT SEARCH ORDER" : "INDEX · ILLUSTRATION", x, y);
+    ctx.fillText("STAR INDEX", x, y);
     y += 6;
 
     // Rows arrive one by one; the newest sits at the top, older ones move down and fade out.
@@ -421,7 +427,7 @@
         { text: "DEC " + S.fmtDec(r.dec), color: white },
         { text: "ERR " + (err < 1 ? "<1″" : err < 60 ? err.toFixed(0) + "″" : (err / 60).toFixed(1) + "′") +
           " · " + r.matched + " matched", color: white },
-        { text: "zodiacal wasm · synthetic frame", color: QUAD.label }
+        { text: "zodiacal · WebAssembly", color: QUAD.label }
       ];
     }
     if (real && real.status !== "pending") {
@@ -432,7 +438,7 @@
     }
     var rd = S.toRaDec(v), fov = 4 * Math.atan(half / (2 * view.scale)) / D2R;
     return [
-      { text: quad ? "QUAD MATCHED" : "TOO FEW STARS", color: quad ? QUAD.match : QUAD.D },
+      { text: quad ? "QUAD MATCHED" : "SCANNING…", color: quad ? QUAD.match : QUAD.label },
       { text: "RA  " + S.fmtRa(rd[0]), color: white },
       { text: "DEC " + S.fmtDec(rd[1]), color: white },
       { text: "FOV " + fov.toFixed(1) + "° · " + nsrc + " src", color: white }

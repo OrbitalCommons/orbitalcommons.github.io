@@ -52,7 +52,7 @@ body { background:
 
 /* Stats */
 .stats { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: rgba(10, 14, 25, .6); }
-.stats-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.stats-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .stat { padding: 2rem 1.5rem; border-left: 1px solid var(--line); }
 .stat:first-child { border-left: 0; padding-left: 0; }
 .stat b { font: 650 clamp(min(2.2rem, 9vw), 4vw, 3.2rem)/1 var(--sans); letter-spacing: -.035em; color: var(--ink);
@@ -140,36 +140,8 @@ h3.sub { margin: 3.5rem 0 1rem; font: 600 .74rem/1 var(--mono); letter-spacing: 
 .site-foot .credit { margin-top: 2rem; font-size: .78rem; flex-direction: column; gap: .35rem; }
 .site-foot .credit p { margin: 0; }
 
-/* Proof: zodiacal benchmark */
-.proof { background: linear-gradient(180deg, rgba(91, 110, 225, .03), rgba(91, 110, 225, .08) 50%, rgba(91, 110, 225, .03));
-  border-block: 1px solid var(--line); margin: 2rem 0; }
 @media (max-width: 640px) { .section { padding: 3.25rem 0; } }
-.proof-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 3.5rem; align-items: start; }
-.proof table { margin-top: 1.5rem; }
-.proof caption { text-align: left; font-size: .8rem; padding-bottom: .4rem; caption-side: top; }
-.proof td:not(:first-child), .proof th:not(:first-child) { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.proof .small a { white-space: nowrap; }
-.proof tr.best td { color: var(--ink); font-weight: 600; }
 .small { font-size: .82rem; }
-.chart { margin: 0; padding: 1.8rem 1.8rem 1.4rem; }
-.chart figcaption h3 { margin: 0 0 .2rem; }
-.chart figcaption p { margin: 0; font-size: .85rem; }
-.bars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.1rem; height: 280px; margin-top: 2rem;
-  padding-top: 1.8rem; border-bottom: 1px solid var(--line-strong); }
-.bar { position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; outline-offset: 4px; }
-.bar i { display: block; width: 100%; max-width: 64px; height: calc(var(--v) * 1%); border-radius: 4px 4px 0 0;
-  background: linear-gradient(180deg, var(--accent), rgba(124, 196, 255, .35)); transform-origin: bottom;
-  transition: transform 1.1s cubic-bezier(.2, .7, .2, 1), filter .2s; }
-.js .reveal .bar i { transform: scaleY(0); }
-.js .reveal.in .bar i { transform: none; }
-.reveal .bar:nth-child(2) i { transition-delay: .1s; } .reveal .bar:nth-child(3) i { transition-delay: .2s; }
-.reveal .bar:nth-child(4) i { transition-delay: .3s; }
-.bar i { flex: none; }
-.bar b { position: absolute; bottom: calc(var(--v) * 1% + .45rem); font: 600 .9rem var(--mono); color: var(--ink); }
-.bar span { position: absolute; bottom: -1.9rem; font: .78rem var(--mono); color: var(--ink-3); }
-.bar:hover i, .bar:focus i { filter: brightness(1.25); }
-.chart .bars { margin-bottom: 2.2rem; }
-@media (max-width: 860px) { .proof-grid { grid-template-columns: minmax(0, 1fr); } .bars { height: 220px; } }
 
 /* Faint fixed star dust behind everything below the hero */
 body::before { content: ""; position: fixed; inset: 0; z-index: -3; pointer-events: none; opacity: .7;
@@ -201,10 +173,6 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -3; pointer-even
 .hud-btn { text-decoration: none; } .hud-btn:hover { text-decoration: none; }
 @media (max-width: 760px) { .hud-l { flex-wrap: wrap; gap: .5rem; } }
 @media (max-width: 480px) { #sky-hud { display: none; } }
-.proof .try { margin-top: 1.6rem; padding: 1rem 1.1rem; border: 1px solid var(--line-strong); border-radius: 12px;
-  background: rgba(139, 227, 176, .05); font-size: .92rem; }
-.proof .try strong { color: var(--ok); }
-
 /* Sky explorer band */
 .sky-band-grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 3.5rem; align-items: center; }
 .sky-band-art { margin: 0; border: 1px solid var(--line-strong); border-radius: var(--radius); overflow: hidden; background: #05070d;
@@ -214,10 +182,7 @@ body::before { content: ""; position: fixed; inset: 0; z-index: -3; pointer-even
 .sky-band-art figcaption { padding: .7rem 1rem; border-top: 1px solid var(--line); font: 500 .74rem var(--mono); color: var(--ink-3); }
 @media (max-width: 860px) { .sky-band-grid { grid-template-columns: 1fr; gap: 2rem; } }
 
-/* Benchmark chart follows the longer copy column; tighter project tags; hanging indent for wrapped commands. */
-@media (min-width: 861px) { .proof .chart { position: sticky; top: 6rem; } }
+/* Tighter project tags; hanging indent for wrapped commands. */
 .featured .meta { gap: .35rem; }
 .featured .meta span { padding: .32rem .45rem; }
 .term .cmd { display: inline-block; vertical-align: top; padding-left: 2ch; text-indent: -2ch; }
-@media (max-width: 480px) { .proof td:not(:first-child), .proof th:not(:first-child) { white-space: normal; } }
-@media (max-width: 480px) { .proof table { table-layout: fixed; } .proof th, .proof td { overflow-wrap: anywhere; } }
