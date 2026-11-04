@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>StratumZero · OrbitalCommons</title>
+    <meta name="robots" content="noindex" />
+    <meta
+      name="description"
+      content="StratumZero is a GNSS-disciplined reference clock you can point a camera at: a 10 MHz OCXO, an iCE40 FPGA and 64 LEDs that show the fraction of the current UTC second."
+    />
+    <meta property="og:title" content="StratumZero · OrbitalCommons" />
+    <meta
+      property="og:description"
+      content="A GNSS-disciplined reference clock you can point a camera at."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://orbitalcommons.github.io/projects/stratumzero/" />
+    <meta property="og:image" content="https://orbitalcommons.github.io/projects/stratumzero/og.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Rendered StratumZero carrier board" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#05070d" />
+    <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../../style.css" />
+    <link rel="stylesheet" href="../project.css" />
+    <link rel="stylesheet" href="stratumzero.css" />
+    <script src="../../assets/nav.js" defer></script>
+    <script type="importmap">
+      { "imports": { "three": "./vendor/three.module.min.js" } }
+    </script>
+    <script type="module" src="viewer.js"></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-nav">
+      <div class="wrap">
+        <a class="brand" href="../../"
+          ><img class="mark" src="../../assets/mark.svg" alt="" width="26" height="26" /><span
+            >Orbital<wbr /><b>Commons</b></span
+          ></a
+        >
+        <nav aria-label="Main navigation">
+          <a href="../../#stack" class="opt">Stack</a
+          ><a href="../../#projects" aria-current="true">Projects</a
+          ><a href="../../sky/" class="opt">Sky</a
+          ><a href="https://github.com/OrbitalCommons">GitHub</a>
+        </nav>
+      </div>
+    </header>
+    <main id="main" class="wrap project-main">
+      <p class="crumb">
+        <a href="../../">OrbitalCommons</a> / <a href="../../#projects">projects</a> / stratumzero
+      </p>
+      <div class="project-head sz-head">
+        <div>
+          <p class="eyebrow">Hardware · timing</p>
+          <h1 class="mono">StratumZero</h1>
+          <p class="lede">
+            The clock your camera can't argue with: a GNSS-disciplined reference clock that
+            shows the fraction of the current UTC second on 64 LEDs, so any picture of it
+            carries the time it was taken.
+          </p>
+          <div class="meta">
+            <span>u-blox MAX-M10S</span><span>10 MHz OCXO</span><span>iCE40UP5K + ESP32-S2</span
+            ><span>16-bit optical word</span><span>NTP server</span>
+          </div>
+          <div class="actions">
+            <a class="btn primary" href="#explore">Explore the board in 3D <span aria-hidden="true">↓</span></a
+            ><a class="btn" href="#system">How it works</a>
+          </div>
+          <p class="sz-status">Beta hardware: revision A carriers are in bring-up.</p>
+        </div>
+        <figure class="project-art sz-hero">
+          <img src="img/hero-1200.webp" srcset="img/hero-700.webp 700w, img/hero-1200.webp 1200w, img/hero-2000.webp 2000w" sizes="(max-width: 900px) 100vw, 560px" width="2000" height="1164" alt="The StratumZero carrier board at an angle: four rows of sixteen LEDs on the left, the OLED, oscillator and connectors on the right" fetchpriority="high" decoding="async" />
+          <figcaption>RENDERED FROM THE KICAD DESIGN · MODULE NOT SHOWN</figcaption>
+        </figure>
+      </div>
+      <div class="project-body">
+        <nav class="project-index" aria-label="On this page">
+          <p>On this page</p>
+          <a href="#overview">Overview</a><a href="#system">System</a><a href="#explore">3D board</a
+          ><a href="#blocks">Subsystems</a><a href="#reading">Reading the time</a
+          ><a href="#gallery">Renders</a><a href="#status">Status</a><a href="#credits">Notes</a>
+        </nav>
+        <div class="project-content">
+          <section id="overview" aria-labelledby="overview-title">
+            <h2 id="overview-title">Stratum 0, made visible.</h2>
+            <p>
+              In NTP terms, stratum 0 is the reference clock everything else is measured against.
+              <strong>StratumZero</strong> is that reference with a face. A GNSS receiver supplies
+              absolute time and a pulse every second, an oven-controlled oscillator fills in between
+              the pulses, and an FPGA turns the result into a 16-bit binary word on a 4 × 16 LED
+              array. Point a camera at it and every frame records its own UTC timestamp, to within
+              1/65536 of a second, without trusting the camera's clock.
+            </p>
+            <p>
+              The same timebase timestamps electrical edges on an SMA input, fires scheduled pulses
+              on an SMA output, and serves NTP over Wi-Fi. The carrier is a 180 × 100 mm two-layer
+              board; the compute lives on the
+              <a href="https://github.com/OrbitalCommons/gumstick">gumstick</a>, an open ESP32 +
+              iCE40 module that plugs into it.
+            </p>
+          </section>
+
+          <section id="system" aria-labelledby="system-title">
+            <h2 id="system-title">Where the time comes from</h2>
+            <p>
+              Time flows left to right. The FPGA is the only part that touches an edge; the ESP32
+              decides what each edge means and tells the world.
+            </p>
+            <figure class="sz-diagram">
+              <svg viewBox="0 0 960 470" role="img" aria-labelledby="sysdiag-t sysdiag-d">
+                <title id="sysdiag-t">StratumZero signal flow</title>
+                <desc id="sysdiag-d">
+                  The GNSS receiver sends a pulse per second to the FPGA and UTC messages to the
+                  ESP32. The 10 MHz OCXO clocks the FPGA. The FPGA drives the 64-LED time word and
+                  the trigger output, timestamps the trigger input, and exchanges registers with the
+                  ESP32 over SPI. The ESP32 serves Wi-Fi, the web interface, the API and NTP, drives
+                  the OLED, and controls USB-C power.
+                </desc>
+                <defs>
+                  <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                    <path d="M0 0L10 5L0 10z" fill="#7b86a3" />
+                  </marker>
+                </defs>
+                <g class="d-box">
+                  <rect x="20" y="40" width="190" height="78" rx="10" style="--c:#9ece6a" />
+                  <text x="115" y="72">GNSS receiver</text><text x="115" y="96" class="d-sub">MAX-M10S · antenna SMA</text>
+                  <rect x="20" y="160" width="190" height="78" rx="10" style="--c:#e0af68" />
+                  <text x="115" y="192">10 MHz OCXO</text><text x="115" y="216" class="d-sub">oven-stabilised crystal</text>
+                  <rect x="20" y="280" width="190" height="78" rx="10" style="--c:#ff9e64" />
+                  <text x="115" y="312">Trigger in</text><text x="115" y="336" class="d-sub">0–5 V SMA input</text>
+                  <rect x="20" y="380" width="190" height="70" rx="10" style="--c:#f7768e" />
+                  <text x="115" y="410">USB-C power</text><text x="115" y="432" class="d-sub">PD 5 V / 3 A · eFuse</text>
+                </g>
+                <rect x="300" y="24" width="330" height="430" rx="16" class="d-module" />
+                <text x="465" y="50" class="d-label">gumstick compute module</text>
+                <g class="d-box">
+                  <rect x="330" y="70" width="270" height="170" rx="10" style="--c:#7aa2f7" />
+                  <text x="465" y="104">iCE40UP5K FPGA</text>
+                  <text x="465" y="134" class="d-sub">64-bit tick counter (100 ns)</text>
+                  <text x="465" y="156" class="d-sub">PPS + trigger capture FIFO</text>
+                  <text x="465" y="178" class="d-sub">optical word accumulator</text>
+                  <text x="465" y="200" class="d-sub">scheduled trigger out</text>
+                  <rect x="330" y="290" width="270" height="140" rx="10" style="--c:#7aa2f7" />
+                  <text x="465" y="324">ESP32-S2</text>
+                  <text x="465" y="354" class="d-sub">UTC from UBX messages</text>
+                  <text x="465" y="376" class="d-sub">tick → UTC model, power</text>
+                  <text x="465" y="398" class="d-sub">Rust firmware</text>
+                </g>
+                <g class="d-box">
+                  <rect x="740" y="40" width="200" height="78" rx="10" style="--c:#73daca" />
+                  <text x="840" y="72">64-LED time word</text><text x="840" y="96" class="d-sub">1/65536 s per bit</text>
+                  <rect x="740" y="160" width="200" height="78" rx="10" style="--c:#ff9e64" />
+                  <text x="840" y="192">Trigger out</text><text x="840" y="216" class="d-sub">5 V logic at a set tick</text>
+                  <rect x="740" y="280" width="200" height="78" rx="10" style="--c:#7dcfff" />
+                  <text x="840" y="312">Wi-Fi</text><text x="840" y="336" class="d-sub">web UI · API · NTP</text>
+                  <rect x="740" y="380" width="200" height="70" rx="10" style="--c:#7dcfff" />
+                  <text x="840" y="410">OLED</text><text x="840" y="432" class="d-sub">clock and status</text>
+                </g>
+                <g class="d-wire" marker-end="url(#arr)">
+                  <path d="M210 70 H300 V110 H328" /><path d="M210 92 C260 92 260 330 328 330" />
+                  <path d="M210 199 H328" />
+                  <path d="M210 312 C270 312 270 180 328 180" /><path d="M210 330 H328" />
+                  <path d="M210 415 H328" />
+                  <path d="M465 242 V288" /><path d="M465 288 V242" />
+                  <path d="M600 110 H738" /><path d="M600 199 H738" />
+                  <path d="M600 330 C670 330 670 319 738 319" /><path d="M600 400 C670 400 670 415 738 415" />
+                </g>
+                <g class="d-tag">
+                  <text x="262" y="64">PPS</text><text x="250" y="160">UBX</text>
+                  <text x="262" y="193">10 MHz</text><text x="270" y="244">edge</text>
+                  <text x="500" y="270">SPI</text><text x="268" y="408">rails</text>
+                </g>
+              </svg>
+              <figcaption>Signal-flow diagram (illustration). Colours match the blocks in the 3D view.</figcaption>
+            </figure>
+            <p>
+              <strong>Edges stay in hardware.</strong> The PPS pulse and trigger edges are registered
+              in FPGA I/O cells against a 64-bit counter of OCXO ticks, so USB, Wi-Fi, task latency
+              and display refresh never decide when something happened. The ESP32 reads those
+              captures over SPI and attaches the UTC second the GNSS receiver reported for each
+              pulse.
+            </p>
+            <p>
+              <strong>Ticks become UTC by fitting.</strong> Each PPS anchors a tick count to a UTC
+              second. The firmware fits the OCXO's frequency across those anchors and places any
+              tick in between on the UTC timeline with an uncertainty attached, then programs the
+              FPGA's phase accumulator so the LED word tracks the same clock.
+            </p>
+          </section>
+
+          <section id="explore" aria-labelledby="explore-title">
+            <h2 id="explore-title">Explore the board</h2>
+            <p>
+              The carrier and module from their KiCad designs. Drag to orbit, scroll or pinch to
+              zoom, and choose a block or click any part to see what it does. Lift the module to see
+              the connectors beneath it.
+            </p>
+            <div id="board3d" class="viewer">
+              <div class="viewer-stage">
+                <p class="viewer-status">The 3D model (about 2 MB) loads when this section comes into view.</p>
+                <p class="viewer-tip" hidden></p>
+              </div>
+              <div class="viewer-controls" role="group" aria-label="View controls">
+                <button type="button" class="btn" data-action="rotate" aria-pressed="false" disabled>Rotate</button
+                ><button type="button" class="btn" data-action="lift" aria-pressed="false" disabled>Lift the module</button
+                ><button type="button" class="btn" data-action="flip" disabled>Underside</button
+                ><button type="button" class="btn" data-action="reset" disabled>Reset view</button>
+              </div>
+              <div class="viewer-side">
+                <ul class="viewer-blocks" aria-label="Blocks"></ul>
+                <div class="viewer-info" aria-live="polite">
+                  <p class="muted">Choose a block, or click any part on the board.</p>
+                </div>
+              </div>
+            </div>
+            <p class="sz-note">
+              Real component geometry where a manufacturer or KiCad model exists; the OCXO, OLED,
+              USB-C jack and a few others are drawing-derived or simplified envelopes.
+            </p>
+          </section>
+
+          <section id="blocks" aria-labelledby="blocks-title">
+            <h2 id="blocks-title">Subsystems</h2>
+            <div class="sz-blocks">
+              <article class="sz-block" style="--c:#7aa2f7">
+                <img src="img/module-top-1600.webp" srcset="img/module-top-800.webp 800w, img/module-top-1600.webp 1600w" sizes="(max-width: 700px) 100vw, 300px" width="1600" height="864" alt="Top of the gumstick module: the ESP32-S2 at the antenna end, the iCE40 FPGA at the other, the mounting hole between them" loading="lazy" decoding="async" />
+                <div>
+                  <h3>Compute module</h3>
+                  <p>
+                    The gumstick carries an <strong>iCE40UP5K FPGA</strong> and an
+                    <strong>ESP32-S2</strong> on a 20 × 45 mm board. It plugs into two Hirose DF40
+                    connectors 25 mm apart, held by one M3 screw midway between them. The FPGA's
+                    1.2 V core and the module's 3.3 V are made on the module from the carrier's 5 V;
+                    Wi-Fi uses an external antenna on a U.FL jack.
+                  </p>
+                  <p>
+                    The FPGA keeps time: a 64-bit counter on the OCXO, a 512-record capture FIFO for
+                    PPS and trigger edges, the optical word, and a tick-scheduled output. The ESP32
+                    runs Rust firmware that configures the receiver, sequences power and serves the
+                    web interface, a JSON and Server-Sent Events API, and NTP.
+                  </p>
+                </div>
+              </article>
+              <article class="sz-block" style="--c:#e0af68">
+                <img src="img/crop-ocxo-1000.webp" srcset="img/crop-ocxo-600.webp 600w, img/crop-ocxo-1000.webp 622w" sizes="(max-width: 700px) 100vw, 300px" width="622" height="493" alt="Close-up of the Abracon 10 MHz OCXO beside its dedicated SOT-223 regulator on a copper island" loading="lazy" decoding="async" />
+                <div>
+                  <h3>10 MHz OCXO</h3>
+                  <p>
+                    An <strong>Abracon AOC97</strong> oven-controlled crystal oscillator is the
+                    short-term timebase: the FPGA counts its 10 MHz cycles in 100 ns ticks. Keeping
+                    the crystal at a constant temperature makes its frequency far steadier between
+                    GNSS pulses than a plain crystal. It has its own 1.5 A low-noise regulator,
+                    switched by the ESP32, on a ground-poured island, and the firmware waits out a
+                    three-minute warm-up before it trusts the clock.
+                  </p>
+                </div>
+              </article>
+              <article class="sz-block" style="--c:#9ece6a">
+                <img src="img/crop-gnss-1000.webp" srcset="img/crop-gnss-600.webp 600w, img/crop-gnss-1000.webp 986w" sizes="(max-width: 700px) 100vw, 300px" width="986" height="815" alt="Close-up of the u-blox MAX-M10S module, the backup cell clip and the GNSS antenna SMA" loading="lazy" decoding="async" />
+                <div>
+                  <h3>GNSS receiver</h3>
+                  <p>
+                    A <strong>u-blox MAX-M10S</strong> tracks GPS, Galileo, GLONASS and BeiDou. Its
+                    PPS goes straight to the FPGA; its UBX messages tell the firmware which UTC
+                    second each pulse marks and how good the fix is. The antenna feed is a 50 Ω
+                    grounded coplanar line with a via fence, and a rechargeable ML1220 cell keeps the
+                    receiver's clock and almanac alive for about three weeks unpowered, so restarts
+                    are hot.
+                  </p>
+                </div>
+              </article>
+              <article class="sz-block" style="--c:#73daca">
+                <img src="img/crop-leds-1000.webp" srcset="img/crop-leds-600.webp 600w, img/crop-leds-1000.webp 986w" sizes="(max-width: 700px) 100vw, 300px" width="986" height="1073" alt="Close-up of the LED array: each green LED sits in a block with its resistor and two capacitors, below the column MOSFETs" loading="lazy" decoding="async" />
+                <div>
+                  <h3>Optical time word</h3>
+                  <p>
+                    Four identical rows of sixteen green LEDs show bit 15 on the left down to bit 0,
+                    the fraction of the current UTC second in units of 1/65536 s (15.26 µs). Sixteen
+                    MOSFETs switch the columns from two buffers, and the rows update together, never
+                    multiplexed. Every LED gets the same 470 Ω resistor, 47 pF speed-up capacitor and
+                    100 nF bypass, laid out the same way, so each one turns on with the same edge.
+                  </p>
+                </div>
+              </article>
+              <article class="sz-block" style="--c:#bb9af7">
+                <img src="img/crop-brightness-600.webp" srcset="img/crop-brightness-600.webp 515w" sizes="(max-width: 700px) 100vw, 220px" width="515" height="772" alt="Close-up of the adjustable LED regulator, the brightness DAC and the bypass solder jumper" loading="lazy" decoding="async" />
+                <div>
+                  <h3>LED brightness</h3>
+                  <p>
+                    The LEDs run from their own rail, made by an adjustable regulator whose set point
+                    a 12-bit DAC pulls between about 2.9 V and 4.7 V. Brightness can follow the
+                    camera's exposure without touching the timing, and a solder jumper bypasses it
+                    for fixed full brightness.
+                  </p>
+                </div>
+              </article>
+              <article class="sz-block" style="--c:#ff9e64">
+                <img src="img/crop-trigger-1000.webp" srcset="img/crop-trigger-600.webp 600w, img/crop-trigger-1000.webp 986w" sizes="(max-width: 700px) 100vw, 300px" width="986" height="772" alt="Close-up of the trigger input and output stages beside their two SMA connectors" loading="lazy" decoding="async" />
+                <div>
+                  <h3>Trigger I/O</h3>
+                  <p>
+                    The input takes 0 to 5 V logic through an RC filter into a 4.5 ns comparator at
+                    2.5 V, then a 3.3 V Schmitt buffer that feeds the FPGA, the ESP32 and the
+                    receiver's EXTINT pin: one edge, three independent timestamps. The output is a
+                    pulse the FPGA starts on an exact tick, driven as 5 V logic for a
+                    high-impedance load.
+                  </p>
+                </div>
+              </article>
+              <article class="sz-block" style="--c:#f7768e">
+                <img src="img/crop-power-1000.webp" srcset="img/crop-power-600.webp 600w, img/crop-power-1000.webp 986w" sizes="(max-width: 700px) 100vw, 300px" width="986" height="729" alt="Close-up of the USB-C connector with the PD controller, eFuse and ESD protection beside it" loading="lazy" decoding="async" />
+                <div>
+                  <h3>USB-C power</h3>
+                  <p>
+                    A PD sink controller asks only for 5 V / 3 A. The ESP32 reads the negotiated
+                    contract before it closes an eFuse onto the switched 5 V domain (2.48 A limit,
+                    soft start, current monitor), then brings up the GNSS, oscillator and display
+                    rails in turn. USB data goes straight to the ESP32-S2 for flashing and a console.
+                  </p>
+                </div>
+              </article>
+              <article class="sz-block" style="--c:#7dcfff">
+                <img src="img/crop-oled-1000.webp" srcset="img/crop-oled-600.webp 600w, img/crop-oled-1000.webp 644w" sizes="(max-width: 700px) 100vw, 300px" width="644" height="686" alt="Close-up of the 0.96-inch OLED module on its four-pin header" loading="lazy" decoding="async" />
+                <div>
+                  <h3>Status display</h3>
+                  <p>
+                    A 0.96-inch 128 × 64 OLED is for people: the time in large digits, redrawn on
+                    each UTC second, with lock state, satellites, power and the IP address rotating
+                    underneath. A separate 3.3 V regulator feeds it, the LED buffers and the
+                    brightness DAC.
+                  </p>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section id="reading" aria-labelledby="reading-title">
+            <h2 id="reading-title">How a camera reads the time</h2>
+            <figure class="sz-wide">
+              <img src="img/low-leds-1600.webp" srcset="img/low-leds-800.webp 800w, img/low-leds-1600.webp 1600w" sizes="(max-width: 900px) 100vw, 900px" width="1600" height="396" alt="Low-angle render across the four rows of LEDs" loading="lazy" decoding="async" />
+              <figcaption>Low-angle render across the LED array.</figcaption>
+            </figure>
+            <p>
+              The array shows <code>floor(65536 × fraction of the UTC second)</code>. A global-shutter
+              exposure shorter than one bit captures a single word: read the 16 bits, add the UTC
+              second, and that is the exposure time. Longer exposures blur the low bits, which says
+              how long the shutter was open. On a rolling-shutter sensor each row is exposed at a
+              different moment, so the word visibly changes part-way down the frame, and the rows
+              where low bits flip measure the sensor's line time and place each line on the UTC
+              timeline. The four rows are redundant copies, so a partly hidden array still reads.
+            </p>
+            <p>
+              The hardware sets the reference; absolute accuracy still has to be shown, LED by LED
+              and edge by edge, with a fast photodiode. That validation is part of the bring-up
+              plan.
+            </p>
+          </section>
+
+          <section id="gallery" aria-labelledby="gallery-title">
+            <h2 id="gallery-title">Renders</h2>
+            <p>Raytraced in KiCad from the production design files. Select a render to open it full size.</p>
+            <div class="sz-gallery">
+              <figure>
+                <a href="img/top-2400.webp"><img src="img/top-1400.webp" srcset="img/top-800.webp 800w, img/top-1400.webp 1400w, img/top-2400.webp 2400w" sizes="(max-width: 900px) 100vw, 900px" width="2400" height="1295" alt="Top view of the whole carrier board" loading="lazy" decoding="async" /></a>
+                <figcaption>Top view, carrier only. The outlined rectangle is where the module sits.</figcaption>
+              </figure>
+              <figure>
+                <a href="img/angle-left-1600.webp"><img src="img/angle-left-1600.webp" srcset="img/angle-left-800.webp 800w, img/angle-left-1600.webp 1600w" sizes="(max-width: 700px) 100vw, 440px" width="1600" height="931" alt="The carrier viewed from the LED end" loading="lazy" decoding="async" /></a>
+                <figcaption>From the LED end.</figcaption>
+              </figure>
+              <figure>
+                <a href="img/edge-right-1600.webp"><img src="img/edge-right-1600.webp" srcset="img/edge-right-800.webp 800w, img/edge-right-1600.webp 1600w" sizes="(max-width: 700px) 100vw, 440px" width="1600" height="1111" alt="The connector edge: USB-C and three SMA connectors" loading="lazy" decoding="async" /></a>
+                <figcaption>The connector edge: USB-C, trigger in, trigger out, GNSS antenna.</figcaption>
+              </figure>
+              <figure>
+                <a href="img/module-iso-1600.webp"><img src="img/module-iso-1600.webp" srcset="img/module-iso-800.webp 800w, img/module-iso-1600.webp 1600w" sizes="(max-width: 700px) 100vw, 440px" width="1600" height="975" alt="The gumstick module at an angle, showing the ESP32-S2 and the iCE40 FPGA" loading="lazy" decoding="async" /></a>
+                <figcaption>The gumstick module: ESP32-S2 at the U.FL end, iCE40UP5K at the other.</figcaption>
+              </figure>
+              <figure>
+                <a href="img/module-bottom-1600.webp"><img src="img/module-bottom-1600.webp" srcset="img/module-bottom-800.webp 800w, img/module-bottom-1600.webp 1600w" sizes="(max-width: 700px) 100vw, 440px" width="1600" height="854" alt="Underside of the gumstick module with its two board-to-board connectors" loading="lazy" decoding="async" /></a>
+                <figcaption>Module underside: the two DF40 connectors that mate with the carrier.</figcaption>
+              </figure>
+              <figure>
+                <a href="img/module-top-1600.webp"><img src="img/module-top-1600.webp" srcset="img/module-top-800.webp 800w, img/module-top-1600.webp 1600w" sizes="(max-width: 700px) 100vw, 440px" width="1600" height="864" alt="Top of the gumstick module" loading="lazy" decoding="async" /></a>
+                <figcaption>Module top.</figcaption>
+              </figure>
+              <figure>
+                <a href="img/bottom-1600.webp"><img src="img/bottom-1600.webp" srcset="img/bottom-800.webp 800w, img/bottom-1600.webp 1600w" sizes="(max-width: 700px) 100vw, 440px" width="1600" height="912" alt="Underside of the carrier board" loading="lazy" decoding="async" /></a>
+                <figcaption>Carrier underside: the LED supply buses and ground plane.</figcaption>
+              </figure>
+            </div>
+          </section>
+
+          <section id="status" aria-labelledby="status-title">
+            <h2 id="status-title">Status</h2>
+            <ul class="sz-list">
+              <li>
+                <strong>Revision A carriers are built and in bring-up.</strong> The board powers up
+                through its full sequence, locks to GNSS and runs the optical word, the OLED clock,
+                NTP and the web interface over Wi-Fi.
+              </li>
+              <li>
+                <strong>The timebase is 10 MHz.</strong> The iCE40UP5K's only PLL output shares a pin
+                with the PPS input on this revision, so ticks are 100 ns rather than the planned
+                12.5 ns. The next revision moves PPS.
+              </li>
+              <li>
+                <strong>The oscillator and Wi-Fi had to learn to share.</strong> The OCXO's fast
+                clock edges radiated into the 2.4 GHz band; antenna placement fixed most of it, and
+                the next revision filters and shields the clock line.
+              </li>
+              <li>
+                <strong>Optical timing still has to be measured.</strong> LED-to-LED edge timing and
+                absolute offset need a photodiode campaign before the word is called calibrated.
+              </li>
+            </ul>
+          </section>
+
+          <section id="credits" aria-labelledby="credits-title">
+            <h2 id="credits-title">Notes</h2>
+            <p class="muted">
+              Renders and the 3D model come from the KiCad 10 design. Component models are from the
+              KiCad libraries (CC BY-SA 4.0 with the KiCad library exception) or were drawn for this
+              project from datasheets; the OCXO, OLED, USB-C jack and several connectors are
+              simplified envelopes. The viewer uses <a href="vendor/three-LICENSE.txt">three.js</a>
+              (MIT). The compute module design is open at
+              <a href="https://github.com/OrbitalCommons/gumstick">OrbitalCommons/gumstick</a>.
+            </p>
+          </section>
+        </div>
+      </div>
+    </main>
+    <footer class="site-foot">
+      <div class="wrap">
+        <div>
+          <a class="brand" href="../../"
+            ><img class="mark" src="../../assets/mark.svg" alt="" width="26" height="26" /><span
+              >Orbital<wbr /><b>Commons</b></span
+            ></a
+          >
+          <p class="muted">Open-source software for seeing, navigating<br />and exploring space.</p>
+        </div>
+        <div class="cols">
+          <div>
+            <p class="foot-h">Projects</p>
+            <a href="../starfield/">starfield</a><a href="../zodiacal/">zodiacal</a
+            ><a href="../fitsio-pure/">fitsio-pure</a><a href="../scicamera/">scicamera</a>
+          </div>
+          <div>
+            <p class="foot-h">Elsewhere</p>
+            <a href="../../sky/">Sky explorer</a><a href="https://github.com/OrbitalCommons">GitHub</a
+            ><a href="https://github.com/OrbitalCommons/gumstick">gumstick module</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
