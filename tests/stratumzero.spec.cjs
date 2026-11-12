@@ -1,14 +1,22 @@
 const { test, expect } = require('@playwright/test');
 
 // The unlinked StratumZero hardware page: 3D viewer, reduced motion, reflow.
-test('the board viewer loads, highlights a block and explains a part', async ({ page }) => {
+// The model renders in software on CI runners, which is slow (and crashes Firefox's
+// headless WebGL), so the WebGL tests run once, in desktop Chromium, with auto-rotate
+// off so frames are only drawn on interaction.
+const webglOnly = testInfo => test.skip(testInfo.project.name !== 'desktop', 'WebGL tests run in desktop Chromium only');
+
+test('the board viewer loads, highlights a block and explains a part', async ({ page }, testInfo) => {
+  webglOnly(testInfo);
+  test.setTimeout(90000);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
   await page.goto('/projects/stratumzero/');
   await page.locator('#explore').scrollIntoViewIfNeeded();
   const viewer = page.locator('#board3d');
   // headless browsers without WebGL show the fallback text instead of the model
-  await expect(viewer.locator('.viewer-status')).toBeHidden({ timeout: 45000 }).catch(() => {});
+  await expect(viewer.locator('.viewer-status')).toBeHidden({ timeout: 70000 }).catch(() => {});
   if (!(await viewer.evaluate(el => el.classList.contains('ready')))) {
     await expect(viewer.locator('.viewer-status')).toContainText('WebGL');
     return;
@@ -23,12 +31,14 @@ test('the board viewer loads, highlights a block and explains a part', async ({ 
   expect(errors).toEqual([]);
 });
 
-test('the viewer does not auto-rotate under reduced motion', async ({ page }) => {
+test('the viewer does not auto-rotate under reduced motion', async ({ page }, testInfo) => {
+  webglOnly(testInfo);
+  test.setTimeout(90000);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/projects/stratumzero/');
   await page.locator('#explore').scrollIntoViewIfNeeded();
   const viewer = page.locator('#board3d');
-  await expect(viewer.locator('.viewer-status')).toBeHidden({ timeout: 45000 }).catch(() => {});
+  await expect(viewer.locator('.viewer-status')).toBeHidden({ timeout: 70000 }).catch(() => {});
   if (!(await viewer.evaluate(el => el.classList.contains('ready')))) return;
   await expect(page.locator('[data-action="rotate"]')).toHaveAttribute('aria-pressed', 'false');
 });
