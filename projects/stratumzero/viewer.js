@@ -25,6 +25,7 @@ const MM = 0.001;
 const MODULE_AT = new THREE.Vector3(45 * MM, 3.6 * MM, -91.45 * MM);
 const LIFT = 22 * MM;
 
+let selReticle, hoverReticle;
 let renderer, scene, camera, controls, pick = [], parts = new Map(), moduleGroup;
 let frame = 0, visible = false, tweens = [], autoRotate = !reduced.matches, lifted = false;
 let selectedBlock = null, selectedPart = null, hovered = null;
@@ -52,6 +53,7 @@ async function start() {
   scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture;
   const sun = new THREE.DirectionalLight(0xffffff, 1.4); sun.position.set(-0.2, 0.5, 0.25); scene.add(sun);
   scene.add(new THREE.HemisphereLight(0xcfd8ff, 0x1a1b26, 0.5));
+  selReticle = makeReticle(0xffffff, 0.95); hoverReticle = makeReticle(0xc0caf5, 0.5);
   camera = new THREE.PerspectiveCamera(32, 1, 0.002, 3);
   controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true; controls.dampingFactor = 0.08;
@@ -136,6 +138,7 @@ function tick(t) {
   let busy = false;
   tweens = tweens.filter(tw => { const k = Math.min(1, (t - tw.t0) / tw.ms); tw.step(ease(k)); if (k < 1) busy = true; return k < 1; });
   if (controls.update()) busy = true;
+  if (pulse(t) && visible && !document.hidden) busy = true;
   renderer.render(scene, camera);
   if ((busy || (autoRotate && visible && !document.hidden))) request();
 }
@@ -168,13 +171,60 @@ function toggleLift() {
 }
 
 // ---------------------------------------------------------------- highlight + picking
+// A selected block tints its parts; the selected and hovered parts get corner reticles.
 function paint() {
   for (const p of parts.values()) {
-    const on = selectedPart === p ? 0.55 : hovered === p ? 0.35 : selectedBlock && p.block === selectedBlock.id ? 0.4 : 0;
-    const col = new THREE.Color(selectedPart === p || hovered === p ? '#ffffff' : (byId[p.block] || {}).color || '#ffffff');
+    const on = selectedBlock && p.block === selectedBlock.id ? 0.4 : 0;
+    const col = new THREE.Color((byId[p.block] || {}).color || '#ffffff');
     for (const m of p.mats) { m.emissive.copy(col); m.emissiveIntensity = on; }
   }
+  aim(selReticle, selectedPart);
+  aim(hoverReticle, hovered !== selectedPart ? hovered : null);
   request();
+}
+
+// ---------------------------------------------------------------- reticles
+// Corner brackets on a part's axis-aligned bounding box: three short edges at each of the
+// eight corners. Drawn on top of everything so a part under the module still shows.
+function makeReticle(color, opacity) {
+  // 24 arms as thin bars (WebGL draws lines 1 px wide whatever the width)
+  const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity, depthTest: false, depthWrite: false, toneMapped: false });
+  const r = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), mat, 24);
+  r.renderOrder = 10; r.visible = false; r.frustumCulled = false; r.userData.base = opacity;
+  scene.add(r);
+  return r;
+}
+const rbox = new THREE.Box3(), rc = new THREE.Vector3(), rs = new THREE.Vector3(), rm = new THREE.Matrix4();
+const rq = new THREE.Quaternion(), rp = new THREE.Vector3(), rsc = new THREE.Vector3();
+function aim(r, part) { r.userData.part = part; r.visible = !!part; if (part) fit(r, 1); }
+function fit(r, grow) {
+  rbox.setFromObject(r.userData.part.node);
+  rbox.getCenter(rc); rbox.getSize(rs);
+  const pad = Math.max(0.0005, rs.length() * 0.05);      // breathing room around small parts
+  const h = rs.clone().addScalar(2 * pad).multiplyScalar(grow / 2);
+  const t = Math.max(0.00012, Math.min(h.x, h.y, h.z, 0.004) * 0.12);   // bar thickness
+  let i = 0;
+  for (const sx of [-1, 1]) for (const sy of [-1, 1]) for (const sz of [-1, 1]) {
+    for (const axis of [0, 1, 2]) {
+      const half = [h.x, h.y, h.z][axis], len = Math.max(half * 0.5, t * 4);   // a quarter of each edge
+      rsc.set(t, t, t).setComponent(axis, len);
+      rp.set(rc.x + sx * h.x, rc.y + sy * h.y, rc.z + sz * h.z);
+      rp.setComponent(axis, rp.getComponent(axis) - [sx, sy, sz][axis] * (len / 2 - t / 2));
+      r.setMatrixAt(i++, rm.compose(rp, rq, rsc));
+    }
+  }
+  r.instanceMatrix.needsUpdate = true;
+}
+// The selected part's reticle breathes (about 1.4 s per cycle); static under reduced motion.
+function pulse(t) {
+  if (!selReticle.visible) return false;
+  scene.updateMatrixWorld();   // the module may be mid-lift
+  const still = reduced.matches;
+  const k = still ? 0 : (Math.sin(t / 1400 * Math.PI * 2) + 1) / 2;
+  fit(selReticle, 1 + 0.12 * k);
+  selReticle.material.opacity = selReticle.userData.base * (0.7 + 0.3 * k);
+  if (hoverReticle.visible) fit(hoverReticle, 1);
+  return !still;
 }
 
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
