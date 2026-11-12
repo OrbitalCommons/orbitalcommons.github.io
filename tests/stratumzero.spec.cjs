@@ -55,3 +55,10 @@ test('the StratumZero page stays out of search indexes', async ({ page }) => {
   await page.goto('/projects/stratumzero/');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
 });
+
+test('the StratumZero legal notes are linked from the footer', async ({ page }) => {
+  await page.goto('/projects/stratumzero/');
+  await page.locator('footer').getByRole('link', { name: 'Legal' }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Legal notes');
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
+});
