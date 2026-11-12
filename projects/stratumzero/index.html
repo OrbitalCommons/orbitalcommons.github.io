@@ -70,7 +70,7 @@
             <a class="btn primary" href="#explore">Explore the board in 3D <span aria-hidden="true">↓</span></a
             ><a class="btn" href="#system">How it works</a>
           </div>
-          <p class="sz-status">Beta hardware: revision A carriers are in bring-up.</p>
+          <p class="sz-status">Beta release.</p>
         </div>
         <figure class="project-art sz-hero">
           <img src="img/hero-1200.webp" srcset="img/hero-700.webp 700w, img/hero-1200.webp 1200w, img/hero-2000.webp 2000w" sizes="(max-width: 900px) 100vw, 560px" width="2000" height="1164" alt="The StratumZero carrier board at an angle: four rows of sixteen LEDs on the left, the OLED, oscillator and connectors on the right" fetchpriority="high" decoding="async" />
@@ -82,7 +82,7 @@
           <p>On this page</p>
           <a href="#overview">Overview</a><a href="#system">System</a><a href="#explore">3D board</a
           ><a href="#blocks">Subsystems</a><a href="#reading">Reading the time</a
-          ><a href="#gallery">Renders</a><a href="#status">Status</a>
+          ><a href="#api">API</a><a href="#gallery">Renders</a><a href="#status">Status</a>
         </nav>
         <div class="project-content">
           <section id="overview" aria-labelledby="overview-title">
@@ -111,12 +111,13 @@
               decides what each edge means and tells the world.
             </p>
             <figure class="sz-diagram">
-              <svg viewBox="0 0 960 470" role="img" aria-labelledby="sysdiag-t sysdiag-d">
+              <svg viewBox="-34 0 994 470" role="img" aria-labelledby="sysdiag-t sysdiag-d">
                 <title id="sysdiag-t">StratumZero signal flow</title>
                 <desc id="sysdiag-d">
                   The GNSS receiver sends a pulse per second to the FPGA and UTC messages to the
-                  ESP32. The 10 MHz OCXO clocks the FPGA. The FPGA drives the 64-LED time word and
-                  the trigger output, timestamps the trigger input, and exchanges registers with the
+                  ESP32. The 10 MHz OCXO clocks the FPGA. The trigger input goes to the FPGA, the
+                  ESP32 and the GNSS receiver, which timestamps it independently. The FPGA drives
+                  the 64-LED time word and the trigger output, timestamps the trigger input, and exchanges registers with the
                   ESP32 over SPI. The ESP32 serves Wi-Fi, the web interface, the API and NTP, drives
                   the OLED, and controls USB-C power.
                 </desc>
@@ -165,6 +166,7 @@
                   <path d="M210 199 H328" />
                   <path d="M210 312 C270 312 270 180 328 180" /><path d="M210 330 H328" />
                   <path d="M210 415 H328" />
+                  <path d="M20 300 H-6 V100 H18" />
                   <path d="M465 242 V288" /><path d="M465 288 V242" />
                   <path d="M600 110 H738" /><path d="M600 199 H738" />
                   <path d="M600 330 C670 330 670 319 738 319" /><path d="M600 400 C670 400 670 415 738 415" />
@@ -173,6 +175,7 @@
                   <text x="262" y="64">PPS</text><text x="250" y="160">UBX</text>
                   <text x="262" y="193">10 MHz</text><text x="270" y="244">edge</text>
                   <text x="500" y="270">SPI</text><text x="268" y="408">rails</text>
+                  <text x="0" y="0" transform="translate(-16 200) rotate(-90)">EXTINT</text>
                 </g>
               </svg>
               <figcaption>Signal-flow diagram (illustration). Colours match the blocks in the 3D view.</figcaption>
@@ -183,6 +186,13 @@
               and display refresh never decide when something happened. The ESP32 reads those
               captures over SPI and attaches the UTC second the GNSS receiver reported for each
               pulse.
+            </p>
+            <p>
+              <strong>Every trigger edge is timed twice.</strong> The trigger input also drives the
+              GNSS receiver's EXTINT pin, so the receiver timestamps each edge against GNSS time
+              itself, with no dependence on the board's oscillator, firmware or FPGA. The firmware
+              pairs each receiver time mark with the FPGA capture of the same edge and reports both
+              and their difference, a continuous independent check on the whole timing chain.
             </p>
             <p>
               <strong>Ticks become UTC by fitting.</strong> Each PPS anchors a tick count to a UTC
@@ -219,10 +229,6 @@
                 </div>
               </div>
             </div>
-            <p class="sz-note">
-              Real component geometry where a manufacturer or KiCad model exists; the OCXO, OLED and
-              a few others are drawing-derived or simplified envelopes.
-            </p>
           </section>
 
           <section id="blocks" aria-labelledby="blocks-title">
@@ -356,10 +362,58 @@
               timeline. The four rows are redundant copies, so a partly hidden array still reads.
             </p>
             <p>
-              The hardware sets the reference; absolute accuracy still has to be shown, LED by LED
-              and edge by edge, with a fast photodiode. That validation is part of the bring-up
-              plan.
+              The hardware sets the reference. A fast photodiode measures each LED's edge against the
+              trigger output, which gives a unit's absolute optical offset and its LED-to-LED spread.
             </p>
+          </section>
+
+          <section id="api" aria-labelledby="api-title">
+            <h2 id="api-title">Built for agents</h2>
+            <p>
+              StratumZero is API first. Everything it can do is a JSON request over HTTP on the local
+              network, and the web interface is just one client of that API. There is no vendor app,
+              no driver and no account, so a script or an AI agent can run a whole timing campaign
+              without a person at the bench.
+            </p>
+            <ul class="sz-list">
+              <li>
+                <strong>Time in, time out.</strong> Read UTC with its uncertainty, schedule output
+                pulses at an absolute UTC instant or a periodic train, and get every captured edge
+                back with GNSS time, UTC and an uncertainty attached.
+              </li>
+              <li>
+                <strong>Calibration sessions.</strong> Start a named session with free-form metadata
+                (camera, exposure, setup), run the experiment, stop it, and collect the timestamped
+                edges as one self-describing record with the firmware and FPGA versions included.
+              </li>
+              <li>
+                <strong>Built to be read by software.</strong> The device reports its state, fault and
+                a plain-language reason for anything that is blocked. Errors are HTTP status codes with
+                a JSON reason, lists page with cursors, and new events arrive by long poll or a
+                Server-Sent Events stream, so a client never needs to guess or scrape.
+              </li>
+              <li>
+                <strong>Operable remotely.</strong> Display mode and brightness, power sequencing,
+                Wi-Fi networks, over-the-air updates, health and crash dumps are all endpoints too, and
+                it serves NTP to the rest of the network.
+              </li>
+            </ul>
+            <div class="code-block">
+              <div class="code-label"><span>Terminal</span></div>
+              <pre tabindex="0" aria-label="Example API session"><code>DEV=http://192.168.1.50   # the board's address, shown on its OLED
+
+# what time is it, and how sure is the board?
+curl -s $DEV/api/time
+
+# a 10 ms pulse at the top of every second, starting at the next one
+curl -s -X POST $DEV/api/trigger/out \
+     -d '{"start":"next","width_ns":1e7,"period_ns":1e9}'
+
+# record a camera test, then fetch the timestamped edges
+curl -s -X POST $DEV/api/calibration/session \
+     -d '{"action":"start","label":"webcam 120 fps","camera":"C920"}'
+curl -s -X POST $DEV/api/calibration/session -d '{"action":"stop"}'</code></pre>
+            </div>
           </section>
 
           <section id="gallery" aria-labelledby="gallery-title">
@@ -401,9 +455,10 @@
             <h2 id="status-title">Status</h2>
             <ul class="sz-list">
               <li>
-                <strong>Revision A carriers are built and in bring-up.</strong> The board powers up
-                through its full sequence, locks to GNSS and runs the optical word, the OLED clock,
-                NTP and the web interface over Wi-Fi.
+                <strong>Beta release.</strong> Revision A hardware and its firmware are complete: the
+                board powers up through its full sequence, locks to GNSS and runs the optical word,
+                trigger capture and output, the OLED clock, NTP, the HTTP API and the web interface
+                over Wi-Fi.
               </li>
               <li>
                 <strong>The timebase is 10 MHz.</strong> The iCE40UP5K's only PLL output shares a pin
@@ -416,8 +471,8 @@
                 the next revision filters and shields the clock line.
               </li>
               <li>
-                <strong>Optical timing still has to be measured.</strong> LED-to-LED edge timing and
-                absolute offset need a photodiode campaign before the word is called calibrated.
+                <strong>Optical calibration uses a fast photodiode</strong> to measure each unit's
+                LED-to-LED edge timing and absolute optical offset.
               </li>
             </ul>
           </section>

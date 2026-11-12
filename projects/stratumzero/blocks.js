@@ -47,7 +47,7 @@ export const BLOCKS = [
     name: 'GNSS receiver',
     color: '#9ece6a',
     summary: 'A u-blox MAX-M10S: absolute time and the pulse-per-second everything is referenced to.',
-    detail: 'The receiver tracks GPS, Galileo, GLONASS and BeiDou. Its PPS edge goes straight to the FPGA (and to the ESP32 for diagnostics); its UBX messages over UART tell the firmware which UTC second that edge belongs to and how good it is. A rechargeable backup cell keeps the almanac and clock alive between power-ups, so restarts are hot.',
+    detail: 'The receiver tracks GPS, Galileo, GLONASS and BeiDou. Its PPS edge goes straight to the FPGA (and to the ESP32 for diagnostics); its UBX messages over UART tell the firmware which UTC second that edge belongs to and how good it is. It also timestamps every trigger-input edge on its EXTINT pin against GNSS time, an independent check on the FPGA\'s own capture. A rechargeable backup cell keeps the almanac and clock alive between power-ups, so restarts are hot.',
     parts: {
       U6: 'u-blox MAX-M10S multi-constellation GNSS module. PPS to the FPGA, UART to the ESP32, EXTINT from the trigger input.',
       J5: 'Edge-launch SMA for an active GNSS antenna, fed by a 50 Ω grounded coplanar line with a via fence.',
