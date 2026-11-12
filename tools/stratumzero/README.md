@@ -1,8 +1,8 @@
 # StratumZero page assets
 
 Development-only scripts behind `projects/stratumzero/`. Nothing here runs on the site.
-They were run against the StratumZero carrier design at `00a318e` and the gumstick module
-(`OrbitalCommons/gumstick`, `current-df40-connectors/`) at `264c904`, with KiCad 10.0.6.
+They were run against the StratumZero carrier design at `433dff6` and the Affogato module
+(`OrbitalCommons/affogato`, `current-df40-connectors/`) at `264c904`, with KiCad 10.0.6.
 Paths at the top of each script point at local checkouts; adjust them before rerunning.
 
 | Step | Script | Output |

@@ -6,7 +6,7 @@ def parts(path):
         at=re.search(r'\n\t\t\(at ([-\d.]+) ([-\d.]+)',fp); layer=re.search(r'\(layer "([^"]+)"\)',fp)[1]
         out[ref]=dict(v=val,x=float(at[1]),y=float(at[2]),side='B' if layer.startswith('B') else 'F')
     return out
-car=parts('/tmp/szweb/board/calibrator.kicad_pcb'); mod=parts('/tmp/szweb/gumstick/current-df40-connectors/module.kicad_pcb')
+car=parts('/tmp/szweb/board/calibrator.kicad_pcb'); mod=parts('/tmp/szweb/affogato/current-df40-connectors/module.kicad_pcb')
 KEY={'power':['J3','U11','U14','U1','D1'],'gnss':['U6','J5','BT1','D75','U5','D74'],'trigger':['J6','J7','U9','U7','U10'],
      'ocxo':['Y1','U15'],'brightness':['U17','U18','SJ1'],'logic':['U2','DS1','J8'],'interface':['J1','J2']}
 KEY['display']=[f'D{i}' for i in range(10,74)]+[f'Q{i}' for i in range(1,17)]+['U3','U4']

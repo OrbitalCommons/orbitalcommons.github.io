@@ -99,8 +99,8 @@
               The same timebase timestamps electrical edges on an SMA input, fires scheduled pulses
               on an SMA output, and serves NTP over Wi-Fi. The carrier is a 180 × 100 mm two-layer
               board; the compute lives on the
-              <a href="https://github.com/OrbitalCommons/gumstick">gumstick</a>, an open ESP32 +
-              iCE40 module that plugs into it.
+              <a href="https://github.com/OrbitalCommons/affogato">Affogato</a>, an open ESP32 + iCE40
+              module that plugs into it.
             </p>
           </section>
 
@@ -136,7 +136,7 @@
                   <text x="115" y="410">USB-C power</text><text x="115" y="432" class="d-sub">PD 5 V / 3 A · eFuse</text>
                 </g>
                 <rect x="300" y="24" width="330" height="430" rx="16" class="d-module" />
-                <text x="465" y="50" class="d-label">gumstick compute module</text>
+                <text x="465" y="50" class="d-label">Affogato compute module</text>
                 <g class="d-box">
                   <rect x="330" y="70" width="270" height="170" rx="10" style="--c:#7aa2f7" />
                   <text x="465" y="104">iCE40UP5K FPGA</text>
@@ -227,11 +227,11 @@
             <h2 id="blocks-title">Subsystems</h2>
             <div class="sz-blocks">
               <article class="sz-block" style="--c:#7aa2f7">
-                <img src="img/module-top-1600.webp" srcset="img/module-top-800.webp 800w, img/module-top-1600.webp 1600w" sizes="(max-width: 700px) 100vw, 300px" width="1600" height="864" alt="Top of the gumstick module: the ESP32-S2 at the antenna end, the iCE40 FPGA at the other, the mounting hole between them" loading="lazy" decoding="async" />
+                <img src="img/module-top-1600.webp" srcset="img/module-top-800.webp 800w, img/module-top-1600.webp 1600w" sizes="(max-width: 700px) 100vw, 300px" width="1600" height="864" alt="Top of the Affogato module: the ESP32-S2 at the antenna end, the iCE40 FPGA at the other, the mounting hole between them" loading="lazy" decoding="async" />
                 <div>
                   <h3>Compute module</h3>
                   <p>
-                    The gumstick carries an <strong>iCE40UP5K FPGA</strong> and an
+                    The Affogato module carries an <strong>iCE40UP5K FPGA</strong> and an
                     <strong>ESP32-S2</strong> on a 20 × 45 mm board. It plugs into two Hirose DF40
                     connectors 25 mm apart, held by one M3 screw midway between them. The FPGA's
                     1.2 V core and the module's 3.3 V are made on the module from the carrier's 5 V;
@@ -377,15 +377,15 @@
                 <figcaption>The connector edge: USB-C, trigger in, trigger out, GNSS antenna.</figcaption>
               </figure>
               <figure>
-                <a href="img/module-iso-1600.webp"><img src="img/module-iso-1600.webp" srcset="img/module-iso-800.webp 800w, img/module-iso-1600.webp 1600w" sizes="(max-width: 700px) 100vw, 440px" width="1600" height="975" alt="The gumstick module at an angle, showing the ESP32-S2 and the iCE40 FPGA" loading="lazy" decoding="async" /></a>
-                <figcaption>The gumstick module: ESP32-S2 at the U.FL end, iCE40UP5K at the other.</figcaption>
+                <a href="img/module-iso-1600.webp"><img src="img/module-iso-1600.webp" srcset="img/module-iso-800.webp 800w, img/module-iso-1600.webp 1600w" sizes="(max-width: 700px) 100vw, 440px" width="1600" height="975" alt="The Affogato module at an angle, showing the ESP32-S2 and the iCE40 FPGA" loading="lazy" decoding="async" /></a>
+                <figcaption>The Affogato module: ESP32-S2 at the U.FL end, iCE40UP5K at the other.</figcaption>
               </figure>
               <figure>
-                <a href="img/module-bottom-1600.webp"><img src="img/module-bottom-1600.webp" srcset="img/module-bottom-800.webp 800w, img/module-bottom-1600.webp 1600w" sizes="(max-width: 700px) 100vw, 440px" width="1600" height="854" alt="Underside of the gumstick module with its two board-to-board connectors" loading="lazy" decoding="async" /></a>
+                <a href="img/module-bottom-1600.webp"><img src="img/module-bottom-1600.webp" srcset="img/module-bottom-800.webp 800w, img/module-bottom-1600.webp 1600w" sizes="(max-width: 700px) 100vw, 440px" width="1600" height="854" alt="Underside of the Affogato module with its two board-to-board connectors" loading="lazy" decoding="async" /></a>
                 <figcaption>Module underside: the two DF40 connectors that mate with the carrier.</figcaption>
               </figure>
               <figure>
-                <a href="img/module-top-1600.webp"><img src="img/module-top-1600.webp" srcset="img/module-top-800.webp 800w, img/module-top-1600.webp 1600w" sizes="(max-width: 700px) 100vw, 440px" width="1600" height="864" alt="Top of the gumstick module" loading="lazy" decoding="async" /></a>
+                <a href="img/module-top-1600.webp"><img src="img/module-top-1600.webp" srcset="img/module-top-800.webp 800w, img/module-top-1600.webp 1600w" sizes="(max-width: 700px) 100vw, 440px" width="1600" height="864" alt="Top of the Affogato module" loading="lazy" decoding="async" /></a>
                 <figcaption>Module top.</figcaption>
               </figure>
               <figure>
@@ -429,7 +429,7 @@
               project from datasheets; the OCXO, OLED and several connectors are
               simplified envelopes. The viewer uses <a href="vendor/three-LICENSE.txt">three.js</a>
               (MIT). The compute module design is open at
-              <a href="https://github.com/OrbitalCommons/gumstick">OrbitalCommons/gumstick</a>.
+              <a href="https://github.com/OrbitalCommons/affogato">OrbitalCommons/affogato</a>.
             </p>
           </section>
         </div>
@@ -454,7 +454,7 @@
           <div>
             <p class="foot-h">Elsewhere</p>
             <a href="../../sky/">Sky explorer</a><a href="https://github.com/OrbitalCommons">GitHub</a
-            ><a href="https://github.com/OrbitalCommons/gumstick">gumstick module</a>
+            ><a href="https://github.com/OrbitalCommons/affogato">Affogato module</a>
           </div>
         </div>
       </div>

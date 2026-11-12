@@ -1,11 +1,11 @@
-// Functional blocks of the StratumZero carrier and its gumstick compute module.
+// Functional blocks of the StratumZero carrier and its Affogato compute module.
 // Every part in parts.js belongs to one block; `parts` lists the parts worth naming.
 export const BLOCKS = [
   {
     id: 'module',
     name: 'Compute module',
     color: '#7aa2f7',
-    summary: 'The gumstick: an ESP32-S2 for networking and an iCE40UP5K FPGA for timing, on one 20 × 45 mm board.',
+    summary: 'The Affogato module: an ESP32-S2 for networking and an iCE40UP5K FPGA for timing, on one 20 × 45 mm board.',
     detail: 'The module plugs into the carrier on two Hirose DF40 board-to-board connectors and one M3 screw. The FPGA does every time-critical job in logic clocked by the OCXO; the ESP32-S2 runs the Rust firmware that configures the GNSS receiver, sequences power, assigns UTC to the FPGA\'s timestamps and serves the web interface, the HTTP API and NTP.',
     parts: {
       'M:U2': 'Lattice iCE40UP5K FPGA. A free-running 64-bit counter on the 10 MHz OCXO, PPS and trigger edge capture into a 512-record FIFO, the phase accumulator behind the optical time word, and a tick-scheduled trigger output. It talks to the ESP32-S2 over SPI.',
