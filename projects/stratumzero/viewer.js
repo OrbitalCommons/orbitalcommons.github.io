@@ -237,6 +237,9 @@ function frameParts(list, minDist = 0.09) {
 function showBlock(block, part) {
   const named = Object.entries(block.parts);
   info.replaceChildren();
+  // the side panel scrolls on its own on wide screens: start each description at the top
+  const side = info.parentElement;
+  if (side.scrollHeight > side.clientHeight) side.scrollTo({ top: info.offsetTop - side.offsetTop - 8 });
   const h = document.createElement('h3'); h.textContent = block.name; info.append(h);
   if (part) {
     const p = document.createElement('p'); p.className = 'viewer-part';
