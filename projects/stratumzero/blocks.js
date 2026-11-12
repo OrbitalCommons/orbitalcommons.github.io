@@ -16,18 +16,9 @@ export const BLOCKS = [
       'M:U4': 'TLV75512 LDO: the FPGA\'s 1.2 V core supply.',
       'M:D1': 'RGB status LED driven by the FPGA\'s current sinks.',
       'M:J1': 'DF40 receptacle to the carrier: ESP32 signals, USB and 5 V.',
-      'M:J2': 'DF40 plug to the carrier: 30 FPGA I/O, including the OCXO clock and GNSS PPS.'
-    }
-  },
-  {
-    id: 'interface',
-    name: 'Module interface',
-    color: '#a9b1d6',
-    summary: 'Two DF40 connectors 25 mm apart, with the M3 hold-down screw between them.',
-    detail: 'The carrier side of the module contract: J1 carries the ESP32 pins, native USB and 5 V; J2 carries the FPGA pins. The screw sits midway so it tensions both connectors evenly, and the 2 mm mating height leaves room for parts under the module.',
-    parts: {
-      J1: 'DF40 plug mating the module\'s ESP32 end (40 contacts).',
-      J2: 'DF40 receptacle mating the module\'s FPGA end (40 contacts). Pin 32 brings the 10 MHz clock to the FPGA\'s global clock input.'
+      'M:J2': 'DF40 plug to the carrier: 30 FPGA I/O, including the OCXO clock and GNSS PPS.',
+      J1: 'Carrier side of the ESP32 connector (DF40 plug), under the module.',
+      J2: 'Carrier side of the FPGA connector (DF40 receptacle), under the module. Pin 32 brings the 10 MHz clock in.'
     }
   },
   {
