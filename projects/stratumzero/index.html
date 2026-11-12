@@ -82,7 +82,7 @@
           <p>On this page</p>
           <a href="#overview">Overview</a><a href="#system">System</a><a href="#explore">3D board</a
           ><a href="#blocks">Subsystems</a><a href="#reading">Reading the time</a
-          ><a href="#api">API</a><a href="#gallery">Renders</a><a href="#status">Status</a>
+          ><a href="#api">API</a><a href="#gallery">Renders</a><a href="#quote">Request a Quote</a>
         </nav>
         <div class="project-content">
           <section id="overview" aria-labelledby="overview-title">
@@ -451,30 +451,10 @@ curl -s -X POST $DEV/api/calibration/session -d '{"action":"stop"}'</code></pre>
             </div>
           </section>
 
-          <section id="status" aria-labelledby="status-title">
-            <h2 id="status-title">Status</h2>
-            <ul class="sz-list">
-              <li>
-                <strong>Beta release.</strong> Revision A hardware and its firmware are complete: the
-                board powers up through its full sequence, locks to GNSS and runs the optical word,
-                trigger capture and output, the OLED clock, NTP, the HTTP API and the web interface
-                over Wi-Fi.
-              </li>
-              <li>
-                <strong>The timebase is 10 MHz.</strong> The iCE40UP5K's only PLL output shares a pin
-                with the PPS input on this revision, so ticks are 100 ns rather than the planned
-                12.5 ns. The next revision moves PPS.
-              </li>
-              <li>
-                <strong>The oscillator and Wi-Fi had to learn to share.</strong> The OCXO's fast
-                clock edges radiated into the 2.4 GHz band; antenna placement fixed most of it, and
-                the next revision filters and shields the clock line.
-              </li>
-              <li>
-                <strong>Optical calibration uses a fast photodiode</strong> to measure each unit's
-                LED-to-LED edge timing and absolute optical offset.
-              </li>
-            </ul>
+          <section id="quote" class="sz-quote" aria-label="Request a quote">
+            <a class="btn primary" href="mailto:matthew.goodman@renphil.org?subject=StratumZero%20quote%20request"
+              >Request a Quote <span aria-hidden="true">↗</span></a
+            >
           </section>
 
         </div>

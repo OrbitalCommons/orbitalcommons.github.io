@@ -105,3 +105,5 @@
 
 .sz-legal { max-width: 70ch; padding-bottom: 4rem; }
 .sz-legal h1 { font-size: clamp(1.8rem, 4vw, 2.4rem); margin-bottom: 1rem; }
+
+.sz-quote { display: flex; justify-content: center; padding: 1rem 0 2rem; }
