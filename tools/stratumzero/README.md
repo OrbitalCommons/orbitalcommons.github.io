@@ -13,8 +13,7 @@ Paths at the top of each script point at local checkouts; adjust them before rer
 | 3D models | `kicad-cli pcb export glb --subst-models` (components and board body only), then `pack.mjs`: one mesh per reference designator, simplified, quantized, meshopt | `model/carrier.glb`, `model/module.glb` |
 | Part catalogue | `catalog.py`: value and functional block for every part (passives join the nearest block) | `parts.js` |
 
-The 3D model's USB-C jack is swapped for the project's simplified envelope before export:
-the detailed community model has no stated licence. `three.js` r181 (MIT) is vendored in
+`three.js` r181 (MIT) is vendored in
 `projects/stratumzero/vendor/` with `GLTFLoader`, `OrbitControls`, `RoomEnvironment`
 and the meshopt decoder; `GLTFLoader`'s `BufferGeometryUtils` import points at the
 vendored copy.

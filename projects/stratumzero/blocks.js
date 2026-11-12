@@ -103,7 +103,7 @@ export const BLOCKS = [
     summary: 'USB-C negotiates 5 V / 3 A, and an eFuse gates and measures everything except the module.',
     detail: 'The PD controller only ever requests 5 V: the module and the input dividers sit on VBUS directly. The ESP32 reads the negotiated contract over I²C before it turns on the switched 5 V domain, then brings the GNSS, OCXO and display rails up one at a time while it watches the eFuse\'s current monitor. Native USB data runs through to the ESP32-S2.',
     parts: {
-      J3: 'USB-C receptacle: power and full-speed USB data. (The web model uses a simplified envelope.)',
+      J3: 'USB-C receptacle: power and full-speed USB data.',
       U11: 'HUSB238 USB PD sink controller, fixed to a 5 V / 3 A request.',
       U14: 'TPS259531 eFuse: the switched 5 V domain, a 2.48 A limit, a 12 ms soft start and a current mirror to the ESP32\'s ADC.',
       U1: 'USBLC6-2 ESD protection on the USB data pair.',
