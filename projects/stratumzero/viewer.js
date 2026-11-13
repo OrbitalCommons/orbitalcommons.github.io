@@ -178,8 +178,9 @@ function paint() {
     const col = new THREE.Color((byId[p.block] || {}).color || '#ffffff');
     for (const m of p.mats) { m.emissive.copy(col); m.emissiveIntensity = on; }
   }
-  aim(selReticle, selectedPart);
-  aim(hoverReticle, hovered !== selectedPart ? hovered : null);
+  // the selection reticle frames the whole block (area); hover frames the single part
+  aim(selReticle, selectedBlock ? [...parts.values()].filter(p => p.block === selectedBlock.id) : null);
+  aim(hoverReticle, hovered ? [hovered] : null);
   request();
 }
 
@@ -196,13 +197,16 @@ function makeReticle(color, opacity) {
 }
 const rbox = new THREE.Box3(), rc = new THREE.Vector3(), rs = new THREE.Vector3(), rm = new THREE.Matrix4();
 const rq = new THREE.Quaternion(), rp = new THREE.Vector3(), rsc = new THREE.Vector3();
-function aim(r, part) { r.userData.part = part; r.visible = !!part; if (part) fit(r, 1); }
+const pbox = new THREE.Box3();
+function aim(r, list) { r.userData.list = list && list.length ? list : null; r.visible = !!r.userData.list; if (r.visible) fit(r, 1); }
 function fit(r, grow) {
-  rbox.setFromObject(r.userData.part.node);
+  rbox.makeEmpty();
+  for (const p of r.userData.list) rbox.union(pbox.setFromObject(p.node));
   rbox.getCenter(rc); rbox.getSize(rs);
   const pad = Math.max(0.0005, rs.length() * 0.05);      // breathing room around small parts
   const h = rs.clone().addScalar(2 * pad).multiplyScalar(grow / 2);
-  const t = Math.max(0.00012, Math.min(h.x, h.y, h.z, 0.004) * 0.12);   // bar thickness
+  // bar thickness grows with the box so a whole-area reticle stays visible zoomed out
+  const t = Math.min(0.0009, Math.max(0.00012, Math.min(h.x, h.y, h.z) * 0.12, h.length() * 0.008));
   let i = 0;
   for (const sx of [-1, 1]) for (const sy of [-1, 1]) for (const sz of [-1, 1]) {
     for (const axis of [0, 1, 2]) {
